@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>区内行情记录</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>区内行情</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <a class="nav-button" href="./index.html">差价计算</a>
+        <a class="nav-button active" href="./market.html" aria-current="page">区内行情</a>
+        <a class="nav-button" href="./floors.html">地板行情</a>
+        <a class="nav-button" href="./equipment.html">宝宝装备</a>
+        <a class="nav-button" href="./eyes.html">三眼九眼</a>
+        <a class="nav-button" href="./stones.html">灵石比价</a>
+        <a class="nav-button" href="./festival.html">元宵珍经</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="market-panel" aria-labelledby="market-title">
+        <div>
+          <h2 id="market-title">行情参数</h2>
+          <p>所有数据只保存在这台电脑的浏览器里。</p>
+        </div>
+        <div class="market-fields">
+          <label>
+            服务器
+            <input id="server-name" type="text" placeholder="例如：2008" />
+          </label>
+          <label>
+            <span id="gold-price-label">金价</span>
+            <span class="gold-price-input">
+              <input id="gold-price" type="number" min="0" step="0.001" value="0" />
+              <select id="gold-price-unit" aria-label="金价单位">
+                <option value="bundle" selected>元 / 3000万两</option>
+                <option value="wan">元 / 万两</option>
+                <option value="million">元 / 100万两</option>
+              </select>
+            </span>
+          </label>
+          <label>
+            手续费率
+            <input id="fee-rate" type="number" min="0" max="1" step="0.01" value="0.05" />
+          </label>
+          <label>
+            手续费上限（元）
+            <input id="fee-cap" type="number" min="0" step="1" value="1000" />
+          </label>
+        </div>
+        <div class="gold-price-history-panel">
+          <div class="gold-price-actions">
+            <label>
+              金价日期
+              <input id="gold-price-date" type="date" />
+            </label>
+            <button id="save-gold-price" type="button">记录当天金价</button>
+          </div>
+          <p id="gold-price-status">填写服务器和当日金价后记录历史。</p>
+          <ol id="gold-price-history" aria-label="金价历史"></ol>
+        </div>
+        <div class="stall-price-panel">
+          <div class="stall-price-head">
+            <h3>摆摊物品价</h3>
+            <label>
+              摆摊价日期
+              <input id="stall-price-date" type="date" />
+            </label>
+            <button id="save-stall-price" type="button">记录并应用到配方</button>
+            <button id="add-stall-price-row" type="button">添加物品行</button>
+          </div>
+          <div id="stall-price-fields" class="stall-price-fields"></div>
+          <p id="stall-price-status">自行添加物品行并填写名称、单价；保存后按同名应用到配方材料。</p>
+          <ol id="stall-price-history" aria-label="摆摊价格历史"></ol>
+        </div>
+        <div class="actions">
+          <button id="reset-data" type="button">恢复默认</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>同一服务器或同一物品的同一天记录会覆盖旧值；最新金价会同步到差价计算，最新摆摊价会按同名套入配方。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

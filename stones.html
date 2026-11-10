@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>灵石比价</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>灵石比价</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <a class="nav-button" href="./index.html">差价计算</a>
+        <a class="nav-button" href="./market.html">区内行情</a>
+        <a class="nav-button" href="./floors.html">地板行情</a>
+        <a class="nav-button" href="./equipment.html">宝宝装备</a>
+        <a class="nav-button" href="./eyes.html">三眼九眼</a>
+        <a class="nav-button active" href="./stones.html" aria-current="page">灵石比价</a>
+        <a class="nav-button" href="./festival.html">元宵珍经</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="reference-panel" aria-labelledby="stones-title">
+        <div>
+          <h2 id="stones-title">输入1级价钱即可</h2>
+          <p id="stone-price-summary">使用区内行情页的当前金价和手续费计算。</p>
+        </div>
+        <div class="stone-controls">
+          <label>
+            比价等级
+            <select id="stone-target-level">
+              <option value="1">1级</option>
+              <option value="2">2级</option>
+              <option value="3">3级</option>
+              <option value="4">4级</option>
+              <option value="5">5级</option>
+              <option value="6">6级</option>
+              <option value="7">7级</option>
+              <option value="8">8级</option>
+              <option value="9">9级</option>
+              <option value="10" selected>10级</option>
+            </select>
+          </label>
+          <p class="stone-input-note">1级价格在每个分层表的第一行直接填写，2–10级自动更新。</p>
+        </div>
+        <div id="stone-tier-tables" class="stone-tier-stack"></div>
+        <div class="reference-table-wrap wide">
+          <table>
+            <thead>
+              <tr>
+                <th>属性 / 灵石</th>
+                <th>对应宝石</th>
+                <th>等级成本（万）</th>
+                <th>折算成本</th>
+                <th>藏宝阁价（元）</th>
+                <th>手续费 / 到手</th>
+                <th>净差价</th>
+              </tr>
+            </thead>
+            <tbody id="stone-comparison"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>精魄灵石按 1、2、4、8、16、32、64、132、296、724 倍推导；星辉石按 3 的级数减一次方推导；五色石按独立序列推导。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

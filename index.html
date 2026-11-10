@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>灵兽绘卷差价计算</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>灵兽绘卷差价计算器</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <a class="nav-button active" href="./index.html" aria-current="page">差价计算</a>
+        <a class="nav-button" href="./market.html">区内行情</a>
+        <a class="nav-button" href="./floors.html">地板行情</a>
+        <a class="nav-button" href="./equipment.html">宝宝装备</a>
+        <a class="nav-button" href="./eyes.html">三眼九眼</a>
+        <a class="nav-button" href="./stones.html">灵石比价</a>
+        <a class="nav-button" href="./festival.html">元宵珍经</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="market-panel" aria-labelledby="market-title">
+        <div>
+          <h2 id="market-title">计算行情</h2>
+          <p>金价和手续费参与本页每只召唤兽的差价计算。</p>
+        </div>
+        <div class="market-fields">
+          <label>
+            服务器
+            <input id="server-name" type="text" placeholder="例如：2008" />
+          </label>
+          <label>
+            <span id="gold-price-label">金价</span>
+            <span class="gold-price-input">
+              <input id="gold-price" type="number" min="0" step="0.001" value="0" />
+              <select id="gold-price-unit" aria-label="金价单位">
+                <option value="bundle" selected>元 / 3000万两</option>
+                <option value="wan">元 / 万两</option>
+                <option value="million">元 / 100万两</option>
+              </select>
+            </span>
+          </label>
+          <label>
+            手续费率
+            <input id="fee-rate" type="number" min="0" max="1" step="0.01" value="0.05" />
+          </label>
+          <label>
+            手续费上限（元）
+            <input id="fee-cap" type="number" min="0" step="1" value="1000" />
+          </label>
+        </div>
+      </section>
+
+      <section class="summary opportunity-summary" aria-label="各方案汇总">
+        <div>
+          <h2>各方案利润</h2>
+          <ul id="opportunity-summary-list"></ul>
+        </div>
+        <span id="summary-text">每个召唤兽方案独立计算，不合并总价</span>
+      </section>
+
+      <section id="opportunities" class="opportunities" aria-label="兑换机会"></section>
+
+      <div class="actions">
+        <button id="add-opportunity" class="primary" type="button">添加独立方案</button>
+      </div>
+    </main>
+
+    <footer>
+      <p>公式：材料成本 = Σ(数量 × 单价)；人民币成本按所选金价单位换算；净利润 = 藏宝阁售价 − min(售价 × 手续费率, 上限) − 材料成本 − 野生/胚子成本。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

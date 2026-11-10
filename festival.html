@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>元宵珍经价格</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>元宵珍经</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <a class="nav-button" href="./index.html">差价计算</a>
+        <a class="nav-button" href="./market.html">区内行情</a>
+        <a class="nav-button" href="./floors.html">地板行情</a>
+        <a class="nav-button" href="./equipment.html">宝宝装备</a>
+        <a class="nav-button" href="./eyes.html">三眼九眼</a>
+        <a class="nav-button" href="./stones.html">灵石比价</a>
+        <a class="nav-button active" href="./festival.html" aria-current="page">元宵珍经</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="reference-panel" aria-labelledby="festival-title">
+        <div>
+          <h2 id="festival-title">元宵与炼兽珍经</h2>
+          <p id="festival-gold-summary">元宵只记录万两价格。</p>
+        </div>
+
+        <div class="reference-table-wrap festival-table-wrap">
+          <table class="festival-table">
+            <thead>
+              <tr>
+                <th>攻击元宵</th>
+                <th>防御元宵</th>
+                <th>速度元宵</th>
+                <th>躲闪元宵</th>
+                <th>体力元宵</th>
+                <th>法力元宵</th>
+              </tr>
+            </thead>
+            <tbody id="yuanxiao-records"></tbody>
+          </table>
+        </div>
+        <article class="reference-card zhenjing-card">
+          <h3>炼兽珍经</h3>
+          <div class="zhenjing-fields">
+            <label>
+              价格（万两）
+              <input id="zhenjing-price" type="number" min="0" step="0.01" placeholder="空" />
+            </label>
+            <p id="zhenjing-rmb">—</p>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>元宵固定列出攻击、防御、速度、躲闪、体力、法力六类；只需要填写万两价格。炼兽珍经只有一个价格。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

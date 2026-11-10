@@ -1,0 +1,786 @@
+:root {
+  color-scheme: light;
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --page: #ffffff;
+  --page-soft: #f6f8f7;
+  --panel: #ffffff;
+  --panel-soft: #f8faf9;
+  --line: #d9e0dc;
+  --line-strong: #bfcac4;
+  --text: #182420;
+  --muted: #64736c;
+  --gold: #a4720d;
+  --gold-deep: #8a5f08;
+  --profit: #107c4f;
+  --loss: #c5342d;
+  --focus: #8a5f08;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(circle at top right, rgba(180, 133, 24, 0.08), transparent 30rem),
+    linear-gradient(180deg, var(--page-soft), var(--page) 28rem);
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.masthead {
+  display: grid;
+  gap: 1.5rem;
+  align-items: end;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 2rem;
+}
+
+.subtitle {
+  margin: 0 0 0.5rem;
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-weight: 650;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.1;
+}
+
+.masthead-note {
+  max-width: 26rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.masthead.compact {
+  grid-template-columns: minmax(14rem, 1fr) auto;
+  align-items: center;
+  padding-top: 2.25rem;
+  padding-bottom: 1.5rem;
+}
+
+.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+}
+
+.nav-button {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.nav-button:hover,
+.nav-button.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+}
+
+.market-panel {
+  display: grid;
+  grid-template-columns: minmax(13rem, 1fr) minmax(20rem, 2fr);
+  gap: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 8px 28px rgba(24, 36, 32, 0.06);
+}
+
+.market-panel p {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.market-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 0.85rem;
+}
+
+.gold-price-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7.5rem, auto);
+  gap: 0.4rem;
+}
+
+.gold-price-history-panel {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.85rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.gold-price-actions {
+  display: grid;
+  grid-template-columns: minmax(10rem, 12rem) auto;
+  gap: 0.85rem;
+  align-items: end;
+}
+
+#gold-price-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+#gold-price-history {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#gold-price-history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+#gold-price-history strong {
+  color: var(--gold);
+}
+
+.stall-price-panel {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.85rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.stall-price-head {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(10rem, 12rem) auto auto;
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.stall-price-head h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.stall-price-fields {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.stall-price-row {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1.4fr) minmax(10rem, 1fr) auto;
+  gap: 0.65rem;
+  align-items: end;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+}
+
+.stall-price-row button {
+  min-height: 2.5rem;
+  gap: 0.65rem;
+}
+
+#stall-price-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+#stall-price-history {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#stall-price-history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+#stall-price-history strong {
+  color: var(--gold);
+}
+
+label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+
+input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+input[type="number"] {
+  text-align: center;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 5px solid var(--gold-deep);
+  background: linear-gradient(90deg, #fff7e6, #ffffff);
+  box-shadow: 0 8px 28px rgba(24, 36, 32, 0.05);
+}
+
+.floor-panel {
+  display: grid;
+  grid-template-columns: minmax(13rem, 1fr) minmax(20rem, 3fr);
+  gap: 2rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 8px 28px rgba(24, 36, 32, 0.06);
+}
+
+.floor-panel p {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.floor-table-wrap {
+  overflow-x: auto;
+}
+
+.floor-panel table {
+  width: 100%;
+  min-width: 42rem;
+  border-collapse: collapse;
+}
+
+.floor-panel th,
+.floor-panel td {
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.floor-panel th {
+  padding: 0.65rem;
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.floor-panel td {
+  padding: 0.35rem;
+}
+
+.floor-panel td:nth-child(1) {
+  width: 11rem;
+}
+
+.floor-panel td:nth-child(2) {
+  width: 9rem;
+}
+
+.reference-panel {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 8px 28px rgba(24, 36, 32, 0.06);
+}
+
+.reference-panel > div:first-child {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.reference-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.reference-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.reference-card {
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.reference-card h3 {
+  margin: 0 0 0.8rem;
+  color: var(--gold);
+  font-size: 1rem;
+}
+
+.reference-table-wrap {
+  overflow-x: auto;
+}
+
+.reference-card table,
+.reference-panel > .reference-table-wrap table {
+  width: 100%;
+  min-width: 27rem;
+  border-collapse: collapse;
+}
+
+.reference-card th,
+.reference-panel > .reference-table-wrap th,
+.reference-card td,
+.reference-panel > .reference-table-wrap td {
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.reference-card th,
+.reference-panel > .reference-table-wrap th {
+  padding: 0.55rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.reference-card td,
+.reference-panel > .reference-table-wrap td {
+  padding: 0.25rem;
+  font-size: 0.86rem;
+}
+
+.reference-card td:not(:has(input)),
+.reference-panel > .reference-table-wrap td {
+  padding: 0.55rem;
+}
+
+.reference-card input,
+.reference-panel > .reference-table-wrap input {
+  min-height: 2.2rem;
+  font-size: 0.84rem;
+}
+
+.zhenjing-card {
+  justify-self: start;
+  width: min(100%, 20rem);
+}
+
+.zhenjing-fields {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.zhenjing-fields p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.festival-table-wrap {
+  overflow-x: auto;
+}
+
+.festival-table {
+  width: 100%;
+  min-width: 43rem;
+  border-collapse: collapse;
+}
+
+.festival-table th,
+.festival-table td {
+  width: 16.66%;
+  border: 1px solid var(--line);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.festival-table th {
+  padding: 0.65rem 0.4rem;
+  color: var(--gold);
+  background: var(--panel-soft);
+  font-size: 0.84rem;
+  white-space: nowrap;
+}
+
+.festival-table td {
+  padding: 0.45rem;
+}
+
+.festival-table input {
+  min-height: 2.3rem;
+}
+
+.equipment-cost,
+.eye-rmb,
+.stone-cost,
+.stone-net {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.equipment-profit {
+  color: var(--text);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.equipment-profit.profit {
+  color: var(--profit);
+}
+
+.equipment-profit.loss {
+  color: var(--loss);
+}
+
+.stone-profit {
+  color: var(--text);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.stone-profit.profit {
+  color: var(--profit);
+}
+
+.stone-profit.loss {
+  color: var(--loss);
+}
+
+.reference-card.notes {
+  grid-column: 1 / -1;
+}
+
+.reference-card.notes ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.8;
+}
+
+.stone-controls {
+  display: grid;
+  grid-template-columns: minmax(9rem, 12rem) minmax(0, 3fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+}
+
+.stone-input-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.stone-tier-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.stone-tier-card h3 {
+  margin: 0 0 0.8rem;
+  color: var(--gold);
+  font-size: 1rem;
+}
+
+.stone-level-multiplier {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.reference-table-wrap.wide table {
+  min-width: 52rem;
+}
+
+.summary strong {
+  color: var(--gold);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
+
+.summary span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.opportunity-summary {
+  align-items: start;
+}
+
+.opportunity-summary h2 {
+  margin: 0 0 0.7rem;
+  font-size: 1.15rem;
+}
+
+.opportunity-summary ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opportunity-summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.opportunity-summary strong {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.opportunity-summary strong.profit {
+  color: var(--profit);
+}
+
+.opportunity-summary strong.loss {
+  color: var(--loss);
+}
+
+.opportunities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.opportunity {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 8px 28px rgba(24, 36, 32, 0.06);
+}
+
+.opportunity-head {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(7rem, 0.7fr) minmax(8rem, 0.7fr) minmax(8rem, 0.7fr) auto;
+  gap: 0.85rem;
+  align-items: end;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.opportunity-head input {
+  color: var(--gold);
+  font-weight: 650;
+}
+
+.recipe {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1.4fr) repeat(2, minmax(7rem, 0.8fr));
+  gap: 0.65rem;
+  align-items: center;
+  margin-top: 0.85rem;
+}
+
+.recipe-header {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.result {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(7rem, 1fr));
+  gap: 1px;
+  margin-top: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.result div {
+  min-height: 5rem;
+  padding: 0.85rem;
+  background: var(--panel);
+}
+
+.result-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.result-value {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.result-value.profit {
+  color: var(--profit);
+}
+
+.result-value.loss {
+  color: var(--loss);
+}
+
+.actions {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+button {
+  min-height: 2.6rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+button:hover {
+  border-color: var(--gold);
+}
+
+.primary {
+  border-color: var(--gold-deep);
+  background: #b48918;
+  color: #ffffff;
+  font-weight: 650;
+}
+
+.danger {
+  color: var(--loss);
+}
+
+footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .masthead,
+  main,
+  footer {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .masthead {
+    padding-top: 2.5rem;
+  }
+
+  .masthead.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .page-nav {
+    justify-content: flex-start;
+  }
+
+  .market-panel,
+  .gold-price-input,
+  .gold-price-actions,
+  .stall-price-head,
+  .stall-price-row,
+  .floor-panel,
+  .opportunity-head,
+  .recipe,
+  .result {
+    grid-template-columns: 1fr;
+  }
+
+  .recipe-header {
+    display: none;
+  }
+
+  .stone-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>宝宝装备价格</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>宝宝装备价格</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <a class="nav-button" href="./index.html">差价计算</a>
+        <a class="nav-button" href="./market.html">区内行情</a>
+        <a class="nav-button" href="./floors.html">地板行情</a>
+        <a class="nav-button active" href="./equipment.html" aria-current="page">宝宝装备</a>
+        <a class="nav-button" href="./eyes.html">三眼九眼</a>
+        <a class="nav-button" href="./stones.html">灵石比价</a>
+        <a class="nav-button" href="./festival.html">元宵珍经</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="reference-panel" aria-labelledby="equipment-title">
+        <div>
+          <h2 id="equipment-title">摆摊价与藏宝阁差价</h2>
+          <p id="equipment-gold-summary">使用区内行情页的当前金价和手续费计算。</p>
+        </div>
+        <div id="equipment-groups" class="reference-grid"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>摆摊价按“万两”记录；差价 = 藏宝阁售价 − 藏宝阁手续费 − 摆摊价 × 当前金价。空白价格不参与计算。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
