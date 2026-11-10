@@ -328,14 +328,50 @@
     });
   }
 
+  function normalizeDecimalText(value) {
+    var normalized = String(value).replace(/。/g, ".").replace(/[^\d.]/g, "");
+    var firstDotIndex = normalized.indexOf(".");
+    if (firstDotIndex === -1) return normalized;
+    return normalized.slice(0, firstDotIndex + 1) +
+      normalized.slice(firstDotIndex + 1).replace(/\./g, "");
+  }
+
+  function normalizeDecimalInput(input) {
+    if (input.inputMode !== "decimal") return;
+    var originalValue = input.value;
+    var normalizedValue = normalizeDecimalText(originalValue);
+    if (normalizedValue === originalValue) return;
+    var caretPosition = input.selectionStart === null
+      ? normalizedValue.length
+      : normalizeDecimalText(originalValue.slice(0, input.selectionStart)).length;
+    input.value = normalizedValue;
+    input.setSelectionRange(caretPosition, caretPosition);
+  }
+
+  function bindDecimalInput(input) {
+    if (input.dataset.decimalInputBound === "true") return input;
+    input.type = "text";
+    input.inputMode = "decimal";
+    input.autocomplete = "off";
+    input.dataset.decimalInputBound = "true";
+    input.addEventListener("input", function (event) {
+      normalizeDecimalInput(event.target);
+    });
+    return input;
+  }
+
+  function createDecimalInput() {
+    return bindDecimalInput(document.createElement("input"));
+  }
+
   function numberFromInput(input, fallback) {
-    var value = Number(input.value);
+    var value = Number(normalizeDecimalText(input.value));
     return Number.isFinite(value) ? value : fallback;
   }
 
   function optionalNumberFromInput(input, fallback) {
     if (input.value === "") return null;
-    var value = Number(input.value);
+    var value = Number(normalizeDecimalText(input.value));
     return Number.isFinite(value) && value >= 0 ? value : fallback;
   }
 
@@ -529,10 +565,7 @@
       nameCell.append(nameInput);
 
       var priceCell = document.createElement("td");
-      var priceInput = document.createElement("input");
-      priceInput.type = "number";
-      priceInput.min = "0";
-      priceInput.step = "1";
+      var priceInput = createDecimalInput();
       priceInput.value = priceValue(record.price);
       priceInput.setAttribute("aria-label", record.name + "价格");
       priceInput.addEventListener("input", function (event) {
@@ -564,10 +597,7 @@
   }
 
   function createPriceInput(record, propertyName, ariaLabel, listener) {
-    var input = document.createElement("input");
-    input.type = "number";
-    input.min = "0";
-    input.step = "0.01";
+    var input = createDecimalInput();
     input.placeholder = "空";
     input.value = priceValue(record[propertyName]);
     input.setAttribute("aria-label", ariaLabel);
@@ -873,10 +903,7 @@
           priceCell.dataset.level = level;
 
           if (level === 1) {
-            var input = document.createElement("input");
-            input.type = "number";
-            input.min = "0";
-            input.step = "0.01";
+            var input = createDecimalInput();
             input.value = priceValue(state.stoneLevelOnePrices[stoneName]);
             input.setAttribute("aria-label", stoneName + "1级价格");
             input.addEventListener("input", function (event) {
@@ -958,6 +985,7 @@
     tbody.append(priceRow);
 
     zhenjingPrice.value = priceValue(state.zhenjingPriceWan);
+    bindDecimalInput(zhenjingPrice);
     zhenjingPrice.oninput = function (event) {
       state.zhenjingPriceWan = optionalNumberFromInput(
         event.target,
@@ -970,11 +998,11 @@
     updateFestivalGoldSummary();
   }
 
-  function createInput(type, value, step, listener) {
-    var input = document.createElement("input");
-    input.type = type;
-    input.min = "0";
-    input.step = step;
+  function createInput(type, value, listener) {
+    var input = type === "number"
+      ? createDecimalInput()
+      : document.createElement("input");
+    if (type !== "number") input.type = type;
     input.value = type === "number" ? priceValue(value) : value;
     input.addEventListener("input", listener);
     return input;
@@ -1012,18 +1040,17 @@
     });
 
     state.materials.forEach(function (material, index) {
-      var nameInput = createInput("text", material.name, "any", function (event) {
+      var nameInput = createInput("text", material.name, function (event) {
         material.name = event.target.value;
         saveState();
         renderOpportunities();
         updateResults();
       });
-      nameInput.min = "";
       nameInput.placeholder = "材料" + (index + 1);
       nameInput.setAttribute("aria-label", "统一材料名称" + (index + 1));
       materialPriceFields.append(createLabeledCell("材料名称", nameInput));
 
-      var unitPriceInput = createInput("number", material.unitPrice, "0.01", function (event) {
+      var unitPriceInput = createInput("number", material.unitPrice, function (event) {
         material.unitPrice = numberFromInput(event.target, material.unitPrice);
         saveState();
         renderOpportunities();
@@ -1091,7 +1118,7 @@
 
     var head = document.createElement("div");
     head.className = "opportunity-head";
-    var nameInput = createInput("text", opportunity.name, "any", function (event) {
+    var nameInput = createInput("text", opportunity.name, function (event) {
       opportunity.name = event.target.value;
       saveState();
       renderOpportunityPicker();
@@ -1103,7 +1130,7 @@
     head.append(createLabeledCell("召唤兽名字", nameInput));
     head.append(createLabeledCell("技能数量", createSkillCountSelect(opportunity)));
 
-    var saleInput = createInput("number", opportunity.salePrice, "0.01", function (event) {
+    var saleInput = createInput("number", opportunity.salePrice, function (event) {
       opportunity.salePrice = numberFromInput(event.target, opportunity.salePrice);
       saveState();
       updateResults();
@@ -1111,7 +1138,7 @@
     saleInput.setAttribute("aria-label", "藏宝阁售价");
     head.append(createLabeledCell("藏宝阁售价（元）", saleInput));
 
-    var extraCostInput = createInput("number", opportunity.extraCostRmb, "0.01", function (event) {
+    var extraCostInput = createInput("number", opportunity.extraCostRmb, function (event) {
       opportunity.extraCostRmb = numberFromInput(event.target, opportunity.extraCostRmb);
       saveState();
       updateResults();
@@ -1159,7 +1186,7 @@
       materialName.textContent = material.name.trim() || "未命名材料";
       recipe.append(materialName);
 
-      var quantityInput = createInput("number", item.quantity, "1", function (event) {
+      var quantityInput = createInput("number", item.quantity, function (event) {
         item.quantity = numberFromInput(event.target, item.quantity);
         saveState();
         updateResults();
@@ -1349,6 +1376,9 @@
     var feeRate = document.getElementById("fee-rate");
     var feeCap = document.getElementById("fee-cap");
 
+    bindDecimalInput(goldPrice);
+    bindDecimalInput(feeRate);
+    bindDecimalInput(feeCap);
     serverName.value = state.serverName;
     goldPrice.value = priceValue(state.goldPriceInput);
     goldPriceUnit.value = state.goldPriceUnit;

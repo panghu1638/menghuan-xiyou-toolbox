@@ -13,7 +13,7 @@ test("整套界面使用白色浅色主题", async () => {
 test("数字输入框统一居中显示", async () => {
   const styles = await readFile(new URL("./styles.css", import.meta.url), "utf8");
 
-  assert.match(styles, /input\[type="number"\]\s*\{\s*text-align:\s*center;/);
+  assert.match(styles, /input\[inputmode="decimal"\]\s*\{\s*text-align:\s*center;/);
   assert.doesNotMatch(styles, /\.festival-table input\s*\{[\s\S]*text-align:\s*right/);
 });
 
@@ -26,4 +26,19 @@ test("零值数字输入显示为空方便直接填写", async () => {
   assert.match(app, /priceInput\.value = priceValue\(record\.price\);/);
   assert.match(app, /goldPrice\.value = priceValue\(state\.goldPriceInput\);/);
   assert.doesNotMatch(market, /type="number"[^>]*value="0"/);
+});
+
+test("十进制输入兼容中文句点并过滤非法字符", async () => {
+  const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
+  const market = await readFile(new URL("./market.html", import.meta.url), "utf8");
+  const festival = await readFile(new URL("./festival.html", import.meta.url), "utf8");
+
+  assert.match(app, /function normalizeDecimalText\(/);
+  assert.match(app, /replace\(\/。\/g,\s*"\."\)/);
+  assert.match(app, /function normalizeDecimalInput\(/);
+  assert.match(app, /function bindDecimalInput\(/);
+  assert.match(app, /function createDecimalInput\(/);
+  assert.doesNotMatch(app, /\.type\s*=\s*"number"/);
+  assert.doesNotMatch(market, /type="number"/);
+  assert.doesNotMatch(festival, /type="number"/);
 });

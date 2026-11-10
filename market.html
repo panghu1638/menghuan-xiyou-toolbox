@@ -37,7 +37,7 @@
           <label>
             <span id="gold-price-label">金价</span>
             <span class="gold-price-input">
-              <input id="gold-price" type="number" min="0" step="0.001" placeholder="空" />
+              <input id="gold-price" type="text" inputmode="decimal" placeholder="空" />
               <select id="gold-price-unit" aria-label="金价单位">
                 <option value="bundle" selected>元 / 3000万两</option>
                 <option value="wan">元 / 万两</option>
@@ -47,11 +47,11 @@
           </label>
           <label>
             手续费率
-            <input id="fee-rate" type="number" min="0" max="1" step="0.01" value="0.05" />
+              <input id="fee-rate" type="text" inputmode="decimal" value="0.05" />
           </label>
           <label>
             手续费上限（元）
-            <input id="fee-cap" type="number" min="0" step="1" value="1000" />
+              <input id="fee-cap" type="text" inputmode="decimal" value="1000" />
           </label>
         </div>
         <div class="gold-price-history-panel">

@@ -216,7 +216,7 @@ select:hover {
   border-color: var(--line-strong);
 }
 
-input[type="number"] {
+input[inputmode="decimal"] {
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
