@@ -502,7 +502,7 @@
       priceInput.type = "number";
       priceInput.min = "0";
       priceInput.step = "1";
-      priceInput.value = record.price;
+      priceInput.value = priceValue(record.price);
       priceInput.setAttribute("aria-label", record.name + "价格");
       priceInput.addEventListener("input", function (event) {
         record.price = numberFromInput(event.target, record.price);
@@ -527,7 +527,9 @@
   }
 
   function priceValue(value) {
-    return value === null || value === undefined ? "" : value;
+    return value === null || value === undefined || Number(value) === 0
+      ? ""
+      : value;
   }
 
   function createPriceInput(record, propertyName, ariaLabel, listener) {
@@ -907,7 +909,7 @@
             input.type = "number";
             input.min = "0";
             input.step = "0.01";
-            input.value = state.stoneLevelOnePrices[stoneName];
+            input.value = priceValue(state.stoneLevelOnePrices[stoneName]);
             input.setAttribute("aria-label", stoneName + "1级价格");
             input.addEventListener("input", function (event) {
               state.stoneLevelOnePrices[stoneName] = numberFromInput(
@@ -1047,7 +1049,7 @@
     input.type = type;
     input.min = "0";
     input.step = step;
-    input.value = value;
+    input.value = type === "number" ? priceValue(value) : value;
     input.addEventListener("input", listener);
     return input;
   }
@@ -1398,7 +1400,7 @@
     var feeCap = document.getElementById("fee-cap");
 
     serverName.value = state.serverName;
-    goldPrice.value = state.goldPriceInput;
+    goldPrice.value = priceValue(state.goldPriceInput);
     goldPriceUnit.value = state.goldPriceUnit;
     feeRate.value = state.feeRate;
     feeCap.value = state.feeCap;
@@ -1429,7 +1431,7 @@
           state.goldPricePerMillion,
           goldPriceUnit.value,
         );
-        goldPrice.value = state.goldPriceInput;
+        goldPrice.value = priceValue(state.goldPriceInput);
         state.goldPriceUnit = goldPriceUnit.value;
       }
       updateGoldPriceFromInput();
