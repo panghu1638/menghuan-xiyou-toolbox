@@ -24,6 +24,7 @@
     stallPriceHistory: [],
     stallPriceDrafts: [{ item: "", unitPrice: null }],
     floorRecords: structuredClone(XYQFloorMarket.defaultFloorRecords),
+    floorNameVersion: 1,
     equipmentRecords: structuredClone(XYQEquipmentPrices.defaultEquipmentRecords),
     eyePriceRecords: structuredClone(XYQEquipmentPrices.defaultEyePriceRecords),
     stoneLevelOnePrices: structuredClone(XYQSpiritStones.defaultLevelOnePrices),
@@ -162,6 +163,12 @@
       saved.floorRecords = Array.isArray(saved.floorRecords)
         ? saved.floorRecords
         : structuredClone(XYQFloorMarket.defaultFloorRecords);
+      if (saved.floorNameVersion !== 1) {
+        saved.floorRecords = XYQFloorMarket.migrateFloorRecordNames(
+          saved.floorRecords,
+        );
+        saved.floorNameVersion = 1;
+      }
       saved.equipmentRecords = Array.isArray(saved.equipmentRecords)
         ? saved.equipmentRecords
         : structuredClone(XYQEquipmentPrices.defaultEquipmentRecords);
