@@ -50,6 +50,24 @@ test("顶部下拉选择召唤兽和技能数量，只显示当前方案", async
   assert.doesNotMatch(styles, /\.input-with-unit/);
 });
 
+test("材料单价全局统一，召唤兽方案只填数量", async () => {
+  const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
+  const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
+  const styles = await readFile(new URL("./styles.css", import.meta.url), "utf8");
+
+  assert.match(index, /id="material-price-fields"/);
+  assert.match(index, /统一材料价格/);
+  assert.match(app, /materials: structuredClone\(XYQCalculator\.defaultMaterials\)/);
+  assert.match(app, /function renderMaterialPriceInputs\(/);
+  assert.match(app, /function recipeForOpportunity\(opportunity\)/);
+  assert.match(app, /normalizeMaterialPrices\(saved\)/);
+  assert.match(app, /normalizeOpportunityQuantities\(/);
+  assert.match(app, /state\.materials\.forEach\(function \(material, itemIndex\)/);
+  assert.match(app, /"对标单价"/);
+  assert.match(styles, /\.material-price-fields/);
+  assert.match(styles, /\.recipe-unit-price/);
+});
+
 test("旧本地数据一次性补齐默认召唤兽方案", async () => {
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
 

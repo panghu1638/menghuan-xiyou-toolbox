@@ -1,11 +1,21 @@
-const defaultRecipe = [
-  { name: "超级金柳露", quantity: 0, unitPrice: 0 },
-  { name: "仙露小丸子", quantity: 0, unitPrice: 0 },
-  { name: "60级武器", quantity: 0, unitPrice: 0 },
-  { name: "70级武器", quantity: 0, unitPrice: 0 },
-  { name: "80级武器", quantity: 0, unitPrice: 0 },
-  { name: "炼兽丹", quantity: 0, unitPrice: 0 },
+const defaultMaterialNames = [
+  "超级金柳露",
+  "仙露小丸子",
+  "60级武器",
+  "70级武器",
+  "80级武器",
+  "炼兽丹",
 ];
+
+const defaultMaterials = defaultMaterialNames.map((name) => ({
+  name,
+  unitPrice: 0,
+}));
+
+const defaultRecipe = defaultMaterialNames.map((name) => ({
+  name,
+  quantity: 0,
+}));
 
 function roundCurrency(value) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -91,6 +101,7 @@ function normalizeGoldPriceToPerMillion(value, unit) {
 
 globalThis.XYQCalculator = {
   calculateOpportunity,
+  defaultMaterials: structuredClone(defaultMaterials),
   defaultRecipe: structuredClone(defaultRecipe),
   formatCurrency,
   formatGameCoin,

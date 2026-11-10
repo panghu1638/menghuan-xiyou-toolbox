@@ -654,12 +654,42 @@ button:focus-visible {
   .opportunity-selector-fields {
     grid-template-columns: 1fr;
   }
+
+  .material-price-fields,
+  .recipe {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Keep the selector compact on narrow screens. */
 .opportunity-selector select {
   position: relative;
   min-width: 0;
+}
+
+.material-prices {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 8px 28px rgba(24, 36, 32, 0.06);
+}
+
+.material-prices h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.material-prices p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.material-price-fields {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1.4fr) minmax(8rem, 0.8fr);
+  gap: 0.65rem;
+  align-items: center;
 }
 
 .recipe {
@@ -673,6 +703,20 @@ button:focus-visible {
 .recipe-header {
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.recipe-material,
+.recipe-unit-price {
+  min-height: 2.5rem;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.recipe-unit-price {
+  text-align: center;
 }
 
 .result {

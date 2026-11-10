@@ -32,6 +32,7 @@
     yuanxiaoRecords: structuredClone(XYQFestivalItems.defaultYuanxiaoRecords),
     zhenjingPriceWan: XYQFestivalItems.defaultZhenjingPriceWan,
     selectedOpportunityId: 1,
+    materials: structuredClone(XYQCalculator.defaultMaterials),
     opportunities: XYQOpportunityPlans.defaultOpportunityNames.map(
       function (name, index) {
         return {
@@ -40,7 +41,9 @@
           skillPlan: "",
           salePrice: 0,
           extraCostRmb: 0,
-          recipe: structuredClone(XYQCalculator.defaultRecipe),
+          recipe: XYQCalculator.defaultRecipe.map(function () {
+            return { quantity: 0 };
+          }),
         };
       },
     ),
@@ -53,6 +56,7 @@
   var summaryText = document.getElementById("summary-text");
   var opportunityPicker = document.getElementById("opportunity-picker");
   var skillCountPicker = document.getElementById("skill-count-picker");
+  var materialPriceFields = document.getElementById("material-price-fields");
 
   function loadState() {
     try {
@@ -67,6 +71,13 @@
       opportunitySeq = opportunityIds.length
         ? Math.max(...opportunityIds) + 1
         : 1;
+      saved.materials = normalizeMaterialPrices(saved);
+      saved.opportunities.forEach(function (opportunity) {
+        opportunity.recipe = normalizeOpportunityQuantities(
+          opportunity.recipe,
+          saved.materials,
+        );
+      });
       if (!Object.prototype.hasOwnProperty.call(saved, "goldPriceInput")) {
         saved.goldPriceInput = saved.goldPricePerMillion || 0;
         saved.goldPriceUnit = "million";
@@ -111,7 +122,9 @@
               skillPlan: "",
               salePrice: 0,
               extraCostRmb: 0,
-              recipe: structuredClone(XYQCalculator.defaultRecipe),
+              recipe: saved.materials.map(function () {
+                return { quantity: 0 };
+              }),
             });
           });
         saved.defaultOpportunityNamesVersion = 1;
@@ -220,8 +233,67 @@
       opportunity.extraCostRmb === 0 &&
       Array.isArray(opportunity.recipe) &&
       opportunity.recipe.every(function (item) {
-        return item.quantity === 0 && item.unitPrice === 0;
+        return item.quantity === 0;
       });
+  }
+
+  function normalizeMaterialPrices(saved) {
+    if (Array.isArray(saved.materials) && saved.materials.length) {
+      return saved.materials.map(function (material, index) {
+        var defaultMaterial = XYQCalculator.defaultMaterials[index] ||
+          { name: "材料" + (index + 1), unitPrice: 0 };
+        var unitPrice = Number(material && material.unitPrice);
+        return {
+          name: typeof material?.name === "string" && material.name.trim()
+            ? material.name
+            : defaultMaterial.name,
+          unitPrice: Number.isFinite(unitPrice) && unitPrice >= 0 ? unitPrice : 0,
+        };
+      });
+    }
+
+    var materials = [];
+    saved.opportunities.forEach(function (opportunity) {
+      if (!Array.isArray(opportunity.recipe)) return;
+      opportunity.recipe.forEach(function (item) {
+        var name = typeof item?.name === "string" ? item.name.trim() : "";
+        if (!name) return;
+        var existing = materials.find(function (material) {
+          return material.name === name;
+        });
+        if (!existing) {
+          existing = { name, unitPrice: 0 };
+          materials.push(existing);
+        }
+        var unitPrice = Number(item.unitPrice);
+        if (!existing.unitPrice && Number.isFinite(unitPrice) && unitPrice > 0) {
+          existing.unitPrice = unitPrice;
+        }
+      });
+    });
+
+    return materials.length
+      ? materials
+      : structuredClone(XYQCalculator.defaultMaterials);
+  }
+
+  function normalizeOpportunityQuantities(recipe, materials) {
+    var legacyRows = Array.isArray(recipe) ? recipe : [];
+    return materials.map(function (material, index) {
+      var row = legacyRows.find(function (item) {
+        return item && item.name === material.name;
+      }) || legacyRows[index] || {};
+      var quantity = Number(row.quantity);
+      return {
+        quantity: Number.isFinite(quantity) && quantity >= 0 ? quantity : 0,
+      };
+    });
+  }
+
+  function blankQuantities() {
+    return state.materials.map(function () {
+      return { quantity: 0 };
+    });
   }
 
   function numberFromInput(input, fallback) {
@@ -1030,6 +1102,40 @@
     skillCountPicker.append(option);
   }
 
+  function renderMaterialPriceInputs() {
+    if (!materialPriceFields) return;
+
+    materialPriceFields.replaceChildren();
+    ["材料名称", "单价（万两）"].forEach(function (title) {
+      var header = document.createElement("div");
+      header.className = "recipe-header";
+      header.textContent = title;
+      materialPriceFields.append(header);
+    });
+
+    state.materials.forEach(function (material, index) {
+      var nameInput = createInput("text", material.name, "any", function (event) {
+        material.name = event.target.value;
+        saveState();
+        renderOpportunities();
+        updateResults();
+      });
+      nameInput.min = "";
+      nameInput.placeholder = "材料" + (index + 1);
+      nameInput.setAttribute("aria-label", "统一材料名称" + (index + 1));
+      materialPriceFields.append(createLabeledCell("材料名称", nameInput));
+
+      var unitPriceInput = createInput("number", material.unitPrice, "0.01", function (event) {
+        material.unitPrice = numberFromInput(event.target, material.unitPrice);
+        saveState();
+        renderOpportunities();
+        updateResults();
+      });
+      unitPriceInput.setAttribute("aria-label", material.name + "统一单价");
+      materialPriceFields.append(createLabeledCell("单价（万两）", unitPriceInput));
+    });
+  }
+
   function renderOpportunityPicker() {
     if (!opportunityPicker || !skillCountPicker) return;
 
@@ -1123,37 +1229,32 @@
 
     var recipe = document.createElement("div");
     recipe.className = "recipe";
-    ["材料", "数量", "单价（万两）"].forEach(function (title) {
+    ["材料", "数量", "对标单价"].forEach(function (title) {
       var header = document.createElement("div");
       header.className = "recipe-header";
       header.textContent = title;
       recipe.append(header);
     });
 
-    opportunity.recipe.forEach(function (item, itemIndex) {
-      var nameInput = createInput("text", item.name, "any", function (event) {
-        item.name = event.target.value;
-        saveState();
-      });
-      nameInput.min = "";
-      nameInput.setAttribute("aria-label", "材料名称");
-      recipe.append(createLabeledCell("材料名称", nameInput));
+    state.materials.forEach(function (material, itemIndex) {
+      var item = opportunity.recipe[itemIndex] || { quantity: 0 };
+      var materialName = document.createElement("div");
+      materialName.className = "recipe-material";
+      materialName.textContent = material.name.trim() || "未命名材料";
+      recipe.append(materialName);
 
       var quantityInput = createInput("number", item.quantity, "1", function (event) {
         item.quantity = numberFromInput(event.target, item.quantity);
         saveState();
         updateResults();
       });
-      quantityInput.setAttribute("aria-label", item.name + "数量");
+      quantityInput.setAttribute("aria-label", material.name + "数量");
       recipe.append(createLabeledCell("数量", quantityInput));
 
-      var unitPriceInput = createInput("number", item.unitPrice, "0.01", function (event) {
-        item.unitPrice = numberFromInput(event.target, item.unitPrice);
-        saveState();
-        updateResults();
-      });
-      unitPriceInput.setAttribute("aria-label", item.name + "单价");
-      recipe.append(createLabeledCell("单价（万两）", unitPriceInput));
+      var unitPrice = document.createElement("div");
+      unitPrice.className = "recipe-unit-price";
+      unitPrice.textContent = XYQCalculator.formatGameCoin(material.unitPrice);
+      recipe.append(unitPrice);
     });
 
     card.append(recipe);
@@ -1187,6 +1288,17 @@
     if (opportunity) opportunityList.append(renderOpportunity(opportunity));
   }
 
+  function recipeForOpportunity(opportunity) {
+    return state.materials.map(function (material, index) {
+      var item = opportunity.recipe[index] || {};
+      return {
+        name: material.name,
+        quantity: Number.isFinite(item.quantity) ? item.quantity : 0,
+        unitPrice: material.unitPrice,
+      };
+    });
+  }
+
   function updateResultCard(opportunity, result) {
     try {
       var calculation = XYQCalculator.calculateOpportunity({
@@ -1195,7 +1307,7 @@
         feeRate: state.feeRate,
         feeCap: state.feeCap,
         extraCostRmb: opportunity.extraCostRmb,
-        recipe: opportunity.recipe,
+        recipe: recipeForOpportunity(opportunity),
       });
       var values = result.querySelectorAll(".result-value");
       values[0].textContent = XYQCalculator.formatGameCoin(calculation.materialCostGameCoin);
@@ -1364,7 +1476,7 @@
       skillPlan: "",
       salePrice: 0,
       extraCostRmb: 0,
-      recipe: structuredClone(XYQCalculator.defaultRecipe),
+      recipe: blankQuantities(),
     };
     state.opportunities.push(opportunity);
     state.selectedOpportunityId = opportunity.id;
@@ -1465,14 +1577,13 @@
       state.stallPriceHistory = records.reduce(function (history, record) {
         return XYQStallPriceHistory.upsertStallPriceRecord(history, record);
       }, state.stallPriceHistory);
-      state.opportunities.forEach(function (opportunity) {
-        opportunity.recipe = XYQStallPriceHistory.applyLatestStallPrices(
-          state.stallPriceHistory,
-          opportunity.recipe,
-        );
-      });
+      state.materials = XYQStallPriceHistory.applyLatestStallPrices(
+        state.stallPriceHistory,
+        state.materials,
+      );
       saveState();
       renderStallPriceHistory();
+      renderMaterialPriceInputs();
       renderOpportunities();
       updateResults();
     } catch (error) {
@@ -1486,6 +1597,7 @@
     opportunitySeq = defaultState.opportunities.length + 1;
     saveState();
     bindMarketInputs();
+    renderMaterialPriceInputs();
     renderGoldPriceHistory();
     renderStallPriceHistory();
     renderFloorMarket();
@@ -1509,6 +1621,7 @@
   renderFestivalMarket();
   bindOpportunityPicker();
   renderOpportunityPicker();
+  renderMaterialPriceInputs();
   renderOpportunities();
   renderCurrentMarketSummary();
   updateResults();

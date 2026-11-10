@@ -3,7 +3,7 @@ import test from "node:test";
 
 import "./calculator.js";
 
-const { calculateOpportunity, defaultRecipe, formatCurrency, formatGameCoin } =
+const { calculateOpportunity, defaultMaterials, defaultRecipe, formatCurrency, formatGameCoin } =
   globalThis.XYQCalculator;
 const {
   normalizeGoldPriceToPerMillion,
@@ -107,6 +107,18 @@ test("默认配方包含80级武器", () => {
       "炼兽丹×0",
     ],
   );
+});
+
+test("材料价格全局维护，方案配方只保留数量", () => {
+  assert.deepEqual(defaultMaterials.map((item) => item.name), [
+    "超级金柳露",
+    "仙露小丸子",
+    "60级武器",
+    "70级武器",
+    "80级武器",
+    "炼兽丹",
+  ]);
+  assert.ok(defaultRecipe.every((item) => !("unitPrice" in item)));
 });
 
 test("金额与游戏币显示保留两位小数", () => {
