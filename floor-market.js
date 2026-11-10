@@ -7,7 +7,6 @@
     { name: "墨金曜光家园", price: 1288, saleTimes: "16.21、23.26、0.15、20.37" },
     { name: "浓情蜜意家园地板", price: 666, saleTimes: "1.55、20.37" },
     { name: "叮当猫欢乐童年地板", price: 666, saleTimes: "16.05、01.37、16.56" },
-    { name: "血之源", price: 2600, saleTimes: "" },
     { name: "青丘魅影家园", price: 1280, saleTimes: "01.56、0.52、23.55" },
     { name: "卧云月家园", price: 2888, saleTimes: "20.55、18.05、0.38" },
     { name: "雪之缘冰天雪地地板", price: 2888, saleTimes: "17.05、0.27、18.18" },
@@ -32,6 +31,7 @@
     "情系千年": "情系千年家园",
     "绿野仙踪": "绿野仙踪地板",
   };
+  const retiredFloorNames = ["血之源"];
 
   function createFloorRecord({ name, price, saleTimes }) {
     const floorName = typeof name === "string" ? name.trim() : "";
@@ -53,12 +53,16 @@
   }
 
   function migrateFloorRecordNames(records) {
-    return records.map(function (record) {
+    return records
+      .filter(function (record) {
+        return !record || typeof record.name !== "string" || !retiredFloorNames.includes(record.name.trim());
+      })
+      .map(function (record) {
       if (!record || typeof record.name !== "string") return record;
       return Object.assign({}, record, {
         name: nameAliases[record.name.trim()] || record.name,
       });
-    });
+      });
   }
 
   globalThis.XYQFloorMarket = {
