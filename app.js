@@ -991,7 +991,7 @@
     skillPlanInput.setAttribute("aria-label", "技能数量");
     var skillUnit = document.createElement("span");
     skillUnit.className = "input-unit";
-    skillUnit.textContent = "技";
+    skillUnit.textContent = "技能";
     var skillInputWrap = document.createElement("span");
     skillInputWrap.className = "input-with-unit";
     skillInputWrap.append(skillPlanInput, skillUnit);

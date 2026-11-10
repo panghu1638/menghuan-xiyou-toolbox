@@ -646,13 +646,13 @@ button:focus-visible {
 }
 
 .input-with-unit input {
-  padding-right: 2.35rem;
+  padding-right: 3.15rem;
 }
 
 .input-with-unit .input-unit {
   position: absolute;
   top: 50%;
-  right: 0.7rem;
+  right: 0.62rem;
   transform: translateY(-50%);
   color: var(--muted);
   font-size: 0.82rem;

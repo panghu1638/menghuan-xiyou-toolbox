@@ -23,6 +23,7 @@ test("方案卡片使用数字输入并固定显示单位", async () => {
   assert.match(app, /createInput\(\s*"number",\s*XYQOpportunityPlans\.skillCountInputValue/);
   assert.match(app, /placeholder = "3"/);
   assert.match(app, /className = "input-unit"/);
+  assert.match(app, /skillUnit\.textContent = "技能"/);
   assert.match(app, /XYQOpportunityPlans\.skillPlanText\(opportunity\.skillPlan\) \|\| "未填技能"/);
   assert.match(styles, /\.input-with-unit/);
 });
