@@ -34,7 +34,7 @@
       {
         id: 1,
         name: "",
-        skillPlan: "默认方案",
+        skillPlan: "",
         salePrice: 0,
         extraCostRmb: 0,
         recipe: structuredClone(XYQCalculator.defaultRecipe),
@@ -84,8 +84,9 @@
           if (opportunity.name === "龙鲤" && opportunity.salePrice === 0) {
             opportunity.name = "";
           }
-          opportunity.skillPlan = "默认方案";
+          opportunity.skillPlan = "";
         }
+        opportunity.skillPlan = XYQOpportunityPlans.skillPlanText(opportunity.skillPlan);
       });
       saved.goldPriceHistory = Array.isArray(saved.goldPriceHistory)
         ? saved.goldPriceHistory
@@ -975,15 +976,26 @@
     nameInput.setAttribute("aria-label", "召唤兽名称");
     head.append(createLabeledCell("召唤兽", nameInput));
 
-    var skillPlanInput = createInput("text", opportunity.skillPlan, "any", function (event) {
-      opportunity.skillPlan = event.target.value;
-      saveState();
-      updateResults();
-    });
-    skillPlanInput.min = "";
-    skillPlanInput.placeholder = "如：2技 / 3技 / 4技";
-    skillPlanInput.setAttribute("aria-label", "技能方案");
-    head.append(createLabeledCell("技能方案", skillPlanInput));
+    var skillPlanInput = createInput(
+      "number",
+      XYQOpportunityPlans.skillCountInputValue(opportunity.skillPlan),
+      "1",
+      function (event) {
+        opportunity.skillPlan = XYQOpportunityPlans.skillPlanText(event.target.value);
+        saveState();
+        updateResults();
+      },
+    );
+    skillPlanInput.className = "skill-count-input";
+    skillPlanInput.placeholder = "3";
+    skillPlanInput.setAttribute("aria-label", "技能数量");
+    var skillUnit = document.createElement("span");
+    skillUnit.className = "input-unit";
+    skillUnit.textContent = "技";
+    var skillInputWrap = document.createElement("span");
+    skillInputWrap.className = "input-with-unit";
+    skillInputWrap.append(skillPlanInput, skillUnit);
+    head.append(createLabeledCell("技能数量", skillInputWrap));
 
     var saleInput = createInput("number", opportunity.salePrice, "0.01", function (event) {
       opportunity.salePrice = numberFromInput(event.target, opportunity.salePrice);
@@ -1137,7 +1149,7 @@
       name.textContent =
         opportunityDisplayName(opportunity) +
         " · " +
-        (opportunity.skillPlan.trim() || "未填技能");
+        (XYQOpportunityPlans.skillPlanText(opportunity.skillPlan) || "未填技能");
       var profit = document.createElement("strong");
       profit.textContent = calculation && calculation.profit !== undefined
         ? "¥" + XYQCalculator.formatCurrency(calculation.profit)
@@ -1232,7 +1244,7 @@
     var opportunity = {
       id: opportunitySeq++,
       name: "",
-      skillPlan: "新方案",
+      skillPlan: "",
       salePrice: 0,
       extraCostRmb: 0,
       recipe: structuredClone(XYQCalculator.defaultRecipe),

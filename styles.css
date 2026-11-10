@@ -640,6 +640,36 @@ button:focus-visible {
   font-weight: 650;
 }
 
+.input-with-unit {
+  position: relative;
+  display: block;
+}
+
+.input-with-unit input {
+  padding-right: 2.35rem;
+}
+
+.input-with-unit .input-unit {
+  position: absolute;
+  top: 50%;
+  right: 0.7rem;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.82rem;
+  pointer-events: none;
+}
+
+.skill-count-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.skill-count-input::-webkit-outer-spin-button,
+.skill-count-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
 .recipe {
   display: grid;
   grid-template-columns: minmax(9rem, 1.4fr) repeat(2, minmax(7rem, 0.8fr));
