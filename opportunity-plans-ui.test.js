@@ -42,7 +42,7 @@ test("顶部下拉选择召唤兽和技能数量，只显示当前方案", async
   assert.match(app, /function currentOpportunity\(/);
   assert.match(app, /function renderOpportunityPicker\(/);
   assert.match(app, /state\.selectedOpportunityId = opportunity\.id/);
-  assert.match(app, /function renderOpportunitySummary\(calculation\)/);
+  assert.match(app, /function renderOpportunitySummary\(\)/);
   assert.doesNotMatch(app, /state\.opportunities\.forEach\(function \(opportunity\) \{\s*opportunityList\.append/);
   assert.match(app, /function opportunityOptionLabel\(opportunity\)/);
   assert.match(app, /function opportunityOptionLabel\(opportunity\) \{\s*return opportunityDisplayName\(opportunity\);\s*\}/);
@@ -69,17 +69,25 @@ test("材料单价全局统一，召唤兽方案只填数量", async () => {
   assert.match(styles, /\.recipe-unit-price/);
 });
 
-test("顶部利润卡只在当前方案有净利润时显示", async () => {
+test("顶部自动扫描全部方案并显示有利润项", async () => {
   const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
   const hiddenStyles = await readFile(new URL("./styles.css", import.meta.url), "utf8");
 
   assert.match(index, /<main>\s*<section id="opportunity-summary-section"[^>]*hidden/);
-  assert.match(index, /有利润方案/);
+  assert.match(index, /有利润方案（已扣手续费）/);
+  assert.match(index, /自动扫描全部方案/);
   assert.doesNotMatch(index, /当前行情/);
-  assert.match(app, /var hasProfit = Boolean\(opportunity && calculation && calculation\.hasProfit\)/);
-  assert.match(app, /opportunitySummarySection\.hidden = !hasProfit/);
-  assert.match(app, /if \(!hasProfit\) return/);
+  assert.match(app, /function calculateOpportunityValues\(opportunity\)/);
+  assert.match(app, /feeRate: state\.feeRate/);
+  assert.match(app, /feeCap: state\.feeCap/);
+  assert.match(app, /state\.opportunities\.forEach\(function \(opportunity\) \{\s*var calculation = calculateOpportunityValues\(opportunity\);/);
+  assert.match(app, /if \(calculation && calculation\.hasProfit\) \{\s*profitablePlans\.push\(\{ opportunity, calculation \}\);/);
+  assert.match(app, /profitablePlans\.sort\(function \(first, second\) \{\s*return second\.calculation\.profit - first\.calculation\.profit;/);
+  assert.match(app, /opportunitySummarySection\.hidden = !profitablePlans\.length/);
+  assert.match(app, /"手续费 ¥" \+ XYQCalculator\.formatCurrency\(plan\.calculation\.fee\)/);
+  assert.match(app, /" · 到手 ¥" \+ XYQCalculator\.formatCurrency\(plan\.calculation\.netProceeds\)/);
+  assert.match(app, /" · 利润 ¥" \+ XYQCalculator\.formatCurrency\(plan\.calculation\.profit\)/);
   assert.match(hiddenStyles, /\[hidden\]\s*\{\s*display: none !important;/);
 });
 

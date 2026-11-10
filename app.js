@@ -667,7 +667,8 @@
     summary.textContent =
       "当前金价：¥" + displayGoldPrice(state.goldPricePerMillion) +
       " / " + goldPriceUnitName() +
-      "；手续费率 " + (state.feeRate * 100).toFixed(0) + "%。";
+      "；手续费率 " + (state.feeRate * 100).toFixed(0) +
+      "%，上限 ¥" + XYQCalculator.formatCurrency(state.feeCap) + "。";
   }
 
   function updateEyePriceRow(row, record) {
@@ -794,7 +795,9 @@
     summary.textContent =
       "当前金价：¥" + displayGoldPrice(state.goldPricePerMillion) +
       " / " + goldPriceUnitName() +
-      "；比价等级：" + state.stoneTargetLevel + "级。";
+      "；比价等级：" + state.stoneTargetLevel + "级；手续费率 " +
+      (state.feeRate * 100).toFixed(0) + "%，上限 ¥" +
+      XYQCalculator.formatCurrency(state.feeCap) + "。";
   }
 
   function updateSpiritStoneRow(row, record) {
@@ -1283,9 +1286,9 @@
     });
   }
 
-  function updateResultCard(opportunity, result) {
+  function calculateOpportunityValues(opportunity) {
     try {
-      var calculation = XYQCalculator.calculateOpportunity({
+      return XYQCalculator.calculateOpportunity({
         goldPricePerMillion: state.goldPricePerMillion,
         salePrice: opportunity.salePrice,
         feeRate: state.feeRate,
@@ -1293,6 +1296,15 @@
         extraCostRmb: opportunity.extraCostRmb,
         recipe: recipeForOpportunity(opportunity),
       });
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function updateResultCard(opportunity, result) {
+    try {
+      var calculation = calculateOpportunityValues(opportunity);
+      if (!calculation) throw new Error("行情数据不完整");
       var values = result.querySelectorAll(".result-value");
       values[0].textContent = XYQCalculator.formatGameCoin(calculation.materialCostGameCoin);
       values[1].textContent =
@@ -1324,26 +1336,47 @@
     return opportunity.name.trim() || "未命名召唤兽";
   }
 
-  function renderOpportunitySummary(calculation) {
+  function opportunitySummaryLabel(opportunity) {
+    var skill = XYQOpportunityPlans.skillPlanText(opportunity.skillPlan);
+    return opportunityDisplayName(opportunity) + (skill ? " · " + skill : "");
+  }
+
+  function renderOpportunitySummary() {
     if (!opportunitySummaryList) return;
 
     opportunitySummaryList.replaceChildren();
-    var opportunity = currentOpportunity();
-    var hasProfit = Boolean(opportunity && calculation && calculation.hasProfit);
-    if (opportunitySummarySection) opportunitySummarySection.hidden = !hasProfit;
-    if (!hasProfit) return;
+    var profitablePlans = [];
+    state.opportunities.forEach(function (opportunity) {
+      var calculation = calculateOpportunityValues(opportunity);
+      if (calculation && calculation.hasProfit) {
+        profitablePlans.push({ opportunity, calculation });
+      }
+    });
+    profitablePlans.sort(function (first, second) {
+      return second.calculation.profit - first.calculation.profit;
+    });
 
-    var row = document.createElement("li");
-    row.dataset.opportunityId = opportunity.id;
-    var name = document.createElement("span");
-    name.textContent = opportunityOptionLabel(opportunity);
-    var profit = document.createElement("strong");
-    profit.textContent = calculation && calculation.profit !== undefined
-      ? "¥" + XYQCalculator.formatCurrency(calculation.profit)
-      : "—";
-    profit.classList.add("profit");
-    row.append(name, profit);
-    opportunitySummaryList.append(row);
+    if (opportunitySummarySection) {
+      opportunitySummarySection.hidden = !profitablePlans.length;
+    }
+    if (!profitablePlans.length) return;
+
+    profitablePlans.forEach(function (plan) {
+      var row = document.createElement("li");
+      row.dataset.opportunityId = plan.opportunity.id;
+      row.title = "藏宝阁手续费 ¥" +
+        XYQCalculator.formatCurrency(plan.calculation.fee);
+      var name = document.createElement("span");
+      name.textContent = opportunitySummaryLabel(plan.opportunity);
+      var profit = document.createElement("strong");
+      profit.textContent =
+        "手续费 ¥" + XYQCalculator.formatCurrency(plan.calculation.fee) +
+        " · 到手 ¥" + XYQCalculator.formatCurrency(plan.calculation.netProceeds) +
+        " · 利润 ¥" + XYQCalculator.formatCurrency(plan.calculation.profit);
+      profit.classList.add("profit");
+      row.append(name, profit);
+      opportunitySummaryList.append(row);
+    });
   }
 
   function updateResults() {
@@ -1360,11 +1393,11 @@
     var result = opportunityList.querySelector(
       '.result[data-opportunity-id="' + opportunity.id + '"]'
     );
-    var calculation = updateResultCard(opportunity, result);
-    renderOpportunitySummary(calculation);
+    updateResultCard(opportunity, result);
+    renderOpportunitySummary();
     summaryText.textContent =
-      "第 " + (state.opportunities.indexOf(opportunity) + 1) +
-      " / " + state.opportunities.length + " 个方案；只显示当前选中方案";
+      "已扫描 " + state.opportunities.length + " 个方案：" +
+      opportunitySummaryList.children.length + " 个有利润；手续费已扣除";
   }
 
   function bindOpportunityPicker() {
