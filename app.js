@@ -32,6 +32,7 @@
     yuanxiaoRecords: structuredClone(XYQFestivalItems.defaultYuanxiaoRecords),
     zhenjingPriceWan: XYQFestivalItems.defaultZhenjingPriceWan,
     selectedOpportunityId: 1,
+    defaultMaterialOrderVersion: 1,
     materials: structuredClone(XYQCalculator.defaultMaterials),
     opportunities: XYQOpportunityPlans.defaultOpportunityNames.map(
       function (name, index) {
@@ -72,6 +73,10 @@
         ? Math.max(...opportunityIds) + 1
         : 1;
       saved.materials = normalizeMaterialPrices(saved);
+      if (saved.defaultMaterialOrderVersion !== 1) {
+        reorderLegacyMaterialRows(saved);
+        saved.defaultMaterialOrderVersion = 1;
+      }
       saved.opportunities.forEach(function (opportunity) {
         opportunity.recipe = normalizeOpportunityQuantities(
           opportunity.recipe,
@@ -287,6 +292,27 @@
       return {
         quantity: Number.isFinite(quantity) && quantity >= 0 ? quantity : 0,
       };
+    });
+  }
+
+  function reorderLegacyMaterialRows(saved) {
+    var indices = [0, 2, 3, 4, 1, 5];
+    var materialCount = saved.materials.length;
+    for (var index = 0; index < materialCount; index += 1) {
+      if (!indices.includes(index)) indices.push(index);
+    }
+    indices = indices.filter(function (index) {
+      return index < materialCount;
+    });
+
+    saved.materials = indices.map(function (index) {
+      return saved.materials[index];
+    });
+    saved.opportunities.forEach(function (opportunity) {
+      if (!Array.isArray(opportunity.recipe)) return;
+      opportunity.recipe = indices.map(function (index) {
+        return opportunity.recipe[index] || { quantity: 0 };
+      });
     });
   }
 

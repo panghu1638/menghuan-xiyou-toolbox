@@ -71,6 +71,17 @@ test("材料单价全局统一，召唤兽方案只填数量", async () => {
   assert.match(styles, /\.recipe-unit-price/);
 });
 
+test("旧材料顺序迁移时数量跟随材料移动", async () => {
+  const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
+
+  assert.match(app, /defaultMaterialOrderVersion: 1/);
+  assert.match(app, /saved\.defaultMaterialOrderVersion !== 1/);
+  assert.match(app, /function reorderLegacyMaterialRows\(saved\)/);
+  assert.match(app, /var indices = \[0, 2, 3, 4, 1, 5\];/);
+  assert.match(app, /saved\.materials = indices\.map\(function \(index\) \{\s*return saved\.materials\[index\];/);
+  assert.match(app, /opportunity\.recipe = indices\.map\(function \(index\) \{\s*return opportunity\.recipe\[index\] \|\| \{ quantity: 0 \};/);
+});
+
 test("顶部自动扫描全部方案并显示有利润项", async () => {
   const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");

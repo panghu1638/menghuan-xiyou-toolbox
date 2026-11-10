@@ -100,10 +100,10 @@ test("默认配方包含80级武器", () => {
     defaultRecipe.map((item) => `${item.name}×${item.quantity}`),
     [
       "超级金柳露×0",
-      "仙露小丸子×0",
       "60级武器×0",
       "70级武器×0",
       "80级武器×0",
+      "仙露小丸子×0",
       "炼兽丹×0",
     ],
   );
@@ -112,10 +112,10 @@ test("默认配方包含80级武器", () => {
 test("材料价格全局维护，方案配方只保留数量", () => {
   assert.deepEqual(defaultMaterials.map((item) => item.name), [
     "超级金柳露",
-    "仙露小丸子",
     "60级武器",
     "70级武器",
     "80级武器",
+    "仙露小丸子",
     "炼兽丹",
   ]);
   assert.ok(defaultRecipe.every((item) => !("unitPrice" in item)));
