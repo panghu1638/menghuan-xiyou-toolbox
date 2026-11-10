@@ -660,6 +660,10 @@ button:hover {
   white-space: nowrap;
 }
 
+.stone-tier-card table {
+  table-layout: fixed;
+}
+
 .stone-level-multiplier {
   display: block;
   margin-top: 0.2rem;
@@ -670,6 +674,17 @@ button:hover {
 .stone-level-price {
   color: var(--green);
   font-weight: 700;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.stone-level-rmb {
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
 

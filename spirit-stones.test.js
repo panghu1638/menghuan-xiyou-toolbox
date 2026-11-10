@@ -26,6 +26,18 @@ test("星辉石和五色石使用独立倍率", () => {
   assert.equal(stones.calculateStonePrice("五色", 42.5, 10), 101065);
 });
 
+test("宝石折算人民币并扣除藏宝阁手续费", () => {
+  const result = stones.calculateGemRmbProceeds(100, 7.2, 0.05, 1000);
+  assert.ok(Math.abs(result.rmb - 7.2) < 0.001);
+  assert.ok(Math.abs(result.fee - 0.36) < 0.001);
+  assert.ok(Math.abs(result.netRmb - 6.84) < 0.001);
+
+  const capped = stones.calculateGemRmbProceeds(100000, 7.2, 0.05, 300);
+  assert.ok(Math.abs(capped.rmb - 7200) < 0.001);
+  assert.equal(capped.fee, 300);
+  assert.ok(Math.abs(capped.netRmb - 6900) < 0.001);
+});
+
 test("二梯队五色排第一并排除法防神秘石", () => {
   const gems = stones.defaultStoneCatalog[1].stones.map((stone) => stone.name);
   assert.deepEqual(gems, [
@@ -40,6 +52,8 @@ test("二梯队五色排第一并排除法防神秘石", () => {
     "星辉石",
   ]);
   assert.ok(!gems.includes("神秘石"));
+  assert.equal(stones.defaultStoneCatalog[0].convertsToRmb, undefined);
+  assert.equal(stones.defaultStoneCatalog[1].convertsToRmb, true);
   assert.equal(stones.defaultLevelOnePrices.五色, 42.5);
   assert.equal(stones.defaultLevelOnePrices.红玛瑙, 9);
 });

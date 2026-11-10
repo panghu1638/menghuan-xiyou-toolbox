@@ -845,6 +845,34 @@
     }
   }
 
+  function updateSpiritStoneSummary() {
+    var summary = document.getElementById("stone-price-summary");
+    if (!summary) return;
+
+    if (!state.goldPricePerMillion) {
+      summary.textContent = "填写1级价格后，2–10级按合成规则自动更新；填写区内行情金价后，宝石栏再显示人民币到手。";
+      return;
+    }
+    summary.textContent =
+      "当前金价：¥" + displayGoldPrice(state.goldPricePerMillion) +
+      " / " + goldPriceUnitName() +
+      "；宝石栏显示折算人民币和扣手续费后到手，费率 " +
+      (state.feeRate * 100).toFixed(0) + "%，上限 ¥" +
+      XYQCalculator.formatCurrency(state.feeCap) + "。";
+  }
+
+  function formatGemRmbText(priceWan) {
+    var calculation = XYQSpiritStones.calculateGemRmbProceeds(
+      priceWan,
+      state.goldPricePerMillion,
+      state.feeRate,
+      state.feeCap,
+    );
+    if (!calculation || !priceWan) return "折算 — / 到手 —";
+    return "折算 ¥" + XYQCalculator.formatCurrency(calculation.rmb) +
+      " / 到手 ¥" + XYQCalculator.formatCurrency(calculation.netRmb);
+  }
+
   function updateStonePriceCells(stoneName) {
     document.querySelectorAll('[data-stone-price="' + stoneName + '"]').forEach(function (cell) {
       var level = Number(cell.dataset.level);
@@ -856,6 +884,10 @@
       var priceText = cell.querySelector(".stone-level-price");
       if (priceText) {
         priceText.textContent = XYQCalculator.formatGameCoin(price);
+      }
+      var rmbText = cell.querySelector(".stone-level-rmb");
+      if (rmbText && cell.closest("table").dataset.convertsRmb === "true") {
+        rmbText.textContent = formatGemRmbText(price);
       }
     });
   }
@@ -875,6 +907,7 @@
       var wrap = document.createElement("div");
       wrap.className = "reference-table-wrap wide";
       var table = document.createElement("table");
+      table.dataset.convertsRmb = String(Boolean(group.convertsToRmb));
       var thead = document.createElement("thead");
       var headerRow = document.createElement("tr");
       var levelHeader = document.createElement("th");
@@ -915,6 +948,11 @@
               updateStonePriceCells(stoneName);
             });
             priceCell.append(input);
+            if (group.convertsToRmb) {
+              var levelOneRmbText = document.createElement("div");
+              levelOneRmbText.className = "stone-level-rmb";
+              priceCell.append(levelOneRmbText);
+            }
           } else {
             var multiplier = XYQSpiritStones.stoneMultiplier(stoneName, level);
             var multiplierText = document.createElement("span");
@@ -922,7 +960,13 @@
             multiplierText.textContent = "×" + multiplier;
             var priceText = document.createElement("div");
             priceText.className = "stone-level-price";
-            priceCell.append(priceText, multiplierText);
+            priceCell.append(priceText);
+            if (group.convertsToRmb) {
+              var rmbText = document.createElement("div");
+              rmbText.className = "stone-level-rmb";
+              priceCell.append(rmbText);
+            }
+            priceCell.append(multiplierText);
           }
           row.append(priceCell);
         });
@@ -935,6 +979,7 @@
       container.append(card);
     });
     Object.keys(state.stoneLevelOnePrices).forEach(updateStonePriceCells);
+    updateSpiritStoneSummary();
   }
 
   function renderSpiritStoneMarket() {

@@ -15,6 +15,7 @@ test("数字输入框统一居中显示", async () => {
 
   assert.match(styles, /input\[inputmode="decimal"\]\s*\{\s*text-align:\s*center;/);
   assert.doesNotMatch(styles, /\.festival-table input\s*\{[\s\S]*text-align:\s*right/);
+  assert.match(styles, /\.stone-level-price\s*\{[\s\S]*white-space:\s*normal;/);
 });
 
 test("零值数字输入显示为空方便直接填写", async () => {

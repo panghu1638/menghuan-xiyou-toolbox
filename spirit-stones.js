@@ -21,8 +21,31 @@
     return price * multiplier;
   }
 
+  function calculateGemRmbProceeds(
+    costWan,
+    goldPricePerMillion,
+    feeRate,
+    feeCap,
+  ) {
+    var priceWan = Number(costWan);
+    var goldPrice = Number(goldPricePerMillion);
+    var rate = Number(feeRate);
+    var cap = Number(feeCap);
+    if (
+      !Number.isFinite(priceWan) || priceWan < 0 ||
+      !Number.isFinite(goldPrice) || goldPrice <= 0 ||
+      !Number.isFinite(rate) || rate < 0 ||
+      !Number.isFinite(cap) || cap < 0
+    ) return null;
+
+    var rmb = priceWan * goldPrice / 100;
+    var fee = Math.min(rmb * rate, cap);
+    return { rmb: rmb, fee: fee, netRmb: rmb - fee };
+  }
+
   globalThis.XYQSpiritStones = {
     calculateStonePrice,
+    calculateGemRmbProceeds,
     stoneMultiplier: multiplierFor,
     defaultStoneCatalog: [
       {
@@ -37,6 +60,7 @@
       },
       {
         tier: "二梯队 · 其他宝石",
+        convertsToRmb: true,
         stones: [
           { name: "五色" },
           { name: "月亮石" },
