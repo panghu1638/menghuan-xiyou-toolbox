@@ -29,15 +29,15 @@ test("默认召唤兽方案覆盖用户指定名单", () => {
   );
 });
 
-test("顶部下拉选择召唤兽和技能数量，只显示当前方案", async () => {
+test("顶部单个下拉显示完整方案，只显示当前方案卡", async () => {
   const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
   const styles = await readFile(new URL("./styles.css", import.meta.url), "utf8");
 
   assert.match(index, /opportunity-plans\.js/);
   assert.match(index, /id="opportunity-picker"/);
-  assert.match(index, /id="skill-count-picker"/);
-  assert.match(index, /value="4">4技能<\/option>/);
+  assert.doesNotMatch(index, /id="skill-count-picker"/);
+  assert.match(index, /召唤兽方案/);
   assert.match(app, /selectedOpportunityId/);
   assert.match(app, /function currentOpportunity\(/);
   assert.match(app, /function renderOpportunityPicker\(/);
@@ -45,7 +45,9 @@ test("顶部下拉选择召唤兽和技能数量，只显示当前方案", async
   assert.match(app, /function renderOpportunitySummary\(\)/);
   assert.doesNotMatch(app, /state\.opportunities\.forEach\(function \(opportunity\) \{\s*opportunityList\.append/);
   assert.match(app, /function opportunityOptionLabel\(opportunity\)/);
-  assert.match(app, /function opportunityOptionLabel\(opportunity\) \{\s*return opportunityDisplayName\(opportunity\);\s*\}/);
+  assert.match(app, /" · " \+ \(skill \|\| "未填技能"\)/);
+  assert.match(app, /function createSkillCountSelect\(opportunity\)/);
+  assert.match(app, /head\.append\(createLabeledCell\("技能数量", createSkillCountSelect\(opportunity\)\)\);/);
   assert.match(app, /var opportunity = currentOpportunity\(\);\n\s*if \(opportunity\) opportunityList\.append\(renderOpportunity\(opportunity\)\);/);
   assert.match(styles, /\.opportunity-selector-fields/);
   assert.doesNotMatch(styles, /\.input-with-unit/);

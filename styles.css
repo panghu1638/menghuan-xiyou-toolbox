@@ -618,7 +618,7 @@ button:focus-visible {
 
 .opportunity-selector-fields {
   display: grid;
-  grid-template-columns: minmax(14rem, 1.4fr) minmax(9rem, 0.8fr);
+  grid-template-columns: minmax(18rem, 1fr);
   gap: 0.85rem;
 }
 
@@ -638,7 +638,7 @@ button:focus-visible {
 
 .opportunity-head {
   display: grid;
-  grid-template-columns: minmax(11rem, 1.2fr) minmax(9rem, 0.8fr) minmax(10rem, 0.8fr) auto;
+  grid-template-columns: minmax(11rem, 1.2fr) minmax(8rem, 0.7fr) minmax(9rem, 0.8fr) minmax(10rem, 0.8fr) auto;
   gap: 0.85rem;
   align-items: end;
   padding-bottom: 1rem;
