@@ -5,7 +5,7 @@
 ## 使用
 
 ```bash
-cd xyq-pet-arbitrage
+cd menghuan-xiyou-toolbox
 npm start
 ```
 
