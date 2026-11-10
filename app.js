@@ -16,6 +16,7 @@
     goldPriceInput: 0,
     goldPriceUnit: "bundle",
     goldPriceUnitVersion: 2,
+    defaultOpportunityNamesVersion: 1,
     goldPricePerMillion: 0,
     feeRate: 0.05,
     feeCap: 1000,
@@ -30,19 +31,22 @@
     stoneTargetLevel: 10,
     yuanxiaoRecords: structuredClone(XYQFestivalItems.defaultYuanxiaoRecords),
     zhenjingPriceWan: XYQFestivalItems.defaultZhenjingPriceWan,
-    opportunities: [
-      {
-        id: 1,
-        name: "",
-        skillPlan: "",
-        salePrice: 0,
-        extraCostRmb: 0,
-        recipe: structuredClone(XYQCalculator.defaultRecipe),
+    opportunities: XYQOpportunityPlans.defaultOpportunityNames.map(
+      function (name, index) {
+        return {
+          id: index + 1,
+          name: name,
+          skillPlan: "",
+          salePrice: 0,
+          extraCostRmb: 0,
+          recipe: structuredClone(XYQCalculator.defaultRecipe),
+        };
       },
-    ],
+    ),
   };
 
   var state = loadState();
+  saveState();
   var opportunityList = document.getElementById("opportunities");
   var opportunitySummaryList = document.getElementById("opportunity-summary-list");
   var summaryText = document.getElementById("summary-text");
@@ -51,7 +55,7 @@
     try {
       var saved = JSON.parse(localStorage.getItem(storageKey));
       if (!saved || !Array.isArray(saved.opportunities)) {
-        opportunitySeq = 2;
+        opportunitySeq = defaultState.opportunities.length + 1;
         return structuredClone(defaultState);
       }
       var opportunityIds = saved.opportunities
@@ -88,6 +92,27 @@
         }
         opportunity.skillPlan = XYQOpportunityPlans.skillPlanText(opportunity.skillPlan);
       });
+      if (saved.defaultOpportunityNamesVersion !== 1) {
+        var blankOpportunity = saved.opportunities.find(isBlankOpportunity);
+        XYQOpportunityPlans
+          .missingOpportunityNames(saved.opportunities)
+          .forEach(function (name) {
+            if (blankOpportunity) {
+              blankOpportunity.name = name;
+              blankOpportunity = null;
+              return;
+            }
+            saved.opportunities.push({
+              id: opportunitySeq++,
+              name: name,
+              skillPlan: "",
+              salePrice: 0,
+              extraCostRmb: 0,
+              recipe: structuredClone(XYQCalculator.defaultRecipe),
+            });
+          });
+        saved.defaultOpportunityNamesVersion = 1;
+      }
       saved.goldPriceHistory = Array.isArray(saved.goldPriceHistory)
         ? saved.goldPriceHistory
         : [];
@@ -178,6 +203,17 @@
 
   function saveState() {
     localStorage.setItem(storageKey, JSON.stringify(state));
+  }
+
+  function isBlankOpportunity(opportunity) {
+    return String(opportunity.name || "").trim() === "" &&
+      String(opportunity.skillPlan || "").trim() === "" &&
+      opportunity.salePrice === 0 &&
+      opportunity.extraCostRmb === 0 &&
+      Array.isArray(opportunity.recipe) &&
+      opportunity.recipe.every(function (item) {
+        return item.quantity === 0 && item.unitPrice === 0;
+      });
   }
 
   function numberFromInput(input, fallback) {
@@ -1364,7 +1400,7 @@
   bindClick("reset-data", function () {
     if (!confirm("恢复默认会清空当前填写的行情，继续吗？")) return;
     state = structuredClone(defaultState);
-    opportunitySeq = 2;
+    opportunitySeq = defaultState.opportunities.length + 1;
     saveState();
     bindMarketInputs();
     renderGoldPriceHistory();
