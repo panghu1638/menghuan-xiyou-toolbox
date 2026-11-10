@@ -277,6 +277,23 @@
       });
   }
 
+  function renderCurrentMarketSummary() {
+    var summary = document.getElementById("current-market-summary");
+    if (!summary) return;
+
+    if (!state.goldPricePerMillion) {
+      summary.textContent = "请先在区内行情页填写金价；手续费也统一在那里维护。";
+      return;
+    }
+
+    summary.textContent =
+      (state.serverName.trim() ? state.serverName.trim() + " · " : "") +
+      "金价 ¥" + displayGoldPrice(state.goldPricePerMillion) +
+      " / " + goldPriceUnitName() +
+      "；手续费率 " + (state.feeRate * 100).toFixed(0) +
+      "%，上限 ¥" + XYQCalculator.formatCurrency(state.feeCap) + "。";
+  }
+
   function renderStallPriceInputs() {
     var fields = document.getElementById("stall-price-fields");
     if (!fields) return;
@@ -1346,6 +1363,7 @@
     renderSpiritStoneMarket();
     renderFestivalMarket();
     renderOpportunities();
+    renderCurrentMarketSummary();
     updateResults();
   });
 
@@ -1358,5 +1376,6 @@
   renderSpiritStoneMarket();
   renderFestivalMarket();
   renderOpportunities();
+  renderCurrentMarketSummary();
   updateResults();
 })();

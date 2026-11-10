@@ -283,6 +283,10 @@ button:focus-visible {
   box-shadow: 0 8px 28px rgba(24, 36, 32, 0.05);
 }
 
+.current-market {
+  align-items: center;
+}
+
 .floor-panel {
   display: grid;
   grid-template-columns: minmax(13rem, 1fr) minmax(20rem, 3fr);

@@ -24,36 +24,12 @@
     </header>
 
     <main>
-      <section class="market-panel" aria-labelledby="market-title">
+      <section class="summary current-market" aria-labelledby="current-market-title">
         <div>
-          <h2 id="market-title">计算行情</h2>
-          <p>金价和手续费参与本页每只召唤兽的差价计算。</p>
+          <h2 id="current-market-title">当前行情</h2>
+          <p id="current-market-summary">金价和手续费在区内行情页统一维护。</p>
         </div>
-        <div class="market-fields">
-          <label>
-            服务器
-            <input id="server-name" type="text" placeholder="例如：2008" />
-          </label>
-          <label>
-            <span id="gold-price-label">金价</span>
-            <span class="gold-price-input">
-              <input id="gold-price" type="number" min="0" step="0.001" value="0" />
-              <select id="gold-price-unit" aria-label="金价单位">
-                <option value="bundle" selected>元 / 3000万两</option>
-                <option value="wan">元 / 万两</option>
-                <option value="million">元 / 100万两</option>
-              </select>
-            </span>
-          </label>
-          <label>
-            手续费率
-            <input id="fee-rate" type="number" min="0" max="1" step="0.01" value="0.05" />
-          </label>
-          <label>
-            手续费上限（元）
-            <input id="fee-cap" type="number" min="0" step="1" value="1000" />
-          </label>
-        </div>
+        <a class="nav-button" href="./market.html">去区内行情修改</a>
       </section>
 
       <section class="summary opportunity-summary" aria-label="各方案汇总">
