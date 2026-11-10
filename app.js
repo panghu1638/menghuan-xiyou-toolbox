@@ -31,6 +31,7 @@
     stoneTargetLevel: 10,
     yuanxiaoRecords: structuredClone(XYQFestivalItems.defaultYuanxiaoRecords),
     zhenjingPriceWan: XYQFestivalItems.defaultZhenjingPriceWan,
+    selectedOpportunityId: 1,
     opportunities: XYQOpportunityPlans.defaultOpportunityNames.map(
       function (name, index) {
         return {
@@ -50,6 +51,8 @@
   var opportunityList = document.getElementById("opportunities");
   var opportunitySummaryList = document.getElementById("opportunity-summary-list");
   var summaryText = document.getElementById("summary-text");
+  var opportunityPicker = document.getElementById("opportunity-picker");
+  var skillCountPicker = document.getElementById("skill-count-picker");
 
   function loadState() {
     try {
@@ -113,6 +116,11 @@
           });
         saved.defaultOpportunityNamesVersion = 1;
       }
+      saved.selectedOpportunityId = saved.opportunities.some(function (item) {
+        return item.id === saved.selectedOpportunityId;
+      })
+        ? saved.selectedOpportunityId
+        : (saved.opportunities[0] && saved.opportunities[0].id) || null;
       saved.goldPriceHistory = Array.isArray(saved.goldPriceHistory)
         ? saved.goldPriceHistory
         : [];
@@ -996,6 +1004,66 @@
     return cell;
   }
 
+  function currentOpportunity() {
+    return state.opportunities.find(function (opportunity) {
+      return opportunity.id === state.selectedOpportunityId;
+    }) || null;
+  }
+
+  function opportunityOptionLabel(opportunity) {
+    var skill = XYQOpportunityPlans.skillPlanText(opportunity.skillPlan);
+    return opportunityDisplayName(opportunity) +
+      (skill ? " · " + skill : " · 未填技能");
+  }
+
+  function ensureSkillCountOption(count) {
+    if (!count) return;
+    var exists = Array.prototype.some.call(
+      skillCountPicker.options,
+      function (option) { return option.value === String(count); },
+    );
+    if (exists) return;
+
+    var option = document.createElement("option");
+    option.value = String(count);
+    option.textContent = count + "技能";
+    skillCountPicker.append(option);
+  }
+
+  function renderOpportunityPicker() {
+    if (!opportunityPicker || !skillCountPicker) return;
+
+    opportunityPicker.replaceChildren();
+    if (!state.opportunities.length) {
+      var emptyOption = document.createElement("option");
+      emptyOption.value = "";
+      emptyOption.textContent = "暂无方案";
+      opportunityPicker.append(emptyOption);
+      opportunityPicker.value = "";
+      opportunityPicker.disabled = true;
+      skillCountPicker.value = "";
+      skillCountPicker.disabled = true;
+      return;
+    }
+
+    opportunityPicker.disabled = false;
+    skillCountPicker.disabled = false;
+    state.opportunities.forEach(function (opportunity) {
+      var option = document.createElement("option");
+      option.value = opportunity.id;
+      option.textContent = opportunityOptionLabel(opportunity);
+      option.selected = opportunity.id === state.selectedOpportunityId;
+      opportunityPicker.append(option);
+    });
+
+    var opportunity = currentOpportunity();
+    var count = opportunity
+      ? XYQOpportunityPlans.skillCountInputValue(opportunity.skillPlan)
+      : "";
+    ensureSkillCountOption(count);
+    skillCountPicker.value = count === "" ? "" : String(count);
+  }
+
   function renderOpportunity(opportunity) {
     var card = document.createElement("article");
     card.className = "opportunity";
@@ -1005,33 +1073,13 @@
     var nameInput = createInput("text", opportunity.name, "any", function (event) {
       opportunity.name = event.target.value;
       saveState();
+      renderOpportunityPicker();
       updateResults();
     });
     nameInput.min = "";
     nameInput.placeholder = "召唤兽名字，可随时修改";
     nameInput.setAttribute("aria-label", "召唤兽名称");
-    head.append(createLabeledCell("召唤兽", nameInput));
-
-    var skillPlanInput = createInput(
-      "number",
-      XYQOpportunityPlans.skillCountInputValue(opportunity.skillPlan),
-      "1",
-      function (event) {
-        opportunity.skillPlan = XYQOpportunityPlans.skillPlanText(event.target.value);
-        saveState();
-        updateResults();
-      },
-    );
-    skillPlanInput.className = "skill-count-input";
-    skillPlanInput.placeholder = "3";
-    skillPlanInput.setAttribute("aria-label", "技能数量");
-    var skillUnit = document.createElement("span");
-    skillUnit.className = "input-unit";
-    skillUnit.textContent = "技能";
-    var skillInputWrap = document.createElement("span");
-    skillInputWrap.className = "input-with-unit";
-    skillInputWrap.append(skillPlanInput, skillUnit);
-    head.append(createLabeledCell("技能数量", skillInputWrap));
+    head.append(createLabeledCell("召唤兽名字", nameInput));
 
     var saleInput = createInput("number", opportunity.salePrice, "0.01", function (event) {
       opportunity.salePrice = numberFromInput(event.target, opportunity.salePrice);
@@ -1054,10 +1102,19 @@
     removeButton.className = "danger";
     removeButton.textContent = "删除";
     removeButton.addEventListener("click", function () {
+      var deletedIndex = state.opportunities.findIndex(function (item) {
+        return item.id === opportunity.id;
+      });
       state.opportunities = state.opportunities.filter(function (item) {
         return item.id !== opportunity.id;
       });
+      if (state.selectedOpportunityId === opportunity.id) {
+        var next = state.opportunities[deletedIndex] ||
+          state.opportunities[deletedIndex - 1];
+        state.selectedOpportunityId = next ? next.id : null;
+      }
       saveState();
+      renderOpportunityPicker();
       renderOpportunities();
       updateResults();
     });
@@ -1126,9 +1183,8 @@
     if (!opportunityList) return;
 
     opportunityList.replaceChildren();
-    state.opportunities.forEach(function (opportunity) {
-      opportunityList.append(renderOpportunity(opportunity));
-    });
+    var opportunity = currentOpportunity();
+    if (opportunity) opportunityList.append(renderOpportunity(opportunity));
   }
 
   function updateResultCard(opportunity, result) {
@@ -1172,42 +1228,67 @@
     return opportunity.name.trim() || "未命名召唤兽";
   }
 
-  function renderOpportunitySummary(calculations) {
+  function renderOpportunitySummary(calculation) {
     if (!opportunitySummaryList) return;
 
     opportunitySummaryList.replaceChildren();
-    state.opportunities.forEach(function (opportunity, index) {
-      var calculation = calculations[index];
-      var row = document.createElement("li");
-      row.dataset.opportunityId = opportunity.id;
+    var opportunity = currentOpportunity();
+    if (!opportunity) return;
 
-      var name = document.createElement("span");
-      name.textContent =
-        opportunityDisplayName(opportunity) +
-        " · " +
-        (XYQOpportunityPlans.skillPlanText(opportunity.skillPlan) || "未填技能");
-      var profit = document.createElement("strong");
-      profit.textContent = calculation && calculation.profit !== undefined
-        ? "¥" + XYQCalculator.formatCurrency(calculation.profit)
-        : "—";
-      if (calculation) profit.classList.add(calculation.hasProfit ? "profit" : "loss");
-      row.append(name, profit);
-      opportunitySummaryList.append(row);
-    });
+    var row = document.createElement("li");
+    row.dataset.opportunityId = opportunity.id;
+    var name = document.createElement("span");
+    name.textContent = opportunityOptionLabel(opportunity);
+    var profit = document.createElement("strong");
+    profit.textContent = calculation && calculation.profit !== undefined
+      ? "¥" + XYQCalculator.formatCurrency(calculation.profit)
+      : "—";
+    if (calculation) profit.classList.add(calculation.hasProfit ? "profit" : "loss");
+    row.append(name, profit);
+    opportunitySummaryList.append(row);
   }
 
   function updateResults() {
     if (!opportunityList || !summaryText) return;
 
-    var calculations = state.opportunities.map(function (opportunity) {
-      var result = opportunityList.querySelector(
-        '.result[data-opportunity-id="' + opportunity.id + '"]'
-      );
-      return updateResultCard(opportunity, result);
-    });
-    renderOpportunitySummary(calculations);
+    var opportunity = currentOpportunity();
+    if (!opportunity) {
+      opportunitySummaryList.replaceChildren();
+      summaryText.textContent = "暂无方案，请添加一个方案";
+      return;
+    }
+
+    var result = opportunityList.querySelector(
+      '.result[data-opportunity-id="' + opportunity.id + '"]'
+    );
+    var calculation = updateResultCard(opportunity, result);
+    renderOpportunitySummary(calculation);
     summaryText.textContent =
-      "共 " + state.opportunities.length + " 个独立方案；利润逐行显示，不合并总价";
+      "第 " + (state.opportunities.indexOf(opportunity) + 1) +
+      " / " + state.opportunities.length + " 个方案；只显示当前选中方案";
+  }
+
+  function bindOpportunityPicker() {
+    if (!opportunityPicker || !skillCountPicker) return;
+
+    opportunityPicker.onchange = function (event) {
+      state.selectedOpportunityId = Number(event.target.value);
+      saveState();
+      renderOpportunityPicker();
+      renderOpportunities();
+      updateResults();
+    };
+
+    skillCountPicker.onchange = function (event) {
+      var opportunity = currentOpportunity();
+      if (!opportunity) return;
+      opportunity.skillPlan = event.target.value
+        ? event.target.value + "技能"
+        : "";
+      saveState();
+      renderOpportunityPicker();
+      updateResults();
+    };
   }
 
   function bindMarketInputs() {
@@ -1286,7 +1367,9 @@
       recipe: structuredClone(XYQCalculator.defaultRecipe),
     };
     state.opportunities.push(opportunity);
+    state.selectedOpportunityId = opportunity.id;
     saveState();
+    renderOpportunityPicker();
     renderOpportunities();
     updateResults();
   });
@@ -1410,6 +1493,7 @@
     renderEyePriceMarket();
     renderSpiritStoneMarket();
     renderFestivalMarket();
+    renderOpportunityPicker();
     renderOpportunities();
     renderCurrentMarketSummary();
     updateResults();
@@ -1423,6 +1507,8 @@
   renderEyePriceMarket();
   renderSpiritStoneMarket();
   renderFestivalMarket();
+  bindOpportunityPicker();
+  renderOpportunityPicker();
   renderOpportunities();
   renderCurrentMarketSummary();
   updateResults();

@@ -612,9 +612,19 @@ button:focus-visible {
   color: var(--loss);
 }
 
+.opportunity-selector {
+  align-items: center;
+}
+
+.opportunity-selector-fields {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.4fr) minmax(9rem, 0.8fr);
+  gap: 0.85rem;
+}
+
 .opportunities {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.25rem;
   align-items: start;
 }
@@ -628,7 +638,7 @@ button:focus-visible {
 
 .opportunity-head {
   display: grid;
-  grid-template-columns: minmax(9rem, 1fr) minmax(7rem, 0.7fr) minmax(8rem, 0.7fr) minmax(8rem, 0.7fr) auto;
+  grid-template-columns: minmax(11rem, 1.2fr) minmax(9rem, 0.8fr) minmax(10rem, 0.8fr) auto;
   gap: 0.85rem;
   align-items: end;
   padding-bottom: 1rem;
@@ -640,34 +650,16 @@ button:focus-visible {
   font-weight: 650;
 }
 
-.input-with-unit {
+@media (max-width: 760px) {
+  .opportunity-selector-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Keep the selector compact on narrow screens. */
+.opportunity-selector select {
   position: relative;
-  display: block;
-}
-
-.input-with-unit input {
-  padding-right: 3.15rem;
-}
-
-.input-with-unit .input-unit {
-  position: absolute;
-  top: 50%;
-  right: 0.62rem;
-  transform: translateY(-50%);
-  color: var(--muted);
-  font-size: 0.82rem;
-  pointer-events: none;
-}
-
-.skill-count-input {
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
-
-.skill-count-input::-webkit-outer-spin-button,
-.skill-count-input::-webkit-inner-spin-button {
-  appearance: none;
-  margin: 0;
+  min-width: 0;
 }
 
 .recipe {

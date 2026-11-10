@@ -17,7 +17,7 @@ test("绘卷页面按独立方案输入而不固定召唤兽", async () => {
   assert.match(index, /id="opportunity-summary-list"/);
   assert.match(app, /opportunity\.skillPlan/);
   assert.match(app, /placeholder = "召唤兽名字，可随时修改"/);
-  assert.match(app, /aria-label", "技能数量"/);
+  assert.match(index, /id="skill-count-picker"/);
   assert.match(app, /function renderOpportunitySummary/);
   assert.doesNotMatch(app, /name: "龙鲤"/);
   assert.doesNotMatch(index, /id="opportunity-template"/);

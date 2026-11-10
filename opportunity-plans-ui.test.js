@@ -29,18 +29,25 @@ test("默认召唤兽方案覆盖用户指定名单", () => {
   );
 });
 
-test("方案卡片使用数字输入并固定显示单位", async () => {
+test("顶部下拉选择召唤兽和技能数量，只显示当前方案", async () => {
   const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
   const styles = await readFile(new URL("./styles.css", import.meta.url), "utf8");
 
   assert.match(index, /opportunity-plans\.js/);
-  assert.match(app, /createInput\(\s*"number",\s*XYQOpportunityPlans\.skillCountInputValue/);
-  assert.match(app, /placeholder = "3"/);
-  assert.match(app, /className = "input-unit"/);
-  assert.match(app, /skillUnit\.textContent = "技能"/);
-  assert.match(app, /XYQOpportunityPlans\.skillPlanText\(opportunity\.skillPlan\) \|\| "未填技能"/);
-  assert.match(styles, /\.input-with-unit/);
+  assert.match(index, /id="opportunity-picker"/);
+  assert.match(index, /id="skill-count-picker"/);
+  assert.match(index, /value="4">4技能<\/option>/);
+  assert.match(app, /selectedOpportunityId/);
+  assert.match(app, /function currentOpportunity\(/);
+  assert.match(app, /function renderOpportunityPicker\(/);
+  assert.match(app, /state\.selectedOpportunityId = opportunity\.id/);
+  assert.match(app, /function renderOpportunitySummary\(calculation\)/);
+  assert.doesNotMatch(app, /state\.opportunities\.forEach\(function \(opportunity\) \{\s*opportunityList\.append/);
+  assert.match(app, /function opportunityOptionLabel\(opportunity\)/);
+  assert.match(app, /var opportunity = currentOpportunity\(\);\n\s*if \(opportunity\) opportunityList\.append\(renderOpportunity\(opportunity\)\);/);
+  assert.match(styles, /\.opportunity-selector-fields/);
+  assert.doesNotMatch(styles, /\.input-with-unit/);
 });
 
 test("旧本地数据一次性补齐默认召唤兽方案", async () => {

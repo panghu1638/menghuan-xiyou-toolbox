@@ -32,12 +32,43 @@
         <a class="nav-button" href="./market.html">去区内行情修改</a>
       </section>
 
-      <section class="summary opportunity-summary" aria-label="各方案汇总">
+      <section class="summary opportunity-selector" aria-labelledby="opportunity-selector-title">
         <div>
-          <h2>各方案利润</h2>
+          <h2 id="opportunity-selector-title">选择召唤兽方案</h2>
+          <p>先选召唤兽和技能数量，下面只显示当前这一张方案卡。</p>
+        </div>
+        <div class="opportunity-selector-fields">
+          <label>
+            召唤兽
+            <select id="opportunity-picker" aria-label="选择召唤兽"></select>
+          </label>
+          <label>
+            技能数量
+            <select id="skill-count-picker" aria-label="选择技能数量">
+              <option value="">未选择</option>
+              <option value="1">1技能</option>
+              <option value="2">2技能</option>
+              <option value="3">3技能</option>
+              <option value="4">4技能</option>
+              <option value="5">5技能</option>
+              <option value="6">6技能</option>
+              <option value="7">7技能</option>
+              <option value="8">8技能</option>
+              <option value="9">9技能</option>
+              <option value="10">10技能</option>
+              <option value="11">11技能</option>
+              <option value="12">12技能</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="summary opportunity-summary" aria-label="当前方案利润">
+        <div>
+          <h2>当前方案利润</h2>
           <ul id="opportunity-summary-list"></ul>
         </div>
-        <span id="summary-text">每个召唤兽方案独立计算，不合并总价</span>
+        <span id="summary-text">只计算当前选中的召唤兽方案</span>
       </section>
 
       <section id="opportunities" class="opportunities" aria-label="兑换机会"></section>
