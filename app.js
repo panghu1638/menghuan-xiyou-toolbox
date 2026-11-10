@@ -1067,9 +1067,7 @@
   }
 
   function opportunityOptionLabel(opportunity) {
-    var skill = XYQOpportunityPlans.skillPlanText(opportunity.skillPlan);
-    return opportunityDisplayName(opportunity) +
-      (skill ? " · " + skill : " · 未填技能");
+    return opportunityDisplayName(opportunity);
   }
 
   function ensureSkillCountOption(count) {

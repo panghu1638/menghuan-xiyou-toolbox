@@ -45,6 +45,7 @@ test("顶部下拉选择召唤兽和技能数量，只显示当前方案", async
   assert.match(app, /function renderOpportunitySummary\(calculation\)/);
   assert.doesNotMatch(app, /state\.opportunities\.forEach\(function \(opportunity\) \{\s*opportunityList\.append/);
   assert.match(app, /function opportunityOptionLabel\(opportunity\)/);
+  assert.match(app, /function opportunityOptionLabel\(opportunity\) \{\s*return opportunityDisplayName\(opportunity\);\s*\}/);
   assert.match(app, /var opportunity = currentOpportunity\(\);\n\s*if \(opportunity\) opportunityList\.append\(renderOpportunity\(opportunity\)\);/);
   assert.match(styles, /\.opportunity-selector-fields/);
   assert.doesNotMatch(styles, /\.input-with-unit/);
