@@ -337,8 +337,7 @@ button:hover {
 }
 
 #gold-price-status,
-#stall-price-status,
-.stone-input-note {
+#stall-price-status {
   margin: 0;
   color: var(--muted);
   font-size: 0.84rem;
@@ -610,29 +609,24 @@ button:hover {
 }
 
 .equipment-cost,
-.eye-rmb,
-.stone-cost,
-.stone-net {
+.eye-rmb {
   color: var(--muted);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.equipment-profit,
-.stone-profit {
+.equipment-profit {
   color: var(--text);
   font-weight: 700;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.equipment-profit.profit,
-.stone-profit.profit {
+.equipment-profit.profit {
   color: var(--profit);
 }
 
-.equipment-profit.loss,
-.stone-profit.loss {
+.equipment-profit.loss {
   color: var(--loss);
 }
 
@@ -648,17 +642,6 @@ button:hover {
   line-height: 1.8;
 }
 
-.stone-controls {
-  display: grid;
-  grid-template-columns: minmax(9rem, 12rem) minmax(0, 3fr);
-  gap: 1rem;
-  align-items: start;
-  padding: 1rem;
-  border: 1px solid rgba(217, 225, 213, 0.95);
-  border-radius: 0.82rem;
-  background: rgba(244, 247, 239, 0.62);
-}
-
 .stone-tier-stack {
   display: grid;
   gap: 1rem;
@@ -672,17 +655,16 @@ button:hover {
   box-shadow: var(--shadow-soft);
 }
 
-.stone-level-multiplier,
-.stone-attribute-value {
+.stone-tier-card th,
+.stone-tier-card td {
+  white-space: nowrap;
+}
+
+.stone-level-multiplier {
   display: block;
   margin-top: 0.2rem;
   color: var(--muted);
   font-size: 0.74rem;
-}
-
-.stone-attribute-value {
-  color: var(--text);
-  font-weight: 650;
 }
 
 .stone-level-price {
@@ -949,8 +931,7 @@ footer p {
   }
 
   .material-price-fields,
-  .opportunity-selector-fields,
-  .stone-controls {
+  .opportunity-selector-fields {
     grid-template-columns: 1fr;
   }
 

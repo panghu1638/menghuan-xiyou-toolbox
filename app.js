@@ -28,8 +28,6 @@
     equipmentRecords: structuredClone(XYQEquipmentPrices.defaultEquipmentRecords),
     eyePriceRecords: structuredClone(XYQEquipmentPrices.defaultEyePriceRecords),
     stoneLevelOnePrices: structuredClone(XYQSpiritStones.defaultLevelOnePrices),
-    stoneComparisonRecords: structuredClone(XYQSpiritStones.defaultComparisonRecords),
-    stoneTargetLevel: 10,
     yuanxiaoRecords: structuredClone(XYQFestivalItems.defaultYuanxiaoRecords),
     zhenjingPriceWan: XYQFestivalItems.defaultZhenjingPriceWan,
     selectedOpportunityId: 1,
@@ -183,25 +181,26 @@
         if (first.type !== second.type) return first.type === "三眼" ? -1 : 1;
         return first.power - second.power;
       });
-      saved.stoneLevelOnePrices = saved.stoneLevelOnePrices && typeof saved.stoneLevelOnePrices === "object"
+      var savedStonePrices = saved.stoneLevelOnePrices;
+      var hasSavedRedAgate = Boolean(
+        savedStonePrices &&
+        Object.prototype.hasOwnProperty.call(savedStonePrices, "红玛瑙"),
+      );
+      saved.stoneLevelOnePrices = savedStonePrices && typeof savedStonePrices === "object"
         ? Object.assign(
           structuredClone(XYQSpiritStones.defaultLevelOnePrices),
-          saved.stoneLevelOnePrices,
+          savedStonePrices,
         )
         : structuredClone(XYQSpiritStones.defaultLevelOnePrices);
-      saved.stoneComparisonRecords = Array.isArray(saved.stoneComparisonRecords)
-        ? saved.stoneComparisonRecords
-        : structuredClone(XYQSpiritStones.defaultComparisonRecords);
-      if (!saved.stoneComparisonRecords.every(function (record) {
-        return record && record.sourceStone;
-      })) {
-        saved.stoneComparisonRecords = structuredClone(
-          XYQSpiritStones.defaultComparisonRecords,
-        );
+      if (
+        saved.stoneLevelOnePrices.玛瑙 !== undefined &&
+        !hasSavedRedAgate
+      ) {
+        saved.stoneLevelOnePrices.红玛瑙 = saved.stoneLevelOnePrices.玛瑙;
       }
-      saved.stoneTargetLevel = saved.stoneTargetLevel >= 1 && saved.stoneTargetLevel <= 10
-        ? saved.stoneTargetLevel
-        : 10;
+      delete saved.stoneLevelOnePrices.玛瑙;
+      delete saved.stoneComparisonRecords;
+      delete saved.stoneTargetLevel;
       var savedYuanxiaoRecords = Array.isArray(saved.yuanxiaoRecords)
         ? saved.yuanxiaoRecords.map(function (record) {
           return {
@@ -816,72 +815,6 @@
     }
   }
 
-  function updateSpiritStoneSummary() {
-    var summary = document.getElementById("stone-price-summary");
-    if (!summary) return;
-
-    if (!state.goldPricePerMillion) {
-      summary.textContent = "请先在区内行情页填写金价，再回到本页比价。";
-      return;
-    }
-    summary.textContent =
-      "当前金价：¥" + displayGoldPrice(state.goldPricePerMillion) +
-      " / " + goldPriceUnitName() +
-      "；比价等级：" + state.stoneTargetLevel + "级；手续费率 " +
-      (state.feeRate * 100).toFixed(0) + "%，上限 ¥" +
-      XYQCalculator.formatCurrency(state.feeCap) + "。";
-  }
-
-  function updateSpiritStoneRow(row, record) {
-    var calculation = XYQSpiritStones.calculateStoneArbitrage({
-      stone: record.stone,
-      levelOnePriceWan: state.stoneLevelOnePrices[record.stone],
-      targetLevel: state.stoneTargetLevel,
-      treasurePriceRmb: record.treasurePriceRmb,
-      goldPricePerMillion: state.goldPricePerMillion,
-      feeRate: state.feeRate,
-      feeCap: state.feeCap,
-    });
-    var attributeCell = row.querySelector(".stone-attribute-value");
-    var costCell = row.querySelector(".stone-cost");
-    var netCell = row.querySelector(".stone-net");
-    var profitCell = row.querySelector(".stone-profit");
-    var attributeValue = XYQSpiritStones.attributeValues(
-      record.attribute,
-      state.stoneTargetLevel,
-    );
-    attributeCell.textContent = attributeValue === null ? "—" : String(attributeValue);
-
-    if (!calculation) {
-      costCell.textContent = "—";
-      netCell.textContent = "—";
-      profitCell.textContent = "—";
-      profitCell.className = "stone-profit";
-      return;
-    }
-
-    costCell.textContent =
-      XYQCalculator.formatGameCoin(calculation.costWan) +
-      " / ¥" +
-      XYQCalculator.formatCurrency(calculation.costRmb);
-    netCell.textContent =
-      "¥" + XYQCalculator.formatCurrency(calculation.fee) +
-      " / ¥" +
-      XYQCalculator.formatCurrency(calculation.netProceeds);
-    profitCell.textContent = "¥" + XYQCalculator.formatCurrency(calculation.profit);
-    profitCell.className = "stone-profit " + (calculation.profit >= 0 ? "profit" : "loss");
-  }
-
-  function updateSpiritStoneResults() {
-    document.querySelectorAll("#stone-comparison tr[data-attribute]").forEach(function (row) {
-      var record = state.stoneComparisonRecords.find(function (item) {
-        return item.attribute === row.dataset.attribute;
-      });
-      if (record) updateSpiritStoneRow(row, record);
-    });
-    updateSpiritStoneSummary();
-  }
-
   function updateStonePriceCells(stoneName) {
     document.querySelectorAll('[data-stone-price="' + stoneName + '"]').forEach(function (cell) {
       var level = Number(cell.dataset.level);
@@ -953,7 +886,6 @@
               );
               saveState();
               updateStonePriceCells(stoneName);
-              updateSpiritStoneResults();
             });
             priceCell.append(input);
           } else {
@@ -979,47 +911,6 @@
   }
 
   function renderSpiritStoneMarket() {
-    var tbody = document.getElementById("stone-comparison");
-    var levelSelect = document.getElementById("stone-target-level");
-    if (!tbody || !levelSelect) return;
-
-    levelSelect.value = state.stoneTargetLevel;
-    levelSelect.addEventListener("change", function (event) {
-      state.stoneTargetLevel = Number(event.target.value);
-      saveState();
-      updateSpiritStoneResults();
-    });
-
-    tbody.replaceChildren();
-    state.stoneComparisonRecords.forEach(function (record) {
-      var row = document.createElement("tr");
-      row.dataset.attribute = record.attribute;
-
-      var nameCell = document.createElement("td");
-      nameCell.textContent = record.attribute + " / " + record.stone;
-      var sourceCell = document.createElement("td");
-      sourceCell.textContent = record.sourceStone;
-      var attributeCell = document.createElement("td");
-      attributeCell.className = "stone-attribute-value";
-      var costCell = document.createElement("td");
-      costCell.className = "stone-cost";
-      var treasureCell = document.createElement("td");
-      treasureCell.append(createPriceInput(
-        record,
-        "treasurePriceRmb",
-        record.attribute + "藏宝阁价",
-        function () { updateSpiritStoneRow(row, record); },
-      ));
-      var netCell = document.createElement("td");
-      netCell.className = "stone-net";
-      var profitCell = document.createElement("td");
-      profitCell.className = "stone-profit";
-
-      row.append(nameCell, sourceCell, attributeCell, costCell, treasureCell, netCell, profitCell);
-      tbody.append(row);
-    });
-
-    updateSpiritStoneResults();
     renderStoneTierTables();
   }
 
