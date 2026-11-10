@@ -32,6 +32,7 @@ test("宝宝装备和三眼九眼分成独立页面", async () => {
   assert.doesNotMatch(eyes, /id="equipment-groups"/);
   const stones = await readFile(new URL("./stones.html", import.meta.url), "utf8");
   assert.match(stones, /id="stone-comparison"/);
+  assert.match(stones, /<th>属性值<\/th>/);
   assert.match(stones, /id="stone-tier-tables"/);
   const festival = await readFile(new URL("./festival.html", import.meta.url), "utf8");
   assert.match(festival, /id="yuanxiao-records"/);
