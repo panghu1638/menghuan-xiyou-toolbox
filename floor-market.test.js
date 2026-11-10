@@ -48,7 +48,8 @@ test("地板行情页文案使用完整表述", async () => {
 
   assert.match(floors, /地板价格以及出货时间/);
   assert.match(floors, /地板名称/);
-  assert.match(floors, /价格（元）/);
+  assert.match(floors, /价格（万两）/);
+  assert.match(floors, /按梦幻币 W 结算/);
   assert.doesNotMatch(floors, /地板名字|价钱/);
 });
 
