@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFile } from "node:fs/promises";
 
 import "./floor-market.js";
 
@@ -26,6 +27,15 @@ test("默认地板价格与出货时间和截图一致", () => {
     { name: "情系千年", price: 1288, saleTimes: "0.22" },
     { name: "绿野仙踪", price: 0, saleTimes: "18.2" },
   ]);
+});
+
+test("地板行情页文案使用完整表述", async () => {
+  const floors = await readFile(new URL("./floors.html", import.meta.url), "utf8");
+
+  assert.match(floors, /地板价格以及出货时间/);
+  assert.match(floors, /地板名称/);
+  assert.match(floors, /价格（元）/);
+  assert.doesNotMatch(floors, /地板名字|价钱/);
 });
 
 test("地板记录校验名称、价格和出货时间", () => {
