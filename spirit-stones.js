@@ -50,6 +50,7 @@
     defaultStoneCatalog: [
       {
         tier: "一梯队 · 精魄灵石",
+        rmbFromLevel: 9,
         stones: [
           { name: "速度灵石" },
           { name: "伤害灵石" },
@@ -60,7 +61,7 @@
       },
       {
         tier: "二梯队 · 其他宝石",
-        convertsToRmb: true,
+        rmbFromLevel: 1,
         stones: [
           { name: "五色" },
           { name: "月亮石" },

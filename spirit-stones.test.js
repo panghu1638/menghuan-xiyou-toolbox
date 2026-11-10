@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFile } from "node:fs/promises";
 import "./spirit-stones.js";
 
 const stones = globalThis.XYQSpiritStones;
@@ -52,8 +53,16 @@ test("二梯队五色排第一并排除法防神秘石", () => {
     "星辉石",
   ]);
   assert.ok(!gems.includes("神秘石"));
-  assert.equal(stones.defaultStoneCatalog[0].convertsToRmb, undefined);
-  assert.equal(stones.defaultStoneCatalog[1].convertsToRmb, true);
+  assert.equal(stones.defaultStoneCatalog[0].rmbFromLevel, 9);
+  assert.equal(stones.defaultStoneCatalog[1].rmbFromLevel, 1);
   assert.equal(stones.defaultLevelOnePrices.五色, 42.5);
   assert.equal(stones.defaultLevelOnePrices.红玛瑙, 9);
+});
+
+test("九级以上精魄灵石和全部二梯队宝石显示人民币到手", async () => {
+  const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
+
+  assert.match(app, /table\.dataset\.rmbFromLevel = String\(group\.rmbFromLevel\)/);
+  assert.match(app, /level >= Number\(table\.dataset\.rmbFromLevel\)/);
+  assert.match(app, /level >= group\.rmbFromLevel/);
 });

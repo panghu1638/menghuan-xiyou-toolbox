@@ -850,13 +850,13 @@
     if (!summary) return;
 
     if (!state.goldPricePerMillion) {
-      summary.textContent = "填写1级价格后，2–10级按合成规则自动更新；填写区内行情金价后，宝石栏再显示人民币到手。";
+      summary.textContent = "填写1级价格后，2–10级按合成规则自动更新；填写区内行情金价后，宝石栏和9级以上精魄灵石再显示人民币到手。";
       return;
     }
     summary.textContent =
       "当前金价：¥" + displayGoldPrice(state.goldPricePerMillion) +
       " / " + goldPriceUnitName() +
-      "；宝石栏显示折算人民币和扣手续费后到手，费率 " +
+      "；宝石栏和9级以上精魄灵石显示折算人民币和扣手续费后到手，费率 " +
       (state.feeRate * 100).toFixed(0) + "%，上限 ¥" +
       XYQCalculator.formatCurrency(state.feeCap) + "。";
   }
@@ -886,7 +886,12 @@
         priceText.textContent = XYQCalculator.formatGameCoin(price);
       }
       var rmbText = cell.querySelector(".stone-level-rmb");
-      if (rmbText && cell.closest("table").dataset.convertsRmb === "true") {
+      var table = cell.closest("table");
+      if (
+        rmbText &&
+        table &&
+        level >= Number(table.dataset.rmbFromLevel)
+      ) {
         rmbText.textContent = formatGemRmbText(price);
       }
     });
@@ -907,7 +912,7 @@
       var wrap = document.createElement("div");
       wrap.className = "reference-table-wrap wide";
       var table = document.createElement("table");
-      table.dataset.convertsRmb = String(Boolean(group.convertsToRmb));
+      table.dataset.rmbFromLevel = String(group.rmbFromLevel);
       var thead = document.createElement("thead");
       var headerRow = document.createElement("tr");
       var levelHeader = document.createElement("th");
@@ -948,7 +953,7 @@
               updateStonePriceCells(stoneName);
             });
             priceCell.append(input);
-            if (group.convertsToRmb) {
+            if (level >= group.rmbFromLevel) {
               var levelOneRmbText = document.createElement("div");
               levelOneRmbText.className = "stone-level-rmb";
               priceCell.append(levelOneRmbText);
@@ -961,7 +966,7 @@
             var priceText = document.createElement("div");
             priceText.className = "stone-level-price";
             priceCell.append(priceText);
-            if (group.convertsToRmb) {
+            if (level >= group.rmbFromLevel) {
               var rmbText = document.createElement("div");
               rmbText.className = "stone-level-rmb";
               priceCell.append(rmbText);
