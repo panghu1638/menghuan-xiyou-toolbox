@@ -52,6 +52,7 @@
   var state = loadState();
   saveState();
   var opportunityList = document.getElementById("opportunities");
+  var opportunitySummarySection = document.getElementById("opportunity-summary-section");
   var opportunitySummaryList = document.getElementById("opportunity-summary-list");
   var summaryText = document.getElementById("summary-text");
   var opportunityPicker = document.getElementById("opportunity-picker");
@@ -392,23 +393,6 @@
         row.append(date, price);
         historyList.append(row);
       });
-  }
-
-  function renderCurrentMarketSummary() {
-    var summary = document.getElementById("current-market-summary");
-    if (!summary) return;
-
-    if (!state.goldPricePerMillion) {
-      summary.textContent = "请先在区内行情页填写金价；手续费也统一在那里维护。";
-      return;
-    }
-
-    summary.textContent =
-      (state.serverName.trim() ? state.serverName.trim() + " · " : "") +
-      "金价 ¥" + displayGoldPrice(state.goldPricePerMillion) +
-      " / " + goldPriceUnitName() +
-      "；手续费率 " + (state.feeRate * 100).toFixed(0) +
-      "%，上限 ¥" + XYQCalculator.formatCurrency(state.feeCap) + "。";
   }
 
   function renderStallPriceInputs() {
@@ -1345,7 +1329,9 @@
 
     opportunitySummaryList.replaceChildren();
     var opportunity = currentOpportunity();
-    if (!opportunity) return;
+    var hasProfit = Boolean(opportunity && calculation && calculation.hasProfit);
+    if (opportunitySummarySection) opportunitySummarySection.hidden = !hasProfit;
+    if (!hasProfit) return;
 
     var row = document.createElement("li");
     row.dataset.opportunityId = opportunity.id;
@@ -1355,7 +1341,7 @@
     profit.textContent = calculation && calculation.profit !== undefined
       ? "¥" + XYQCalculator.formatCurrency(calculation.profit)
       : "—";
-    if (calculation) profit.classList.add(calculation.hasProfit ? "profit" : "loss");
+    profit.classList.add("profit");
     row.append(name, profit);
     opportunitySummaryList.append(row);
   }
@@ -1366,6 +1352,7 @@
     var opportunity = currentOpportunity();
     if (!opportunity) {
       opportunitySummaryList.replaceChildren();
+      if (opportunitySummarySection) opportunitySummarySection.hidden = true;
       summaryText.textContent = "暂无方案，请添加一个方案";
       return;
     }
@@ -1607,7 +1594,6 @@
     renderFestivalMarket();
     renderOpportunityPicker();
     renderOpportunities();
-    renderCurrentMarketSummary();
     updateResults();
   });
 
@@ -1623,6 +1609,5 @@
   renderOpportunityPicker();
   renderMaterialPriceInputs();
   renderOpportunities();
-  renderCurrentMarketSummary();
   updateResults();
 })();

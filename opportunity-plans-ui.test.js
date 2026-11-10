@@ -68,6 +68,20 @@ test("材料单价全局统一，召唤兽方案只填数量", async () => {
   assert.match(styles, /\.recipe-unit-price/);
 });
 
+test("顶部利润卡只在当前方案有净利润时显示", async () => {
+  const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
+  const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
+  const hiddenStyles = await readFile(new URL("./styles.css", import.meta.url), "utf8");
+
+  assert.match(index, /<main>\s*<section id="opportunity-summary-section"[^>]*hidden/);
+  assert.match(index, /有利润方案/);
+  assert.doesNotMatch(index, /当前行情/);
+  assert.match(app, /var hasProfit = Boolean\(opportunity && calculation && calculation\.hasProfit\)/);
+  assert.match(app, /opportunitySummarySection\.hidden = !hasProfit/);
+  assert.match(app, /if \(!hasProfit\) return/);
+  assert.match(hiddenStyles, /\[hidden\]\s*\{\s*display: none !important;/);
+});
+
 test("旧本地数据一次性补齐默认召唤兽方案", async () => {
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
 

@@ -24,12 +24,12 @@
     </header>
 
     <main>
-      <section class="summary current-market" aria-labelledby="current-market-title">
+      <section id="opportunity-summary-section" class="summary opportunity-summary" aria-label="有利润方案" hidden>
         <div>
-          <h2 id="current-market-title">当前行情</h2>
-          <p id="current-market-summary">金价和手续费在区内行情页统一维护。</p>
+          <h2>有利润方案</h2>
+          <ul id="opportunity-summary-list"></ul>
         </div>
-        <a class="nav-button" href="./market.html">去区内行情修改</a>
+        <span id="summary-text">只显示当前选中且有净利润的方案</span>
       </section>
 
       <section class="summary opportunity-selector" aria-labelledby="opportunity-selector-title">
@@ -69,14 +69,6 @@
           <p>材料名称和单价只在这里维护，所有召唤兽方案共用这份价格。</p>
         </div>
         <div id="material-price-fields" class="material-price-fields"></div>
-      </section>
-
-      <section class="summary opportunity-summary" aria-label="当前方案利润">
-        <div>
-          <h2>当前方案利润</h2>
-          <ul id="opportunity-summary-list"></ul>
-        </div>
-        <span id="summary-text">只计算当前选中的召唤兽方案</span>
       </section>
 
       <section id="opportunities" class="opportunities" aria-label="兑换机会"></section>

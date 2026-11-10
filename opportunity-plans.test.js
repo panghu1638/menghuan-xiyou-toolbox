@@ -44,7 +44,7 @@ test("恢复默认会清空历史且不重复绑定行情输入", async () => {
   assert.match(app, /goldPriceUnit\.onchange\s*=/);
 });
 
-test("行情参数只在区内行情页编辑，差价页仅显示", async () => {
+test("行情参数只在区内行情页编辑，差价页不显示行情摘要", async () => {
   const index = await readFile(new URL("./index.html", import.meta.url), "utf8");
   const market = await readFile(new URL("./market.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
@@ -59,6 +59,7 @@ test("行情参数只在区内行情页编辑，差价页仅显示", async () =>
     assert.doesNotMatch(index, new RegExp(`id="${elementId}"`));
     assert.match(market, new RegExp(`id="${elementId}"`));
   }
-  assert.match(index, /id="current-market-summary"/);
-  assert.match(app, /renderCurrentMarketSummary\(\);/);
+  assert.doesNotMatch(index, /id="current-market-summary"/);
+  assert.doesNotMatch(index, /class="[^"]*current-market/);
+  assert.doesNotMatch(app, /renderCurrentMarketSummary/);
 });
