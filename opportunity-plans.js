@@ -18,7 +18,7 @@
     var match = String(value).match(/\d+/);
     if (!match) return "";
     var count = Number(match[0]);
-    return Math.trunc(count) + "技";
+    return Math.trunc(count) + "技能";
   }
 
   function missingOpportunityNames(opportunities) {

@@ -5,11 +5,11 @@ import "./opportunity-plans.js";
 
 const plans = globalThis.XYQOpportunityPlans;
 
-test("技能数量输入和显示文案统一为数字加技", () => {
+test("技能数量输入和显示文案统一为数字加技能", () => {
   assert.equal(plans.skillCountInputValue("4技能"), 4);
-  assert.equal(plans.skillPlanText(4), "4技");
-  assert.equal(plans.skillPlanText("3"), "3技");
-  assert.equal(plans.skillPlanText("4技能"), "4技");
+  assert.equal(plans.skillPlanText(4), "4技能");
+  assert.equal(plans.skillPlanText("3"), "3技能");
+  assert.equal(plans.skillPlanText("4技能"), "4技能");
   assert.equal(plans.skillPlanText(""), "");
   assert.equal(plans.skillPlanText("新方案"), "");
 });
