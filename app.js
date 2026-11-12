@@ -681,6 +681,7 @@
       removeButton.className = "danger";
       removeButton.textContent = "删除";
       removeButton.addEventListener("click", function () {
+        if (!confirmDelete("确定删除这条摆摊价格吗？")) return;
         state.stallPriceDrafts.splice(index, 1);
         if (!state.stallPriceDrafts.length) {
           state.stallPriceDrafts.push({ item: "", unitPrice: null });
@@ -922,6 +923,7 @@
       removeButton.className = "danger";
       removeButton.textContent = "删除";
       removeButton.addEventListener("click", function () {
+        if (!confirmDelete("确定删除这条装备记录吗？")) return;
         state.petEquipmentDeliveryRecords = state.petEquipmentDeliveryRecords.filter(
           function (item) { return item !== record; },
         );
@@ -1035,6 +1037,7 @@
       removeButton.className = "danger";
       removeButton.textContent = "删除";
       removeButton.addEventListener("click", function () {
+        if (!confirmDelete("确定删除这条炼妖记录吗？")) return;
         state.fusionDeliveryRecords = state.fusionDeliveryRecords.filter(
           function (item) { return item !== record; },
         );
@@ -1841,6 +1844,7 @@
       removeButton.className = "danger";
       removeButton.textContent = "删除";
       removeButton.addEventListener("click", function () {
+        if (!confirmDelete("确定删除这条技能档吗？")) return;
         record.skillTiers = record.skillTiers.filter(
           function (item) { return item !== tier; },
         );
@@ -1908,6 +1912,7 @@
       removeButton.className = "danger";
       removeButton.textContent = "删除宝宝";
       removeButton.addEventListener("click", function () {
+        if (!confirmDelete("确定删除这只宝宝吗？")) return;
         state.petMarketRecords = state.petMarketRecords.filter(
           function (item) { return item !== record; },
         );
@@ -2121,6 +2126,7 @@
     removeButton.className = "danger";
     removeButton.textContent = "删除";
     removeButton.addEventListener("click", function () {
+      if (!confirmDelete("确定删除这个机会计划吗？")) return;
       var deletedIndex = state.opportunities.findIndex(function (item) {
         return item.id === opportunity.id;
       });
@@ -2408,6 +2414,10 @@
   function bindClick(elementId, listener) {
     var button = document.getElementById(elementId);
     if (button) button.addEventListener("click", listener);
+  }
+
+  function confirmDelete(message) {
+    return window.confirm(message || "确定删除吗？删除后无法恢复。");
   }
 
   bindClick("pet-equipment-add-character", function () {
