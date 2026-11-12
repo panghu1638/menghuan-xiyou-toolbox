@@ -20,29 +20,36 @@ test("内置宝宝装备价格覆盖截图关键数据", () => {
   );
 });
 
-test("内置三眼九眼价格覆盖截图关键数据", () => {
+test("内置三眼九眼天珠价格默认留空", () => {
   assert.equal(prices.defaultEyePriceRecords.length, 144);
   assert.deepEqual(
     [...new Set(prices.defaultEyePriceRecords.map((record) => record.level))],
     [115, 125, 105],
   );
-  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 105, "三眼", 93), {
+  assert.deepEqual(
+    [...new Set(prices.defaultEyePriceRecords.map((record) => record.type))],
+    ["三眼天珠", "九眼天珠"],
+  );
+  assert.ok(
+    prices.defaultEyePriceRecords.every((record) => record.priceWan === null),
+  );
+  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 105, "三眼天珠", 93), {
     level: 105,
-    type: "三眼",
+    type: "三眼天珠",
     power: 93,
-    priceWan: 33,
+    priceWan: null,
   });
-  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 115, "九眼", 98), {
+  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 115, "九眼天珠", 98), {
     level: 115,
-    type: "九眼",
+    type: "九眼天珠",
     power: 98,
-    priceWan: 350,
+    priceWan: null,
   });
-  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 125, "九眼", 99), {
+  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 125, "九眼天珠", 99), {
     level: 125,
-    type: "九眼",
+    type: "九眼天珠",
     power: 99,
-    priceWan: 950,
+    priceWan: null,
   });
   assert.deepEqual(prices.defaultEyeNotes, [
     { source: "105三九眼", label: "40–50", price: 18.8 },

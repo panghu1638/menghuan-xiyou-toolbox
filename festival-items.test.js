@@ -27,7 +27,7 @@ test("元宵不折算人民币，珍经按当前金价折算", () => {
 });
 
 test("元宵固定六类，只保留价格输入", async () => {
-  const page = await readFile(new URL("./festival.html", import.meta.url), "utf8");
+  const page = await readFile(new URL("./market.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
 
   assert.doesNotMatch(page, /id="add-yuanxiao-record"/);

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>炼妖出货时间</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>炼妖出货时间</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <div class="nav-group">
+          <span class="nav-group-label">价格行情</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./index.html">差价计算</a>
+            <a class="nav-button" href="./market.html">区内行情</a>
+            <a class="nav-button" href="./pets.html">召唤兽行情</a>
+            <a class="nav-button" href="./equipment.html">宝宝装备</a>
+            <a class="nav-button" href="./eyes.html">三眼九眼</a>
+            <a class="nav-button" href="./stones.html">灵石合成</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-time">
+          <span class="nav-group-label">出货时间</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./floors.html">地板出货时间</a>
+            <a class="nav-button" href="./equipment-times.html">宠装出货</a>
+            <a class="nav-button active" href="./fusion-times.html" aria-current="page">炼妖出货</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="reference-panel pet-equipment-time-panel" aria-labelledby="fusion-time-title">
+        <div>
+          <h2 id="fusion-time-title">炼妖记录</h2>
+          <p>角色名复用“宠装出货”页的角色列表；先在那里添加角色，再在这里新增炼妖记录。</p>
+        </div>
+        <div class="pet-equipment-time-actions">
+          <button id="fusion-add-record" type="button" class="primary">新增炼妖记录</button>
+        </div>
+        <div class="reference-table-wrap pet-equipment-time-table-wrap">
+          <table class="pet-equipment-time-table fusion-time-table">
+            <thead>
+              <tr>
+                <th>角色</th>
+                <th>胚子组合</th>
+                <th>炼妖结果</th>
+                <th>出货时间</th>
+                <th>梦幻时辰</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="fusion-time-records"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>炼妖记录和出货时间仅保存在本地浏览器；时间格式与地板出货时间一致。梦幻时辰按子时到亥时30分钟一轮自动对应。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./opportunity-plans.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./pet-equipment-times.js"></script>
+    <script src="./pet-fusion-times.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./pet-market.js"></script>
+    <script src="./craft-prices.js"></script>
+    <script src="./data-backup.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

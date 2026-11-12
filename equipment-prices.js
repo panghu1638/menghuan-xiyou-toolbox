@@ -15,38 +15,12 @@
   };
 
   var eyeSpecifications = {
-    "115三眼": {
-      80: null, 81: null, 82: null, 83: null, 84: null, 85: null, 86: null, 87: null,
-      88: null, 89: null, 90: null, 91: null, 92: null, 93: null, 94: null, 95: 100,
-      96: 88, 97: 99, 98: 110, 99: 130, 100: 150,
-    },
-    "115九眼": {
-      80: 100, 81: 110, 82: 120, 83: 130, 84: 140, 85: 150, 86: 160, 87: 170,
-      88: 180, 89: 190, 90: 200, 91: 210, 92: 220, 93: 230, 94: 240, 95: 250,
-      96: 260, 97: 268, 98: 350, 99: 399, 100: 599,
-    },
-    "125三眼": {
-      80: 100, 81: 110, 82: 120, 83: 130, 84: 140, 85: 150, 86: 160, 87: 170,
-      88: 180, 89: 190, 90: 199, 91: 220, 92: 240, 93: 250, 94: 260, 95: 280,
-      96: 299, 97: null, 98: 340, 99: 360,
-    },
-    "125九眼": {
-      80: 450, 81: 480, 82: 500, 83: 530, 84: null, 85: null, 86: 450, 87: 460,
-      88: 470, 89: 480, 90: 500, 91: 555, 92: 580, 93: 600, 94: 620, 95: 650,
-      96: 695, 97: 799, 98: 899, 99: 950,
-    },
-    "105三眼": {
-      70: null, 71: null, 72: null, 73: null, 74: null, 75: null, 76: null, 77: null,
-      78: null, 79: null, 80: null, 81: null, 82: null, 83: null, 84: null, 85: null,
-      86: null, 87: null, 88: 28, 89: 28, 90: null, 91: 31, 92: null, 93: 33, 94: null,
-      95: null, 96: null, 97: null, 98: null, 99: null, 100: null,
-    },
-    "105九眼": {
-      70: 45, 71: 45, 72: 45, 73: 45, 74: 45, 75: 45, 76: 45, 77: 45, 78: 45, 79: 45,
-      80: 55, 81: 55, 82: 55, 83: 55, 84: 55, 85: 55, 86: 55, 87: 55, 88: 55, 89: 55,
-      90: 90, 91: 90, 92: 90, 93: 95, 94: 95, 95: 100, 96: 110, 97: 120, 98: 130,
-      99: 140, 100: 160,
-    },
+    "115三眼天珠": Array.from({ length: 21 }, (_, index) => 80 + index),
+    "115九眼天珠": Array.from({ length: 21 }, (_, index) => 80 + index),
+    "125三眼天珠": Array.from({ length: 20 }, (_, index) => 80 + index),
+    "125九眼天珠": Array.from({ length: 20 }, (_, index) => 80 + index),
+    "105三眼天珠": Array.from({ length: 31 }, (_, index) => 70 + index),
+    "105九眼天珠": Array.from({ length: 31 }, (_, index) => 70 + index),
   };
 
   function createEquipmentRecords() {
@@ -67,12 +41,12 @@
     return Object.entries(eyeSpecifications).flatMap(function ([name, powers]) {
       var level = Number(name.slice(0, 3));
       var type = name.slice(3);
-      return Object.entries(powers).map(function ([power, price]) {
+      return powers.map(function (power) {
         return {
           level: level,
           type: type,
           power: Number(power),
-          priceWan: price,
+          priceWan: null,
         };
       });
     });

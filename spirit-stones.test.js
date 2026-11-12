@@ -27,6 +27,120 @@ test("星辉石和五色石使用独立倍率", () => {
   assert.equal(stones.calculateStonePrice("五色", 42.5, 10), 101065);
 });
 
+test("灵饰分解按星辉石等级折算并计算保本收购价", () => {
+  const result = stones.calculateLingShiBreakEven({
+    stoneCount: 4,
+    stoneLevel: 1,
+    levelOnePriceWan: 14.5,
+    symbolCount: 4,
+    symbolPriceWan: 0.1,
+  });
+  assert.equal(result.equivalentCount, 4);
+  assert.equal(result.grossWan, 58);
+  assert.equal(result.symbolCostWan, 0.4);
+  assert.equal(result.maxCostWan, 57.6);
+
+  const levelTwo = stones.calculateLingShiBreakEven({
+    stoneCount: 3,
+    stoneLevel: 2,
+    levelOnePriceWan: 14.5,
+    symbolCount: 8,
+    symbolPriceWan: 0.1,
+  });
+  assert.equal(levelTwo.equivalentCount, 9);
+  assert.equal(levelTwo.grossWan, 130.5);
+  assert.equal(levelTwo.symbolCostWan, 0.8);
+  assert.equal(levelTwo.maxCostWan, 129.7);
+
+  assert.equal(stones.calculateLingShiBreakEven({
+    stoneCount: 0,
+    stoneLevel: 1,
+    levelOnePriceWan: 14.5,
+    symbolCount: 4,
+    symbolPriceWan: 0.1,
+  }), null);
+  assert.equal(stones.calculateLingShiBreakEven({
+    stoneCount: 1,
+    stoneLevel: 11,
+    levelOnePriceWan: 14.5,
+    symbolCount: 4,
+    symbolPriceWan: 0.1,
+  }), null);
+});
+
+test("灵饰分解默认覆盖60/80/100级", () => {
+  assert.deepEqual(stones.defaultLingShiDecompose.records, [
+    { level: 60, stoneLevel: 1, stoneCount: 4, symbolCount: 4 },
+    { level: 80, stoneLevel: 2, stoneCount: 2, symbolCount: 6 },
+    { level: 100, stoneLevel: 2, stoneCount: 3, symbolCount: 8 },
+  ]);
+  assert.equal(stones.defaultLingShiDecompose.levelOnePriceWan, 14.5);
+  assert.equal(stones.defaultDecomposeSymbolPriceWan, 0.1);
+});
+
+test("上古玉魄按3个1级五色灵尘计算保本收购价", () => {
+  const result = stones.calculateYuPoBreakEven({
+    dustPriceWan: 40,
+    symbolPriceWan: 0.1,
+  });
+  assert.equal(result.dustCount, 3);
+  assert.equal(result.symbolCount, 6);
+  assert.equal(result.dustRevenueWan, 120);
+  assert.equal(result.symbolCostWan, 0.6);
+  assert.equal(result.maxCostWan, 119.4);
+
+  assert.equal(stones.calculateYuPoBreakEven({
+    dustPriceWan: 0,
+    symbolPriceWan: 0.1,
+  }), null);
+  assert.equal(stones.calculateYuPoBreakEven({
+    dustPriceWan: 40,
+    symbolPriceWan: -0.1,
+  }), null);
+});
+
+test("上古玉魄默认内置6个分解符", () => {
+  assert.equal(stones.defaultYuPoDecompose.dustCount, 3);
+  assert.equal(stones.defaultYuPoDecompose.symbolCount, 6);
+  assert.equal(stones.defaultDecomposeSymbolPriceWan, 0.1);
+});
+
+test("装备吸附石分解按数量扣分解符计算保本收购价", () => {
+  const result = stones.calculateEquipmentAdsorbBreakEven({
+    adsorbCount: 3,
+    symbolCount: 6,
+    adsorbPriceWan: 5,
+    symbolPriceWan: 0.1,
+  });
+  assert.equal(result.adsorbRevenueWan, 15);
+  assert.equal(result.symbolCostWan, 0.6);
+  assert.equal(result.maxCostWan, 14.4);
+
+  assert.equal(stones.calculateEquipmentAdsorbBreakEven({
+    adsorbCount: 0,
+    symbolCount: 6,
+    adsorbPriceWan: 5,
+    symbolPriceWan: 0.1,
+  }), null);
+  assert.equal(stones.calculateEquipmentAdsorbBreakEven({
+    adsorbCount: 3,
+    symbolCount: 6,
+    adsorbPriceWan: 5,
+    symbolPriceWan: -0.1,
+  }), null);
+});
+
+test("装备吸附石分解默认覆盖100到140级", () => {
+  assert.equal(stones.defaultEquipmentAdsorb.adsorbPriceWan, 5);
+  assert.deepEqual(stones.defaultEquipmentAdsorb.records, [
+    { level: 100, adsorbCount: 3, symbolCount: 6 },
+    { level: 110, adsorbCount: 3, symbolCount: 7 },
+    { level: 120, adsorbCount: 3, symbolCount: 12 },
+    { level: 130, adsorbCount: 4, symbolCount: 16 },
+    { level: 140, adsorbCount: 4, symbolCount: 23 },
+  ]);
+});
+
 test("宝石折算人民币并扣除藏宝阁手续费", () => {
   const result = stones.calculateGemRmbProceeds(100, 7.2, 0.05, 1000);
   assert.ok(Math.abs(result.rmb - 7.2) < 0.001);
@@ -65,4 +179,45 @@ test("九级以上精魄灵石和全部二梯队宝石显示人民币到手", as
   assert.match(app, /table\.dataset\.rmbFromLevel = String\(group\.rmbFromLevel\)/);
   assert.match(app, /level >= Number\(table\.dataset\.rmbFromLevel\)/);
   assert.match(app, /level >= group\.rmbFromLevel/);
+});
+
+test("灵石页接入灵饰分解保本收购", async () => {
+  const [app, page] = await Promise.all([
+    readFile(new URL("./app.js", import.meta.url), "utf8"),
+    readFile(new URL("./stones.html", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /id="ling-shi-decompose-table"/);
+  assert.match(app, /renderLingShiDecompose\(\)/);
+  assert.match(app, /lingShiDecompose/);
+  assert.match(app, /decompose-symbol-price/);
+  assert.match(app, /symbolCount/);
+  assert.match(app, /symbolPriceWan/);
+  assert.match(app, /decomposeSymbolPriceWan/);
+  assert.doesNotMatch(page, /id="adsorb-symbol-price"/);
+  assert.doesNotMatch(page, /id="yu-po-cost"/);
+});
+
+test("灵石页接入上古玉魄分解保本收购", async () => {
+  const [app, page] = await Promise.all([
+    readFile(new URL("./app.js", import.meta.url), "utf8"),
+    readFile(new URL("./stones.html", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /id="yu-po-decompose-result"/);
+  assert.match(page, /最低成本价/);
+  assert.match(app, /renderYuPoDecompose\(\)/);
+  assert.match(app, /yuPoDecompose/);
+  assert.doesNotMatch(app, /yuPoDecompose\.decomposeCostWan/);
+});
+
+test("灵石页接入装备吸附石分解保本收购", async () => {
+  const [app, page] = await Promise.all([
+    readFile(new URL("./app.js", import.meta.url), "utf8"),
+    readFile(new URL("./stones.html", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /id="equipment-adsorb-table"/);
+  assert.match(app, /renderEquipmentAdsorb\(\)/);
+  assert.match(app, /equipmentAdsorb/);
 });

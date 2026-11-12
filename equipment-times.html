@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>宝宝装备出货时间</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead compact">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>宝宝装备出货时间</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <div class="nav-group">
+          <span class="nav-group-label">价格行情</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./index.html">差价计算</a>
+            <a class="nav-button" href="./market.html">区内行情</a>
+            <a class="nav-button" href="./pets.html">召唤兽行情</a>
+            <a class="nav-button" href="./equipment.html">宝宝装备</a>
+            <a class="nav-button" href="./eyes.html">三眼九眼</a>
+            <a class="nav-button" href="./stones.html">灵石合成</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-time">
+          <span class="nav-group-label">出货时间</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./floors.html">地板出货时间</a>
+            <a class="nav-button active" href="./equipment-times.html" aria-current="page">宠装出货</a>
+            <a class="nav-button" href="./fusion-times.html">炼妖出货</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="reference-panel pet-equipment-time-panel" aria-labelledby="pet-equipment-time-title">
+        <div>
+          <h2 id="pet-equipment-time-title">装备记录</h2>
+          <p>先在顶部添加角色，再新增装备记录；填写装备部位、伤害和属性，输入时间会自动补上当天日期。</p>
+        </div>
+        <div class="pet-equipment-time-actions">
+          <label>
+            <span>新增角色</span>
+            <input id="pet-equipment-new-character" type="text" placeholder="角色名" />
+          </label>
+          <button id="pet-equipment-add-character" type="button">添加角色</button>
+          <button id="pet-equipment-add-record" type="button" class="primary">新增装备记录</button>
+        </div>
+        <div class="reference-table-wrap pet-equipment-time-table-wrap">
+          <table class="pet-equipment-time-table">
+            <thead>
+              <tr>
+                <th>角色</th>
+                <th>装备部位</th>
+                <th>伤害</th>
+                <th>属性</th>
+                <th>出货时间</th>
+                <th>梦幻时辰</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="pet-equipment-time-records"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>宠装记录和出货时间仅保存在本地浏览器；时间格式与地板出货时间一致。梦幻时辰按子时到亥时30分钟一轮自动对应。</p>
+    </footer>
+
+    <script src="./calculator.js"></script>
+    <script src="./opportunity-plans.js"></script>
+    <script src="./gold-price-history.js"></script>
+    <script src="./stall-price-history.js"></script>
+    <script src="./floor-market.js"></script>
+    <script src="./equipment-prices.js"></script>
+    <script src="./pet-equipment-times.js"></script>
+    <script src="./pet-fusion-times.js"></script>
+    <script src="./spirit-stones.js"></script>
+    <script src="./festival-items.js"></script>
+    <script src="./pet-market.js"></script>
+    <script src="./craft-prices.js"></script>
+    <script src="./data-backup.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

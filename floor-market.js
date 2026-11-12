@@ -52,6 +52,84 @@
     };
   }
 
+  function normalizeSaleTimeSeparators(value) {
+    const text = typeof value === "string" ? value.trim() : "";
+    if (!text) return "";
+
+    const normalized = text
+      .replace(/[、，,;；/／\r\n\t]+/g, "、")
+      .replace(/[ \u3000]+/g, "、")
+      .replace(/(\d{1,2}月\d{1,2}日)、/g, "$1 ")
+      .replace(/(\d{1,2}月\d{1,2}日)(?=\d)/g, "$1 ")
+      .replace(/、+/g, "、")
+      .replace(/^[、\s]+|[、\s]+$/g, "");
+
+    return normalized ? normalized.replace(/、\s*/g, "、 ") : "";
+  }
+
+  function formatSaleTimes(value, now) {
+    const spaced = normalizeSaleTimeSeparators(value);
+    if (!spaced) return "";
+
+    const current = now instanceof Date ? now : new Date();
+    if (/\d{1,2}月\d{1,2}日/.test(spaced) || !/\d/.test(spaced)) {
+      return spaced;
+    }
+
+    return current.getMonth() + 1 + "月" + current.getDate() + "日 " + spaced;
+  }
+
+  function stripSaleTimeDates(value) {
+    const text = typeof value === "string" ? value.trim() : "";
+    if (!text) return "";
+
+    return normalizeSaleTimeSeparators(
+      text.replace(/\d{1,2}月\d{1,2}日/g, " "),
+    );
+  }
+
+  const shichenNames = [
+    "子时",
+    "丑时",
+    "寅时",
+    "卯时",
+    "辰时",
+    "巳时",
+    "午时",
+    "未时",
+    "申时",
+    "酉时",
+    "戌时",
+    "亥时",
+  ];
+
+  function shichenFromDeliveryTime(value) {
+    var timeMatches = String(value || "").trim().match(/\d{1,2}[.：:]\d{1,2}/g) || [];
+    if (!timeMatches.length) return "—";
+
+    return timeMatches.map(function (timeMatch) {
+      var timeParts = timeMatch.split(/[.：:]/).map(Number);
+      var hour = timeParts[0];
+      var minute = timeParts[1];
+      if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return "—";
+
+      var minuteInCycle = (hour * 60 + minute) % 30;
+      return shichenNames[Math.floor(minuteInCycle / 2.5)];
+    }).join("、");
+  }
+
+  function migrateFloorRecordSaleTimes(records, now) {
+    if (!Array.isArray(records)) return records;
+
+    return records.map(function (record) {
+      if (!record || typeof record !== "object") return record;
+      return Object.assign({}, record, {
+        saleTimes: stripSaleTimeDates(record.saleTimes),
+        deliveryTimes: formatSaleTimes(record.deliveryTimes, now),
+      });
+    });
+  }
+
   function migrateFloorRecordNames(records) {
     return records
       .filter(function (record) {
@@ -68,6 +146,10 @@
   globalThis.XYQFloorMarket = {
     createFloorRecord,
     defaultFloorRecords: structuredClone(records),
+    formatSaleTimes,
     migrateFloorRecordNames,
+    migrateFloorRecordSaleTimes,
+    shichenFromDeliveryTime,
+    stripSaleTimeDates,
   };
 })();

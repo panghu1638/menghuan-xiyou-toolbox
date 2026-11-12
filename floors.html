@@ -3,38 +3,47 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>地板行情</title>
+    <title>地板出货时间</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="masthead compact">
       <div>
         <p class="subtitle">傲来国 · 神笔马良</p>
-        <h1>地板行情</h1>
+        <h1>地板出货时间</h1>
       </div>
       <nav class="page-nav" aria-label="页面导航">
-        <a class="nav-button" href="./index.html">差价计算</a>
-        <a class="nav-button" href="./market.html">区内行情</a>
-        <a class="nav-button active" href="./floors.html" aria-current="page">地板行情</a>
-        <a class="nav-button" href="./equipment.html">宝宝装备</a>
-        <a class="nav-button" href="./eyes.html">三眼九眼</a>
-        <a class="nav-button" href="./stones.html">灵石合成</a>
-        <a class="nav-button" href="./festival.html">元宵珍经</a>
+        <div class="nav-group">
+          <span class="nav-group-label">价格行情</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./index.html">差价计算</a>
+            <a class="nav-button" href="./market.html">区内行情</a>
+            <a class="nav-button" href="./pets.html">召唤兽行情</a>
+            <a class="nav-button" href="./equipment.html">宝宝装备</a>
+            <a class="nav-button" href="./eyes.html">三眼九眼</a>
+            <a class="nav-button" href="./stones.html">灵石合成</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-time">
+          <span class="nav-group-label">出货时间</span>
+          <div class="nav-links">
+            <a class="nav-button active" href="./floors.html" aria-current="page">地板出货时间</a>
+            <a class="nav-button" href="./equipment-times.html">宠装出货</a>
+            <a class="nav-button" href="./fusion-times.html">炼妖出货</a>
+          </div>
+        </div>
       </nav>
     </header>
 
     <main>
-      <section class="floor-panel" aria-labelledby="floor-title">
-        <div>
-          <h2 id="floor-title">地板价格以及出货时间</h2>
-          <p>可直接修改，保存后用于日常查阅。</p>
-        </div>
+      <section class="floor-panel">
         <div class="floor-table-wrap">
           <table>
             <thead>
               <tr>
                 <th>地板名称</th>
                 <th>价格（万两）</th>
+                <th>旧数据参考</th>
                 <th>出货时间</th>
               </tr>
             </thead>
@@ -54,8 +63,13 @@
     <script src="./stall-price-history.js"></script>
     <script src="./floor-market.js"></script>
     <script src="./equipment-prices.js"></script>
+    <script src="./pet-equipment-times.js"></script>
+    <script src="./pet-fusion-times.js"></script>
     <script src="./spirit-stones.js"></script>
     <script src="./festival-items.js"></script>
+    <script src="./pet-market.js"></script>
+    <script src="./craft-prices.js"></script>
+    <script src="./data-backup.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

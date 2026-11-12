@@ -13,13 +13,25 @@
         <h1>灵石合成</h1>
       </div>
       <nav class="page-nav" aria-label="页面导航">
-        <a class="nav-button" href="./index.html">差价计算</a>
-        <a class="nav-button" href="./market.html">区内行情</a>
-        <a class="nav-button" href="./floors.html">地板行情</a>
-        <a class="nav-button" href="./equipment.html">宝宝装备</a>
-        <a class="nav-button" href="./eyes.html">三眼九眼</a>
-        <a class="nav-button active" href="./stones.html" aria-current="page">灵石合成</a>
-        <a class="nav-button" href="./festival.html">元宵珍经</a>
+        <div class="nav-group">
+          <span class="nav-group-label">价格行情</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./index.html">差价计算</a>
+            <a class="nav-button" href="./market.html">区内行情</a>
+            <a class="nav-button" href="./pets.html">召唤兽行情</a>
+            <a class="nav-button" href="./equipment.html">宝宝装备</a>
+            <a class="nav-button" href="./eyes.html">三眼九眼</a>
+            <a class="nav-button active" href="./stones.html" aria-current="page">灵石合成</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-time">
+          <span class="nav-group-label">出货时间</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./floors.html">地板出货时间</a>
+            <a class="nav-button" href="./equipment-times.html">宠装出货</a>
+            <a class="nav-button" href="./fusion-times.html">炼妖出货</a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -30,11 +42,73 @@
           <p id="stone-price-summary">填写1级价格后，2–10级按合成规则自动更新；宝石栏和9级以上精魄灵石会显示扣手续费后的人民币到手。</p>
         </div>
         <div id="stone-tier-tables" class="stone-tier-stack"></div>
+        <article class="reference-card stone-tier-card">
+          <h3>灵饰分解保本收购</h3>
+          <div class="ling-shi-decompose-settings">
+            <label>
+              1级星辉石价（万两）
+              <input id="decompose-star-price" />
+            </label>
+            <label>
+              分解符价（万两/个，全页共用）
+              <input id="decompose-symbol-price" />
+            </label>
+          </div>
+          <div class="reference-table-wrap">
+            <table id="ling-shi-decompose-table">
+              <thead>
+                <tr>
+                  <th scope="col">灵饰等级</th>
+                  <th scope="col">星辉石等级</th>
+                  <th scope="col">数量</th>
+                  <th scope="col">折1级</th>
+                  <th scope="col">分解符</th>
+                  <th scope="col">最高收购价</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="reference-card stone-tier-card">
+          <h3>上古玉魄分解保本收购</h3>
+          <div class="ling-shi-decompose-settings">
+            <label>
+              1级五色灵尘价（万两）
+              <input id="yu-po-dust-price" />
+            </label>
+          </div>
+          <p id="yu-po-decompose-result" class="yu-po-decompose-result"></p>
+          <p class="yu-po-decompose-note">可交易上古玉魄固定出 3 个 1 级五色灵尘；最低成本价 = 6 × 共用分解符价，体力成本未计。</p>
+        </article>
+        <article class="reference-card stone-tier-card">
+          <h3>装备分解吸附石收购</h3>
+          <div class="ling-shi-decompose-settings">
+            <label>
+              吸附石价（万两/个）
+              <input id="adsorb-price" />
+            </label>
+          </div>
+          <div class="reference-table-wrap">
+            <table id="equipment-adsorb-table">
+              <thead>
+                <tr>
+                  <th scope="col">装备等级</th>
+                  <th scope="col">吸附石数量</th>
+                  <th scope="col">分解符</th>
+                  <th scope="col">吸附石收入</th>
+                  <th scope="col">最高收购价</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </article>
       </section>
     </main>
 
     <footer>
-      <p>精魄灵石按专用倍率推导；普通宝石按 1–10 级合成数量推导；星辉石和五色石使用独立倍率；不包含法防神秘石。宝石和9级以上精魄灵石到手 = 折算人民币 − 藏宝阁手续费。</p>
+      <p>精魄灵石按专用倍率推导；普通宝石按 1–10 级合成数量推导；星辉石和五色石使用独立倍率；不包含法防神秘石。宝石和9级以上精魄灵石到手 = 折算人民币 − 藏宝阁手续费。分解符价全页共用：灵饰最高收购价 = 出石数量 × 星辉石等级折算倍率 × 1级星辉石价 − 分解符数量 × 分解符价；上古玉魄最高收购价 = 3 × 1级五色灵尘价 − 6 × 分解符价；装备最高收购价 = 吸附石数量 × 吸附石价 − 分解符数量 × 分解符价。</p>
     </footer>
 
     <script src="./calculator.js"></script>
@@ -43,8 +117,13 @@
     <script src="./stall-price-history.js"></script>
     <script src="./floor-market.js"></script>
     <script src="./equipment-prices.js"></script>
+    <script src="./pet-equipment-times.js"></script>
+    <script src="./pet-fusion-times.js"></script>
     <script src="./spirit-stones.js"></script>
     <script src="./festival-items.js"></script>
+    <script src="./pet-market.js"></script>
+    <script src="./craft-prices.js"></script>
+    <script src="./data-backup.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
