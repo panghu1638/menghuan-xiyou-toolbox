@@ -11,6 +11,10 @@ test("行情页提供导出备份和导入恢复", async () => {
 
   assert.match(page, /id="export-data"/);
   assert.match(page, /id="import-data"/);
+  assert.ok(
+    page.indexOf('id="export-data"') > page.indexOf('id="craft-price-records"'),
+    "导出备份等操作按钮应位于页面最底部",
+  );
   assert.match(app, /bindClick\("export-data"/);
   assert.match(app, /bindClick\("import-data"/);
   assert.match(app, /XYQDataBackup\.validateBackup/);
