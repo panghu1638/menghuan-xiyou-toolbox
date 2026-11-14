@@ -184,6 +184,8 @@
         { level: 60, stoneLevel: 1, stoneCount: 4, symbolCount: 4 },
         { level: 80, stoneLevel: 2, stoneCount: 2, symbolCount: 6 },
         { level: 100, stoneLevel: 2, stoneCount: 3, symbolCount: 8 },
+        { level: 120, stoneLevel: 3, stoneCount: 2, symbolCount: 10 },
+        { level: 140, stoneLevel: 3, stoneCount: 3, symbolCount: 12 },
       ],
     },
     defaultDecomposeSymbolPriceWan: 0.1,

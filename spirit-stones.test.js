@@ -68,11 +68,13 @@ test("灵饰分解按星辉石等级折算并计算保本收购价", () => {
   }), null);
 });
 
-test("灵饰分解默认覆盖60/80/100级", () => {
+test("灵饰分解默认覆盖60/80/100/120/140级", () => {
   assert.deepEqual(stones.defaultLingShiDecompose.records, [
     { level: 60, stoneLevel: 1, stoneCount: 4, symbolCount: 4 },
     { level: 80, stoneLevel: 2, stoneCount: 2, symbolCount: 6 },
     { level: 100, stoneLevel: 2, stoneCount: 3, symbolCount: 8 },
+    { level: 120, stoneLevel: 3, stoneCount: 2, symbolCount: 10 },
+    { level: 140, stoneLevel: 3, stoneCount: 3, symbolCount: 12 },
   ]);
   assert.equal(stones.defaultLingShiDecompose.levelOnePriceWan, 14.5);
   assert.equal(stones.defaultDecomposeSymbolPriceWan, 0.1);
@@ -181,43 +183,53 @@ test("九级以上精魄灵石和全部二梯队宝石显示人民币到手", as
   assert.match(app, /level >= group\.rmbFromLevel/);
 });
 
-test("灵石页接入灵饰分解保本收购", async () => {
-  const [app, page] = await Promise.all([
+test("区内行情页接入灵饰分解保本收购", async () => {
+  const [app, market, stones] = await Promise.all([
     readFile(new URL("./app.js", import.meta.url), "utf8"),
+    readFile(new URL("./market.html", import.meta.url), "utf8"),
     readFile(new URL("./stones.html", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /id="ling-shi-decompose-table"/);
+  assert.match(market, /id="ling-shi-decompose-table"/);
+  assert.match(market, /id="decompose-star-price"/);
+  assert.match(market, /id="decompose-symbol-price"/);
   assert.match(app, /renderLingShiDecompose\(\)/);
   assert.match(app, /lingShiDecompose/);
   assert.match(app, /decompose-symbol-price/);
   assert.match(app, /symbolCount/);
   assert.match(app, /symbolPriceWan/);
   assert.match(app, /decomposeSymbolPriceWan/);
-  assert.doesNotMatch(page, /id="adsorb-symbol-price"/);
-  assert.doesNotMatch(page, /id="yu-po-cost"/);
+  assert.doesNotMatch(market, /id="adsorb-symbol-price"/);
+  assert.doesNotMatch(market, /id="yu-po-cost"/);
+  assert.doesNotMatch(stones, /id="ling-shi-decompose-table"/);
+  assert.doesNotMatch(stones, /id="decompose-symbol-price"/);
 });
 
-test("灵石页接入上古玉魄分解保本收购", async () => {
-  const [app, page] = await Promise.all([
+test("区内行情页接入上古玉魄分解保本收购", async () => {
+  const [app, market, stones] = await Promise.all([
     readFile(new URL("./app.js", import.meta.url), "utf8"),
+    readFile(new URL("./market.html", import.meta.url), "utf8"),
     readFile(new URL("./stones.html", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /id="yu-po-decompose-result"/);
-  assert.match(page, /最低成本价/);
+  assert.match(market, /id="yu-po-decompose-result"/);
+  assert.match(market, /最低成本价/);
+  assert.match(market, /id="decompose-symbol-price"/);
   assert.match(app, /renderYuPoDecompose\(\)/);
   assert.match(app, /yuPoDecompose/);
   assert.doesNotMatch(app, /yuPoDecompose\.decomposeCostWan/);
+  assert.doesNotMatch(stones, /id="yu-po-decompose-result"/);
 });
 
-test("灵石页接入装备吸附石分解保本收购", async () => {
-  const [app, page] = await Promise.all([
+test("区内行情页接入装备吸附石分解保本收购", async () => {
+  const [app, market, stones] = await Promise.all([
     readFile(new URL("./app.js", import.meta.url), "utf8"),
+    readFile(new URL("./market.html", import.meta.url), "utf8"),
     readFile(new URL("./stones.html", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /id="equipment-adsorb-table"/);
+  assert.match(market, /id="equipment-adsorb-table"/);
   assert.match(app, /renderEquipmentAdsorb\(\)/);
   assert.match(app, /equipmentAdsorb/);
+  assert.doesNotMatch(stones, /id="equipment-adsorb-table"/);
 });

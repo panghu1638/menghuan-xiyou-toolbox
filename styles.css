@@ -900,7 +900,31 @@ button:hover {
 }
 
 #ling-shi-decompose-table {
-  min-width: 34rem;
+  min-width: 42rem;
+}
+
+#ling-shi-decompose-table th:nth-child(1) {
+  width: 5.5rem;
+}
+
+#ling-shi-decompose-table th:nth-child(2) {
+  width: 6rem;
+}
+
+#ling-shi-decompose-table th:nth-child(3) {
+  width: 5rem;
+}
+
+#ling-shi-decompose-table th:nth-child(4) {
+  width: 4rem;
+}
+
+#ling-shi-decompose-table th:nth-child(5) {
+  width: 9rem;
+}
+
+#ling-shi-decompose-table th:nth-child(6) {
+  width: 8rem;
 }
 
 .ling-shi-symbol {
@@ -909,7 +933,27 @@ button:hover {
 }
 
 #equipment-adsorb-table {
-  min-width: 34rem;
+  min-width: 38rem;
+}
+
+#equipment-adsorb-table th:nth-child(1) {
+  width: 6rem;
+}
+
+#equipment-adsorb-table th:nth-child(2) {
+  width: 6rem;
+}
+
+#equipment-adsorb-table th:nth-child(3) {
+  width: 9rem;
+}
+
+#equipment-adsorb-table th:nth-child(4) {
+  width: 8rem;
+}
+
+#equipment-adsorb-table th:nth-child(5) {
+  width: 8rem;
 }
 
 .equipment-adsorb-symbol {
