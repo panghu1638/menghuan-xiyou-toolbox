@@ -1526,10 +1526,23 @@
       dustPriceWan: state.yuPoDecompose.dustPriceWan,
       symbolPriceWan: state.decomposeSymbolPriceWan,
     });
-    result.textContent = calculation
-      ? "最低成本价：" + XYQCalculator.formatGameCoin(calculation.symbolCostWan) +
-        " · 最高收购价：" + XYQCalculator.formatGameCoin(calculation.maxCostWan)
-      : "填写1级五色灵尘价后自动计算。";
+    if (!calculation) {
+      result.replaceChildren("填写1级五色灵尘价后自动计算。");
+      return;
+    }
+
+    result.replaceChildren();
+    var mutedCost = document.createElement("span");
+    mutedCost.className = "muted-cost";
+    mutedCost.textContent = "最低成本价：" + XYQCalculator.formatGameCoin(
+      calculation.symbolCostWan,
+    );
+    var maxCost = document.createElement("span");
+    maxCost.className = "max-cost";
+    maxCost.textContent = "最高收购价：" + XYQCalculator.formatGameCoin(
+      calculation.maxCostWan,
+    );
+    result.append(mutedCost, maxCost);
   }
 
   function renderYuPoDecompose() {

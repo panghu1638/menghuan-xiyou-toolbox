@@ -948,11 +948,29 @@ button:hover {
   margin-bottom: 0.85rem;
 }
 
+.yu-po-decompose-settings {
+  display: grid;
+  grid-template-columns: minmax(7rem, 9rem);
+  gap: 0.45rem;
+  align-items: end;
+  margin-bottom: 0.55rem;
+}
+
 .ling-shi-decompose-settings label {
   display: grid;
   gap: 0.3rem;
   color: var(--muted);
   font-size: 0.86rem;
+}
+
+.yu-po-decompose-settings label {
+  gap: 0.22rem;
+}
+
+.yu-po-decompose-settings input {
+  min-height: 2.2rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.88rem;
 }
 
 .ling-shi-decompose-settings input,
@@ -1036,10 +1054,25 @@ button:hover {
 }
 
 .yu-po-decompose-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
   margin: 0 0 0.45rem;
   color: var(--green);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.yu-po-decompose-result .muted-cost {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.yu-po-decompose-result .max-cost {
+  color: var(--green);
+  font-size: 1.45rem;
 }
 
 .yu-po-decompose-note {
