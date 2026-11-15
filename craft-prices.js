@@ -15,6 +15,13 @@
     150: 30,
     160: 30,
   };
+  var lingShiEnhanceStoneCounts = {
+    60: 5,
+    80: 9,
+    100: 13,
+    120: 17,
+    140: 21,
+  };
 
   function createCraftPriceRecords() {
     return craftCategories.flatMap(function (category) {
@@ -37,6 +44,16 @@
       numericLevel,
     )
       ? enhanceStoneCounts[numericLevel]
+      : null;
+  }
+
+  function lingShiEnhanceStoneCount(level) {
+    var numericLevel = Number(level);
+    return Object.prototype.hasOwnProperty.call(
+      lingShiEnhanceStoneCounts,
+      numericLevel,
+    )
+      ? lingShiEnhanceStoneCounts[numericLevel]
       : null;
   }
 
@@ -69,11 +86,25 @@
     return guidePrice + ironPrice + stoneCount * stonePrice;
   }
 
-  function calculateLingShiCraftCost(guidePriceWan, crystalPriceWan) {
+  function calculateLingShiCraftCost(
+    level,
+    guidePriceWan,
+    crystalPriceWan,
+    enhanceStonePriceWan,
+  ) {
+    var stoneCount = lingShiEnhanceStoneCount(level);
     var guidePrice = nonNegativePrice(guidePriceWan);
     var crystalPrice = nonNegativePrice(crystalPriceWan);
-    if (guidePrice === null || crystalPrice === null) return null;
-    return guidePrice + crystalPrice;
+    var stonePrice = nonNegativePrice(enhanceStonePriceWan);
+    if (
+      stoneCount === null ||
+      guidePrice === null ||
+      crystalPrice === null ||
+      stonePrice === null
+    ) {
+      return null;
+    }
+    return guidePrice + crystalPrice + stoneCount * stonePrice;
   }
 
   globalThis.XYQCraftPrices = {
@@ -82,6 +113,7 @@
     defaultCraftPriceRecords: createCraftPriceRecords(),
     findCraftPriceRecord,
     enhanceStoneCount,
+    lingShiEnhanceStoneCount,
     calculateEquipmentCraftCost,
     calculateLingShiCraftCost,
   };

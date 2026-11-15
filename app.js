@@ -1713,20 +1713,26 @@
           return record ? record.priceWan : null;
         }
 
-        var stoneCount = XYQCraftPrices.enhanceStoneCount(level);
+        var equipmentStoneCount = XYQCraftPrices.enhanceStoneCount(level);
         var equipmentCost = XYQCraftPrices.calculateEquipmentCraftCost(
           level,
           priceOf("打造指南书"),
           priceOf("铁"),
           state.craftEnhanceStonePriceWan,
         );
+        var lingShiStoneCount =
+          XYQCraftPrices.lingShiEnhanceStoneCount(level);
         var lingShiCost = XYQCraftPrices.calculateLingShiCraftCost(
+          level,
           priceOf("灵饰指南书"),
           priceOf("元灵晶石"),
+          state.craftEnhanceStonePriceWan,
         );
 
-        row.querySelector(".craft-enhance-stones").textContent =
-          stoneCount === null ? "—" : stoneCount + "个";
+        row.querySelector(".craft-equipment-stones").textContent =
+          equipmentStoneCount === null ? "—" : equipmentStoneCount + "个";
+        row.querySelector(".craft-ling-shi-stones").textContent =
+          lingShiStoneCount === null ? "—" : lingShiStoneCount + "个";
         row.querySelector(".craft-equipment-cost").textContent =
           equipmentCost === null
             ? "—"
@@ -1771,10 +1777,12 @@
       var levelCell = document.createElement("td");
       levelCell.textContent = level + "级";
 
-      var enhanceStoneCell = document.createElement("td");
-      enhanceStoneCell.className = "craft-enhance-stones";
+      var equipmentStoneCell = document.createElement("td");
+      equipmentStoneCell.className = "craft-equipment-stones";
       var equipmentCostCell = document.createElement("td");
       equipmentCostCell.className = "craft-equipment-cost";
+      var lingShiStoneCell = document.createElement("td");
+      lingShiStoneCell.className = "craft-ling-shi-stones";
       var lingShiCostCell = document.createElement("td");
       lingShiCostCell.className = "craft-jewelry-cost";
 
@@ -1782,10 +1790,11 @@
         levelCell,
         createCraftPriceCell("打造指南书", level),
         createCraftPriceCell("铁", level),
-        enhanceStoneCell,
+        equipmentStoneCell,
         equipmentCostCell,
         createCraftPriceCell("灵饰指南书", level),
         createCraftPriceCell("元灵晶石", level),
+        lingShiStoneCell,
         lingShiCostCell,
       );
       tbody.append(row);

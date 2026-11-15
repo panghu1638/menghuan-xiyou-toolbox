@@ -693,10 +693,11 @@ button:hover {
 }
 
 #craft-price-table {
-  min-width: 62rem;
+  min-width: 70rem;
 }
 
-.craft-enhance-stones {
+.craft-equipment-stones,
+.craft-ling-shi-stones {
   color: var(--muted);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
