@@ -6,6 +6,15 @@
     { name: "元灵晶石", levels: [60, 80, 100, 120, 140] },
   ];
   var craftLevels = [60, 80, 100, 110, 120, 130, 140, 150, 160];
+  var enhanceStoneCounts = {
+    100: 20,
+    110: 24,
+    120: 30,
+    130: 30,
+    140: 30,
+    150: 30,
+    160: 30,
+  };
 
   function createCraftPriceRecords() {
     return craftCategories.flatMap(function (category) {
@@ -23,15 +32,12 @@
 
   function enhanceStoneCount(level) {
     var numericLevel = Number(level);
-    if (
-      !Number.isInteger(numericLevel) ||
-      numericLevel < 100 ||
-      numericLevel > 160 ||
-      numericLevel % 10 !== 0
-    ) {
-      return null;
-    }
-    return numericLevel / 10;
+    return Object.prototype.hasOwnProperty.call(
+      enhanceStoneCounts,
+      numericLevel,
+    )
+      ? enhanceStoneCounts[numericLevel]
+      : null;
   }
 
   function nonNegativePrice(value) {

@@ -38,17 +38,18 @@ test("打造材料按四类和指定等级生成", () => {
   );
 });
 
-test("强化石数量按装备等级除以十", () => {
-  assert.equal(prices.enhanceStoneCount(100), 10);
-  assert.equal(prices.enhanceStoneCount(110), 11);
-  assert.equal(prices.enhanceStoneCount(160), 16);
+test("强化石数量按装备等级固定消耗", () => {
+  assert.equal(prices.enhanceStoneCount(100), 20);
+  assert.equal(prices.enhanceStoneCount(110), 24);
+  assert.equal(prices.enhanceStoneCount(120), 30);
+  assert.equal(prices.enhanceStoneCount(160), 30);
   assert.equal(prices.enhanceStoneCount(60), null);
   assert.equal(prices.enhanceStoneCount(115), null);
 });
 
 test("装备总成本包含指南书、铁和强化石", () => {
-  assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, 1.5), 145);
-  assert.equal(prices.calculateEquipmentCraftCost(160, 500, 200, 2), 732);
+  assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, 1.5), 160);
+  assert.equal(prices.calculateEquipmentCraftCost(160, 500, 200, 2), 760);
   assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, 0), 130);
   assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, null), null);
   assert.equal(prices.calculateEquipmentCraftCost(100, null, 30, 1.5), null);
