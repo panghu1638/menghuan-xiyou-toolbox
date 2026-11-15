@@ -21,10 +21,62 @@
     }) || null;
   }
 
+  function enhanceStoneCount(level) {
+    var numericLevel = Number(level);
+    if (
+      !Number.isInteger(numericLevel) ||
+      numericLevel < 100 ||
+      numericLevel > 160 ||
+      numericLevel % 10 !== 0
+    ) {
+      return null;
+    }
+    return numericLevel / 10;
+  }
+
+  function nonNegativePrice(value) {
+    var price = Number(value);
+    return value !== null && value !== undefined && value !== "" &&
+      Number.isFinite(price) && price >= 0
+      ? price
+      : null;
+  }
+
+  function calculateEquipmentCraftCost(
+    level,
+    guidePriceWan,
+    ironPriceWan,
+    enhanceStonePriceWan,
+  ) {
+    var stoneCount = enhanceStoneCount(level);
+    var guidePrice = nonNegativePrice(guidePriceWan);
+    var ironPrice = nonNegativePrice(ironPriceWan);
+    var stonePrice = nonNegativePrice(enhanceStonePriceWan);
+    if (
+      stoneCount === null ||
+      guidePrice === null ||
+      ironPrice === null ||
+      stonePrice === null
+    ) {
+      return null;
+    }
+    return guidePrice + ironPrice + stoneCount * stonePrice;
+  }
+
+  function calculateLingShiCraftCost(guidePriceWan, crystalPriceWan) {
+    var guidePrice = nonNegativePrice(guidePriceWan);
+    var crystalPrice = nonNegativePrice(crystalPriceWan);
+    if (guidePrice === null || crystalPrice === null) return null;
+    return guidePrice + crystalPrice;
+  }
+
   globalThis.XYQCraftPrices = {
     craftCategories,
     craftLevels,
     defaultCraftPriceRecords: createCraftPriceRecords(),
     findCraftPriceRecord,
+    enhanceStoneCount,
+    calculateEquipmentCraftCost,
+    calculateLingShiCraftCost,
   };
 })();

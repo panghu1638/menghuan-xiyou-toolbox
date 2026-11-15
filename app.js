@@ -43,6 +43,7 @@
     yuanxiaoRecords: structuredClone(XYQFestivalItems.defaultYuanxiaoRecords),
     zhenjingPriceWan: XYQFestivalItems.defaultZhenjingPriceWan,
     craftPriceRecords: structuredClone(XYQCraftPrices.defaultCraftPriceRecords),
+    craftEnhanceStonePriceWan: null,
     petMarketRecords: structuredClone(XYQPetMarket.defaultPetRecords),
     petMarketNameVersion: 1,
     selectedOpportunityId: 1,
@@ -319,6 +320,15 @@
           };
         },
       );
+      var savedEnhanceStonePrice = Number(saved.craftEnhanceStonePriceWan);
+      saved.craftEnhanceStonePriceWan =
+        saved.craftEnhanceStonePriceWan !== null &&
+        saved.craftEnhanceStonePriceWan !== undefined &&
+        saved.craftEnhanceStonePriceWan !== "" &&
+        Number.isFinite(savedEnhanceStonePrice) &&
+        savedEnhanceStonePrice >= 0
+          ? savedEnhanceStonePrice
+          : null;
       return saved;
     } catch (error) {
       return structuredClone(defaultState);
@@ -1669,9 +1679,89 @@
       : "元宵只记录万两价格；填写区内行情金价后，炼兽珍经可折算人民币。";
   }
 
+  function createCraftPriceCell(category, level) {
+    var record = XYQCraftPrices.findCraftPriceRecord(
+      state.craftPriceRecords,
+      category,
+      level,
+    );
+    var cell = document.createElement("td");
+    if (!record) {
+      cell.textContent = "—";
+      return cell;
+    }
+    cell.append(createPriceInput(
+      record,
+      "priceWan",
+      category + level + "级价格",
+      updateCraftPriceRows,
+    ));
+    return cell;
+  }
+
+  function updateCraftPriceRows() {
+    document
+      .querySelectorAll("#craft-price-records tr[data-level]")
+      .forEach(function (row) {
+        var level = Number(row.dataset.level);
+        function priceOf(category) {
+          var record = XYQCraftPrices.findCraftPriceRecord(
+            state.craftPriceRecords,
+            category,
+            level,
+          );
+          return record ? record.priceWan : null;
+        }
+
+        var stoneCount = XYQCraftPrices.enhanceStoneCount(level);
+        var equipmentCost = XYQCraftPrices.calculateEquipmentCraftCost(
+          level,
+          priceOf("打造指南书"),
+          priceOf("铁"),
+          state.craftEnhanceStonePriceWan,
+        );
+        var lingShiCost = XYQCraftPrices.calculateLingShiCraftCost(
+          priceOf("灵饰指南书"),
+          priceOf("元灵晶石"),
+        );
+
+        row.querySelector(".craft-enhance-stones").textContent =
+          stoneCount === null ? "—" : stoneCount + "个";
+        row.querySelector(".craft-equipment-cost").textContent =
+          equipmentCost === null
+            ? "—"
+            : XYQCalculator.formatGameCoin(equipmentCost);
+        row.querySelector(".craft-jewelry-cost").textContent =
+          lingShiCost === null
+            ? "—"
+            : XYQCalculator.formatGameCoin(lingShiCost);
+      });
+  }
+
   function renderCraftPriceMarket() {
     var tbody = document.getElementById("craft-price-records");
     if (!tbody) return;
+
+    var enhanceStonePriceInput = document.getElementById(
+      "craft-enhance-stone-price",
+    );
+    if (enhanceStonePriceInput) {
+      enhanceStonePriceInput.value = priceValue(
+        state.craftEnhanceStonePriceWan,
+      );
+      bindDecimalInput(enhanceStonePriceInput);
+      if (enhanceStonePriceInput.dataset.craftEnhanceBound !== "true") {
+        enhanceStonePriceInput.dataset.craftEnhanceBound = "true";
+        enhanceStonePriceInput.addEventListener("input", function (event) {
+          state.craftEnhanceStonePriceWan = optionalNumberFromInput(
+            event.target,
+            state.craftEnhanceStonePriceWan,
+          );
+          saveState();
+          updateCraftPriceRows();
+        });
+      }
+    }
 
     tbody.replaceChildren();
     XYQCraftPrices.craftLevels.forEach(function (level) {
@@ -1680,30 +1770,27 @@
 
       var levelCell = document.createElement("td");
       levelCell.textContent = level + "级";
-      row.append(levelCell);
 
-      XYQCraftPrices.craftCategories.forEach(function (category) {
-        var record = XYQCraftPrices.findCraftPriceRecord(
-          state.craftPriceRecords,
-          category.name,
-          level,
-        );
-        var priceCell = document.createElement("td");
-        if (!record) {
-          priceCell.textContent = "—";
-        } else {
-          priceCell.append(createPriceInput(
-            record,
-            "priceWan",
-            category.name + level + "级价格",
-            function () {},
-          ));
-        }
-        row.append(priceCell);
-      });
+      var enhanceStoneCell = document.createElement("td");
+      enhanceStoneCell.className = "craft-enhance-stones";
+      var equipmentCostCell = document.createElement("td");
+      equipmentCostCell.className = "craft-equipment-cost";
+      var lingShiCostCell = document.createElement("td");
+      lingShiCostCell.className = "craft-jewelry-cost";
 
+      row.append(
+        levelCell,
+        createCraftPriceCell("打造指南书", level),
+        createCraftPriceCell("铁", level),
+        enhanceStoneCell,
+        equipmentCostCell,
+        createCraftPriceCell("灵饰指南书", level),
+        createCraftPriceCell("元灵晶石", level),
+        lingShiCostCell,
+      );
       tbody.append(row);
     });
+    updateCraftPriceRows();
   }
 
   function updateZhenjingPrice() {

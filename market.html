@@ -198,7 +198,11 @@
       <section class="reference-panel" aria-labelledby="craft-title">
         <div>
           <h2 id="craft-title">打造与灵饰材料</h2>
-          <p>价格按“万两”填写；该等级没有的材料显示“—”。</p>
+          <p>价格按“万两”填写；装备总成本 = 打造指南书 + 铁 + 强化石（等级 ÷ 10 个）；灵饰不消耗强化石，灵饰总成本 = 灵饰指南书 + 元灵晶石。缺价显示“—”。</p>
+          <label class="craft-enhance-price">
+            强化石单价（万两/个）
+            <input id="craft-enhance-stone-price" type="text" inputmode="decimal" placeholder="空" />
+          </label>
         </div>
         <div class="reference-table-wrap wide">
           <table id="craft-price-table">
@@ -207,8 +211,11 @@
                 <th scope="col">等级</th>
                 <th scope="col">打造指南书</th>
                 <th scope="col">铁</th>
+                <th scope="col">强化石</th>
+                <th scope="col">装备总成本</th>
                 <th scope="col">灵饰指南书</th>
                 <th scope="col">元灵晶石</th>
+                <th scope="col">灵饰总成本</th>
               </tr>
             </thead>
             <tbody id="craft-price-records"></tbody>

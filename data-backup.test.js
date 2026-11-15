@@ -25,11 +25,13 @@ test("行情页提供导出备份和导入恢复", async () => {
 test("备份校验接受旧备份并补齐当前版本", () => {
   const imported = backup.validateBackup({
     serverName: "神笔马良",
+    craftEnhanceStonePriceWan: 1.2,
     opportunities: [{ id: 1 }],
   });
 
   assert.equal(imported.schemaVersion, backup.schemaVersion);
   assert.equal(imported.serverName, "神笔马良");
+  assert.equal(imported.craftEnhanceStonePriceWan, 1.2);
 });
 
 test("备份校验拒绝错误类型和未知版本", () => {
@@ -57,6 +59,13 @@ test("备份校验拒绝非法数值和文本字段", () => {
   assert.throws(
     () => backup.validateBackup({ opportunities: [], serverName: 123 }),
     /serverName/,
+  );
+  assert.throws(
+    () => backup.validateBackup({
+      opportunities: [],
+      craftEnhanceStonePriceWan: "bad",
+    }),
+    /craftEnhanceStonePriceWan/,
   );
   assert.throws(
     () => backup.validateBackup({ opportunities: [], lingShiDecompose: [] }),

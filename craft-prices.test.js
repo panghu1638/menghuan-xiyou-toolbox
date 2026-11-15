@@ -38,17 +38,47 @@ test("打造材料按四类和指定等级生成", () => {
   );
 });
 
+test("强化石数量按装备等级除以十", () => {
+  assert.equal(prices.enhanceStoneCount(100), 10);
+  assert.equal(prices.enhanceStoneCount(110), 11);
+  assert.equal(prices.enhanceStoneCount(160), 16);
+  assert.equal(prices.enhanceStoneCount(60), null);
+  assert.equal(prices.enhanceStoneCount(115), null);
+});
+
+test("装备总成本包含指南书、铁和强化石", () => {
+  assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, 1.5), 145);
+  assert.equal(prices.calculateEquipmentCraftCost(160, 500, 200, 2), 732);
+  assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, 0), 130);
+  assert.equal(prices.calculateEquipmentCraftCost(100, 100, 30, null), null);
+  assert.equal(prices.calculateEquipmentCraftCost(100, null, 30, 1.5), null);
+  assert.equal(prices.calculateEquipmentCraftCost(60, 100, 30, 1.5), null);
+});
+
+test("灵饰总成本只计指南书和元灵晶石", () => {
+  assert.equal(prices.calculateLingShiCraftCost(20, 15), 35);
+  assert.equal(prices.calculateLingShiCraftCost(0, 15), 15);
+  assert.equal(prices.calculateLingShiCraftCost(20, null), null);
+});
+
 test("打造材料等级表并入区内行情", async () => {
   const page = await readFile(new URL("./market.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
 
   assert.match(page, /id="craft-price-table"/);
+  assert.match(page, /id="craft-enhance-stone-price"/);
   assert.match(page, /<th[^>]*>打造指南书<\/th>/);
   assert.match(page, /<th[^>]*>铁<\/th>/);
+  assert.match(page, /<th[^>]*>强化石<\/th>/);
+  assert.match(page, /<th[^>]*>装备总成本<\/th>/);
   assert.match(page, /<th[^>]*>灵饰指南书<\/th>/);
   assert.match(page, /<th[^>]*>元灵晶石<\/th>/);
+  assert.match(page, /<th[^>]*>灵饰总成本<\/th>/);
   assert.match(page, /craft-prices\.js/);
   assert.doesNotMatch(page, /href="\.\/craft\.html"/);
   assert.match(app, /craftPriceRecords/);
+  assert.match(app, /craftEnhanceStonePriceWan/);
+  assert.match(app, /calculateEquipmentCraftCost/);
+  assert.match(app, /calculateLingShiCraftCost/);
   assert.match(app, /renderCraftPriceMarket\(\)/);
 });

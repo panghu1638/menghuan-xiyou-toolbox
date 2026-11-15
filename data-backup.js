@@ -28,6 +28,7 @@
     "feeCap",
     "decomposeSymbolPriceWan",
     "zhenjingPriceWan",
+    "craftEnhanceStonePriceWan",
   ];
   const stringFields = ["serverName", "goldPriceUnit"];
 

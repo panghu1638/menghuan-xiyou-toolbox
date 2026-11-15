@@ -680,6 +680,36 @@ button:hover {
   line-height: 1.65;
 }
 
+.craft-enhance-price {
+  display: grid;
+  gap: 0.3rem;
+  width: min(100%, 16rem);
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.craft-enhance-price input {
+  min-height: 2.35rem;
+}
+
+#craft-price-table {
+  min-width: 62rem;
+}
+
+.craft-enhance-stones {
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.craft-equipment-cost,
+.craft-jewelry-cost {
+  color: var(--green-deep);
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 .reference-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
