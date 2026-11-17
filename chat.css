@@ -1,0 +1,733 @@
+/* 喊话对准页专用样式：沿用 styles.css 的青绿 + 金色主题，只在本页加载 */
+
+.cx-main {
+  --card: var(--panel);
+  --ink: var(--text);
+  --sub: var(--muted);
+  --gold-soft: rgba(194, 149, 61, 0.13);
+  --ok: var(--profit);
+  --ok-bg: #eaf5f1;
+  --err: var(--loss);
+  --err-bg: #fdeef0;
+  --blue: var(--green);
+  --blue-bg: #ecf6f2;
+  max-width: 1080px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.cx-lead {
+  margin: 1.2rem 0 0;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--panel-tint);
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.75;
+}
+
+.cx-lead b {
+  color: var(--green-deep);
+}
+
+/* ---------- 卡片 ---------- */
+.cx-main .card {
+  margin-top: 1.2rem;
+  padding: 1.15rem 1.3rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.cx-main .card h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.85rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: var(--green-deep);
+}
+
+.cx-main .card h2 .no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 0.5rem;
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cx-main .card h2 small {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.76rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+}
+
+.cx-main .tip {
+  margin-top: 0.55rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.cx-main .hint {
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.95rem;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 0.6rem 0.6rem 0;
+  background: var(--panel-soft);
+  font-size: 0.78rem;
+  line-height: 1.85;
+  color: var(--muted);
+}
+
+.cx-main .hint b {
+  color: var(--green-deep);
+}
+
+.cx-main .sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.cx-main .mono {
+  font-family: "SFMono-Regular", "Courier New", monospace;
+  font-size: 0.88rem;
+  color: var(--green-deep);
+  word-break: break-all;
+}
+
+/* ---------- 输入 ---------- */
+.cx-main textarea {
+  width: 100%;
+  min-height: 108px;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.85rem;
+  background: var(--panel-tint);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.94rem;
+  line-height: 1.9;
+  outline: none;
+  resize: vertical;
+}
+
+.cx-main textarea:focus {
+  border-color: var(--green);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(47, 125, 106, 0.12);
+}
+
+.cx-main .toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.cx-main .btn {
+  padding: 0.42rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.65rem;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: 0.16s;
+}
+
+.cx-main .btn:hover {
+  border-color: var(--green);
+  color: var(--green-deep);
+  background: var(--panel-soft);
+}
+
+.cx-main .btn.primary {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.cx-main .btn.primary:hover {
+  filter: brightness(0.94);
+  color: #fff;
+}
+
+.cx-main .btn.blue {
+  border-color: var(--gold);
+  color: var(--gold-deep);
+  font-weight: 700;
+}
+
+.cx-main .btn.blue:hover {
+  background: var(--gold-soft);
+}
+
+.cx-main .chk {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cx-main .chk input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--green);
+}
+
+/* ---------- 填充风格 ---------- */
+.cx-main .styles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.cx-main .style-opt {
+  position: relative;
+  flex: 1 1 132px;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--panel-tint);
+  cursor: pointer;
+  transition: 0.16s;
+}
+
+.cx-main .style-opt:hover {
+  border-color: var(--line-strong);
+}
+
+.cx-main .style-opt.on {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.cx-main .style-opt .name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+
+.cx-main .style-opt .demo {
+  margin-top: 0.15rem;
+  font-family: "SFMono-Regular", "Courier New", monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.cx-main .style-opt .tag {
+  position: absolute;
+  top: -0.5rem;
+  right: 0.6rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 0.6rem;
+  background: var(--gold);
+  color: #fff;
+  font-size: 0.62rem;
+}
+
+.cx-main .custom-row {
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+}
+
+.cx-main .custom-row.show {
+  display: flex;
+}
+
+.cx-main .custom-row label {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.cx-main input.txt {
+  width: 7rem;
+  height: 2.1rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.6rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.cx-main input.txt:focus {
+  border-color: var(--green);
+}
+
+.cx-main .emo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+}
+
+.cx-main .emo-note {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.cx-main .emo-note b {
+  color: var(--green-deep);
+}
+
+.cx-main .stepper {
+  display: flex;
+  align-items: center;
+}
+
+.cx-main .stepper button,
+.cx-main .stepper input {
+  height: 2.1rem;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.cx-main .stepper button {
+  width: 2rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.cx-main .stepper button:hover {
+  background: var(--panel-soft);
+  color: var(--green-deep);
+}
+
+.cx-main .stepper input {
+  width: 3.4rem;
+  border-right: 0;
+  border-left: 0;
+  text-align: center;
+  font-weight: 700;
+}
+
+.cx-main .stepper button:first-child {
+  border-radius: 0.6rem 0 0 0.6rem;
+}
+
+.cx-main .stepper button:last-child {
+  border-radius: 0 0.6rem 0.6rem 0;
+}
+
+.cx-main .pos-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--line);
+}
+
+.cx-main .pos-lbl {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.cx-main .pos-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.cx-main .pos-opt {
+  padding: 0.24rem 0.75rem;
+  border: 1.5px solid var(--line);
+  border-radius: 2rem;
+  background: #fff;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: 0.16s;
+}
+
+.cx-main .pos-opt:hover {
+  border-color: var(--green);
+  color: var(--green-deep);
+}
+
+.cx-main .pos-opt.on {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+  font-weight: 700;
+}
+
+.cx-main details.adv {
+  margin-top: 0.8rem;
+}
+
+.cx-main details.adv summary {
+  color: var(--green);
+  font-size: 0.76rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.cx-main .cal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  margin-top: 0.6rem;
+  font-size: 0.76rem;
+}
+
+.cx-main .cal label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--muted);
+}
+
+.cx-main .cal input {
+  width: 3.4rem;
+  height: 1.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.45rem;
+  font-size: 0.8rem;
+  text-align: center;
+  outline: none;
+}
+
+/* ---------- 表格 ---------- */
+.cx-main table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.cx-main th {
+  padding: 0.3rem 0.5rem 0.55rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.76rem;
+  text-align: left;
+}
+
+.cx-main td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid #eff7f4;
+  vertical-align: top;
+}
+
+.cx-main td.idx {
+  width: 1.8rem;
+  color: var(--muted);
+}
+
+.cx-main .badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cx-main .b-ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.cx-main .b-fill {
+  background: var(--blue-bg);
+  color: var(--blue);
+}
+
+.cx-main .b-thin {
+  background: #fdf3dd;
+  color: #a3751f;
+}
+
+.cx-main .b-over {
+  background: var(--err-bg);
+  color: var(--err);
+}
+
+/* ---------- 待微调清单 ---------- */
+.cx-main .todo {
+  margin-bottom: 0.9rem;
+}
+
+.cx-main .todo-hd {
+  margin-bottom: 0.55rem;
+  color: var(--err);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.cx-main .todo-ok {
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.7rem;
+  background: var(--ok-bg);
+  color: var(--ok);
+  font-size: 0.82rem;
+}
+
+.cx-main .todo-item {
+  margin-bottom: 0.55rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #f0e0b0;
+  border-radius: 0.75rem;
+  background: #fffdf5;
+}
+
+.cx-main .todo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.cx-main .todo-idx {
+  flex: 0 0 auto;
+  color: var(--gold-deep);
+  font-weight: 700;
+}
+
+.cx-main .todo-bad {
+  padding: 0.05rem 0.5rem;
+  border-radius: 2rem;
+  background: var(--err-bg);
+  color: var(--err);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cx-main .todo-note {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.cx-main .todo-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.cx-main .todo-edit .lbl {
+  color: var(--green);
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.cx-main .fixin {
+  flex: 1 1 15rem;
+  height: 1.95rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.86rem;
+  outline: none;
+}
+
+.cx-main .fixin:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(47, 125, 106, 0.12);
+}
+
+.cx-main .wtag {
+  font-family: "SFMono-Regular", "Courier New", monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cx-main .wtag.good {
+  color: var(--ok);
+}
+
+.cx-main .wtag.mid {
+  color: var(--blue);
+}
+
+.cx-main .wtag.bad {
+  color: var(--err);
+}
+
+.cx-main .mini {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: var(--green);
+  font-family: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.cx-main .mini:hover {
+  border-color: var(--green);
+  background: var(--panel-soft);
+}
+
+.cx-main .mini.ghost {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+/* ---------- 算钱 ---------- */
+.cx-main table.calc td {
+  vertical-align: middle;
+}
+
+.cx-main table.calc .c-idx {
+  color: var(--muted);
+  font-family: "SFMono-Regular", "Courier New", monospace;
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+.cx-main table.calc .c-name {
+  font-weight: 700;
+  color: var(--green-deep);
+}
+
+.cx-main table.calc .c-sum {
+  color: var(--gold-deep);
+  font-family: "SFMono-Regular", "Courier New", monospace;
+  font-weight: 700;
+}
+
+.cx-main table.calc tr.zero .c-sum {
+  color: #c3ccc8;
+  font-weight: 400;
+}
+
+.cx-main .qty,
+.cx-main .pin {
+  height: 2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.55rem;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.cx-main .qty {
+  width: 4.4rem;
+}
+
+.cx-main .pin {
+  width: 6.2rem;
+  font-family: "SFMono-Regular", "Courier New", monospace;
+}
+
+.cx-main .pin[data-auto="1"] {
+  color: var(--gold-deep);
+}
+
+.cx-main .qty:focus,
+.cx-main .pin:focus {
+  border-color: var(--green);
+}
+
+.cx-main .calc-none {
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.7rem;
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.cx-main .calc-sum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--line);
+}
+
+.cx-main .sum-l {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.cx-main .sum-l b {
+  color: var(--gold-deep);
+  font-family: "SFMono-Regular", "Courier New", monospace;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.cx-main .sum-l em {
+  font-style: normal;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.cx-main .sum-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.cx-main .sum-r {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cx-page-footer {
+  margin: 2.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .cx-main .card {
+    padding: 1rem 0.9rem 1.1rem;
+  }
+
+  .cx-main table {
+    font-size: 0.8rem;
+  }
+}

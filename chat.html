@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>喊话对准器</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./chat.css" />
+  </head>
+  <body>
+    <header class="masthead compact floating-nav">
+      <div>
+        <p class="subtitle">傲来国 · 神笔马良</p>
+        <h1>喊话对准</h1>
+      </div>
+      <nav class="page-nav" aria-label="页面导航">
+        <div class="nav-group">
+          <span class="nav-group-label">价格行情</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./index.html">差价计算</a>
+            <a class="nav-button" href="./market.html">区内行情</a>
+            <a class="nav-button" href="./pets.html">召唤兽行情</a>
+            <a class="nav-button" href="./equipment.html">宝宝装备</a>
+            <a class="nav-button" href="./eyes.html">三眼九眼</a>
+            <a class="nav-button" href="./stones.html">灵石合成</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-time">
+          <span class="nav-group-label">出货时间</span>
+          <div class="nav-links">
+            <a class="nav-button" href="./floors.html">地板出货时间</a>
+            <a class="nav-button" href="./equipment-times.html">宠装出货</a>
+            <a class="nav-button" href="./fusion-times.html">炼妖出货</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <span class="nav-group-label">摆摊喊话</span>
+          <div class="nav-links">
+            <a class="nav-button active" href="./chat.html" aria-current="page">喊话对准</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="cx-main">
+      <p class="cx-lead">
+        宽度按游戏实测字宽算：一行 <b>97px</b>，中文字 14px、数字 6.5px、表情 <b>#32</b> 占 22px。
+        把每条补到安全线（≥91px）以上，游戏就必然在条与条之间换行，广告不会被劈成两半。
+      </p>
+
+      <section class="card" aria-labelledby="cx-input-title">
+        <h2 id="cx-input-title"><span class="no">1</span>输入每条信息
+          <small>回车 = 下一条；空格也 = 下一条（想两个词落在同一行，就别加空格）</small></h2>
+        <textarea id="input" placeholder="每行一条，或用空格分组，例如：&#10;#Y10W收死亡幽灵 4级老家具20W- 图纸也来#32&#10;收60灵饰=55W 80灵饰--85W 120灵饰--250W"></textarea>
+        <div class="toolbar">
+          <button class="btn" id="demoBtn" type="button">填入你的示例</button>
+          <button class="btn" id="clearBtn" type="button">清空</button>
+          <button class="btn blue" id="alignBtn" type="button">⚡ 一键对准</button>
+          <button class="btn" id="cleanEmoBtn" type="button">🧹 连排表情压成 1 个</button>
+          <button class="btn" id="stripEmoBtn" type="button">🚫 删掉所有表情</button>
+          <label class="chk"><input type="checkbox" id="autoSplit" checked /> 整段粘进来时，自动在 - = #32 处拆成多条</label>
+        </div>
+        <div class="tip" id="inputTip"></div>
+      </section>
+
+      <section class="card" aria-labelledby="cx-style-title">
+        <h2 id="cx-style-title"><span class="no">2</span>填充风格 <small>每条差的那点宽度用什么补、补在哪</small></h2>
+        <div class="styles" id="styles">
+          <div class="style-opt on" data-style="mix"><span class="tag">推荐</span>
+            <div class="name">✨ 混搭</div><div class="demo">跟这条原文同一种符号</div></div>
+          <div class="style-opt" data-style="dash"><div class="name">－ 全减号</div><div class="demo">----</div></div>
+          <div class="style-opt" data-style="eq"><div class="name">＝ 全等号</div><div class="demo">====</div></div>
+          <div class="style-opt" data-style="space"><div class="name">␣ 空格</div><div class="demo">不可见；注意尾部空格可能被吞</div></div>
+          <div class="style-opt" data-style="alt"><div class="name">≈ 交替</div><div class="demo">=-=-</div></div>
+          <div class="style-opt" data-style="custom"><div class="name">✎ 自定义</div><div class="demo">自己填</div></div>
+        </div>
+        <div class="custom-row" id="customRow">
+          <label>填充字符：</label>
+          <input id="customFill" class="txt" type="text" value="-" />
+        </div>
+        <div class="emo-row">
+          <span class="pos-lbl">每条最多几个表情</span>
+          <div class="stepper"><button id="maxEmoMinus" type="button">−</button><input id="maxEmoji" type="number" min="0" max="4" step="1" value="1" /><button id="maxEmoPlus" type="button">+</button></div>
+          <span class="emo-note">设 0 = 只用符号补，一条 <b>#32</b> 都不出现</span>
+        </div>
+        <div class="pos-row">
+          <span class="pos-lbl">补在哪</span>
+          <div class="pos-opts" id="posOpts">
+            <button class="pos-opt on" data-pos="smart" type="button">名称后 2 个 + 余下补尾部</button>
+            <button class="pos-opt" data-pos="mid" type="button">全补在名称后</button>
+            <button class="pos-opt" data-pos="tail" type="button">全补在尾部</button>
+          </div>
+        </div>
+        <div class="hint">
+          <b>为什么补在名称和价格之间更好：</b>补在行尾是一串“尾巴”，视觉上会和下一条的开头粘在一起；
+          补在名称后，读起来像 <span class="mono">小丸子===14.5W</span> 这种“项目 —— 价格”的分隔符，行尾干干净净。<br />
+          <b>一排只用一种符号：</b>这条原文里已经有 <span class="mono">=</span> 就用 <span class="mono">=</span> 补，已经有 <span class="mono">-</span> 就用 <span class="mono">-</span> 补，都没有才用 <span class="mono">-</span>；表情 <span class="mono">#32</span> 永远留在行尾。<br />
+          <b>注意：</b>不管补在哪，总宽都得补到 <b>≥91px</b> 才不会漏。像 <span class="mono">小丸子==14.5W</span> 只有 90.5px，
+          下一条若以数字开头（<span class="mono">1</span>=6.5px）就会被吸到这一行，所以工具会补成 <span class="mono">小丸子===14.5W</span>。
+        </div>
+        <details class="adv">
+          <summary>高级：换分辨率 / 换字体时手调字符宽度</summary>
+          <div class="cal">
+            <label>一行宽 <input id="capacity" type="number" min="40" max="200" step="1" value="97" /></label>
+            <label>表情 #数字 <input id="emoWidth" type="number" min="6" max="40" step="1" value="22" /></label>
+            <label>中文字 <input id="wCn" type="number" step="0.5" value="14" /></label>
+            <label>数字 <input id="wDigit" type="number" step="0.5" value="6.5" /></label>
+            <label>- = 空格 <input id="wDash" type="number" step="0.5" value="6" /></label>
+            <label>大写 W <input id="wUpper" type="number" step="0.5" value="11" /></label>
+            <label>其它大写 <input id="wUpper2" type="number" step="0.5" value="10" /></label>
+            <label>小写 <input id="wLower" type="number" step="0.5" value="9" /></label>
+          </div>
+        </details>
+      </section>
+
+      <section class="card" aria-labelledby="cx-rows-title">
+        <h2 id="cx-rows-title"><span class="no">3</span>逐条计算 <small>要改的会列在最上面</small></h2>
+        <div class="todo" id="todo"></div>
+        <table>
+          <thead><tr><th>#</th><th>原文</th><th>宽度</th><th>补满后</th></tr></thead>
+          <tbody id="entries"></tbody>
+        </table>
+        <div class="tip" id="tableTip"></div>
+      </section>
+
+      <section class="card" aria-labelledby="cx-result-title">
+        <h2 id="cx-result-title"><span class="no">4</span>成品 <small>拼成一整条，直接粘到游戏</small></h2>
+        <textarea id="resultText" style="min-height: 80px; font-family: 'SFMono-Regular', 'Courier New', monospace"></textarea>
+        <div class="toolbar">
+          <button class="btn primary" id="copyBtn" type="button">📋 复制成品</button>
+          <span class="tip" id="copyTip">没换行符，游戏会自己折行</span>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="cx-calc-title">
+        <h2 id="cx-calc-title"><span class="no">5</span>算钱
+          <small>一排一行：名字直接从这排贴过来，价钱自动填好也能改，数量自己填</small></h2>
+        <table class="calc" id="calcTable">
+          <thead><tr><th style="width: 44px">排</th><th>名字</th><th style="width: 120px">单价（万）</th><th style="width: 100px">数量</th><th>小计</th></tr></thead>
+          <tbody id="calcBody"></tbody>
+        </table>
+        <div class="calc-none" id="calcNone" style="display: none">
+          上面输入几条，这里就会按排列出名字和价钱。
+        </div>
+        <div class="calc-sum" id="calcSum">
+          <div class="sum-l">
+            <span>合计</span><b id="calcTotal">0 万</b><em id="calcYi"></em>
+            <span class="sum-sub" id="calcSub"></span>
+          </div>
+          <div class="sum-r">
+            <button class="btn" id="qtyZeroBtn" type="button">数量归 0</button>
+            <button class="btn" id="qtyOneBtn" type="button">数量全设 1</button>
+            <button class="btn" id="calcCopyBtn" type="button">📋 复制清单</button>
+          </div>
+        </div>
+        <div class="tip" id="calcTip"></div>
+      </section>
+
+      <footer class="cx-page-footer">纯本地运行 · 不联网 · 宽度表由游戏截图实测反推</footer>
+    </main>
+
+    <script src="./chat-aligner.js"></script>
+  </body>
+</html>
