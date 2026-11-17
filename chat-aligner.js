@@ -5,9 +5,7 @@
   var W = { cn:14, digit:6.5, dash:6, upperW:11, upper:10, lower:9 };
   var state = {
     cap: 97, emojiW: 22, maxEmoji: 1, emojiFace: "😮",
-    style: "mix", customFill: "-", autoSplit: true, fillPos: "smart",
-    qty: {},                                   // 算钱：{ 名字@第几个 : 数量 }
-    price: {}                                  // 算钱：手改过的单价 { 名字@第几个 : 万 }
+    style: "mix", customFill: "-", autoSplit: true, fillPos: "smart"
   };
   // "安全线" = 一行减去最窄字符的宽度：只要多出来的空白装不下任何一个字符，下一段必然被挤到新行
   var SAFE = function(){ return Math.min(W.cn, W.digit, W.dash, W.upperW, W.upper, W.lower) || W.dash; };
@@ -431,115 +429,6 @@
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   function escAttr(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-  /* ================= 算钱：一排一行，名字就从这一排里贴过来 ================= */
-  // 不再跨排猜「哪个价钱配哪个名字」：每一排（= 对准后的那一条）自己成一行，
-  // 名字取这排的文字，价钱取这排最后一个数字（自动填好，可以改），数量自己填。
-  function cleanName(s){
-    s = String(s).replace(/[-=_~·•]+/g, " ").replace(/\s+/g, " ").trim();
-    s = s.replace(/^[收售出卖求]\s*/, "");          // 开头的「收」是动词，不是名字
-    return s.replace(/^[\s\-=]+|[\s\-=]+$/g, "").trim();
-  }
-  function splitNamePrice(line){
-    var s = String(line)
-      .replace(/#[A-Za-z][0-9A-Fa-f]{6}|#[A-Za-z]/g, "")   // 颜色码：0 宽，不算内容
-      .replace(/#\d+/g, " ")                                // 表情 #32
-      .replace(/[ \t]+/g, " ");
-    var m, last=null, re=/(\d+(?:\.\d+)?)\s*[wW](?![A-Za-z])/g;
-    while((m = re.exec(s)) !== null) last = { i:m.index, end:m.index+m[0].length, v:parseFloat(m[1]) };
-    if(!last){                        // 没写 W：认结尾那个裸数字（垃圾玉魄100 / 大丸子73）
-      var mb = /(\d+(?:\.\d+)?)\s*[-=]*\s*$/.exec(s);
-      if(mb) last = { i:mb.index, end:mb.index+mb[0].length, v:parseFloat(mb[1]) };
-    }
-    if(!last) return { name:cleanName(s), price:null };
-    var name = cleanName(s.slice(0, last.i));
-    if(!name) name = cleanName(s.slice(last.end));     // 价钱写在前头：10W收死亡幽灵
-    return { name:name, price:(last.v > 0 ? last.v : null) };
-  }
-  function fmtNum(v){
-    var r = Math.round(v*100)/100;
-    var s = r.toFixed(2).replace(/\.00$/,"").replace(/(\.\d)0$/,"$1");
-    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
-  var calcItems = [];
-  var CALC_TIP_DEFAULT = "价钱是从每排最后一个数字自动认的，认错直接在框里改；数量随便填，合计自动算。";
-  function priceOf(it){
-    var p = state.price[it.key];
-    if(p === undefined) p = (it.autoPrice === null ? 0 : it.autoPrice);
-    return p;
-  }
-  function qtyOf(key){
-    return (state.qty[key] === undefined ? 1 : state.qty[key]);
-  }
-  function calcTipHTML(){
-    var noP = calcItems.filter(function(it){ return it.autoPrice === null; });
-    if(noP.length){
-      return '<span style="color:var(--gold)">有 '+noP.length+' 排没认出价钱（'+
-        noP.slice(0,3).map(function(it){ return esc(it.name); }).join('、')+
-        (noP.length>3?'…':'')+'），在单价框里自己填一下就行。</span>';
-    }
-    return CALC_TIP_DEFAULT;
-  }
-  function resetCalcTip(){
-    var tip=$("calcTip"); if(!tip) return;
-    tip.innerHTML = calcItems.length ? calcTipHTML() : ""; tip.style.color = "";
-  }
-  function renderCalc(){
-    var seen = {};
-    calcItems = items.map(function(it, i){
-      var sp = splitNamePrice(it.src);
-      var nm = sp.name || ("第" + (i+1) + "排");
-      var k = (seen[nm] = (seen[nm]||0) + 1);
-      return { idx:i+1, name:nm, autoPrice:sp.price, key:nm + "@" + k };
-    });
-    var body=$("calcBody"), none=$("calcNone"), tbl=$("calcTable"), sum=$("calcSum");
-    if(!calcItems.length){
-      body.innerHTML = "";
-      if(tbl) tbl.style.display = "none";
-      if(sum) sum.style.display = "none";
-      none.style.display = "";
-      resetCalcTip();
-      updateTotals();
-      return;
-    }
-    if(tbl) tbl.style.display = "";
-    if(sum) sum.style.display = "";
-    none.style.display = "none";
-    var h="";
-    calcItems.forEach(function(it){
-      var q=qtyOf(it.key);
-      var shown = (state.price[it.key] !== undefined)
-        ? state.price[it.key]
-        : (it.autoPrice === null ? "" : it.autoPrice);
-      h += '<tr data-key="'+escAttr(it.key)+'"'+(q>0?"":' class="zero"')+'>'+
-             '<td class="c-idx">'+it.idx+'</td>'+
-             '<td class="c-name">'+esc(it.name)+'</td>'+
-             '<td><input class="pin" type="number" min="0" step="0.5" value="'+shown+'"'+
-               (state.price[it.key]===undefined && it.autoPrice!==null ? ' data-auto="1"' : '')+
-               ' placeholder="填价" data-key="'+escAttr(it.key)+'"/></td>'+
-             '<td><input class="qty" type="number" min="0" step="1" value="'+q+'" data-key="'+escAttr(it.key)+'"/></td>'+
-             '<td class="c-sum">'+fmtNum(priceOf(it)*q)+' 万</td>'+
-           '</tr>';
-    });
-    body.innerHTML = h;
-    resetCalcTip();
-    updateTotals();
-  }
-  function updateTotals(){
-    var total=0, cnt=0, kinds=0;
-    calcItems.forEach(function(it){
-      var q=qtyOf(it.key), p=priceOf(it);
-      total += p*q;
-      cnt += q;
-      if(q>0 && p>0) kinds++;
-    });
-    $("calcTotal").textContent = fmtNum(total) + " 万";
-    $("calcYi").textContent = total >= 10000 ? "≈ " + fmtNum(total/10000) + " 亿" : "";
-    $("calcSub").textContent = calcItems.length
-      ? "共 "+calcItems.length+" 排"+(kinds? " · 有价 "+kinds+" 排 · "+fmtNum(cnt)+" 件" : " · 数量全是 0")
-      : "";
-  }
-
   /* ================= 主流程 ================= */
   var items=[];
   function compute(){
@@ -658,7 +547,6 @@
     }
 
     $("resultText").value = items.map(function(it){ return it.text; }).join("");
-    renderCalc();
   }
 
   function oneMap(idx, val){ var m={}; m[idx]=val; return m; }
@@ -861,59 +749,6 @@
     }
     function fb(){ var ta=$("resultText"); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} }
     if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fb);
-    else fb();
-  });
-
-  /* ---------- 算钱：数量与合计 ---------- */
-  function setAllQty(v){
-    calcItems.forEach(function(it){ state.qty[it.key] = v; });
-    renderCalc();
-  }
-  $("qtyZeroBtn").addEventListener("click", function(){ setAllQty(0); });
-  $("qtyOneBtn").addEventListener("click", function(){ setAllQty(1); });
-
-  $("calcBody").addEventListener("input", function(e){
-    var t = e.target;
-    if(!t || !t.getAttribute) return;
-    var key = t.getAttribute("data-key"); if(!key) return;
-    var v = parseFloat(t.value);
-    if(isNaN(v) || v < 0) v = 0;
-    var isPrice = /(^|\s)pin(\s|$)/.test(t.className || "");
-    if(isPrice) state.price[key] = v; else state.qty[key] = v;
-    var it = null;
-    for(var i=0;i<calcItems.length;i++){ if(calcItems[i].key === key){ it = calcItems[i]; break; } }
-    var tr = t.parentNode && t.parentNode.parentNode;
-    if(it && tr){
-      var cell = tr.querySelector ? tr.querySelector(".c-sum") : null;
-      if(cell) cell.textContent = fmtNum(priceOf(it) * qtyOf(it)) + " 万";
-      if(tr.classList) tr.classList.toggle("zero", !(qtyOf(it) > 0));
-    }
-    updateTotals();
-  });
-
-  $("calcCopyBtn").addEventListener("click", function(){
-    var tip=$("calcTip");
-    function say(msg,color){
-      tip.textContent = msg; tip.style.color = color || "";
-      setTimeout(resetCalcTip, 2500);
-    }
-    if(!calcItems.length){ say("上面还没有可算的排", "var(--err)"); return; }
-    var total=0, txt=[];
-    calcItems.forEach(function(it){
-      var q=qtyOf(it.key), p=priceOf(it);
-      total += p*q;
-      txt.push(it.idx+". "+it.name+"  "+(p>0?fmtNum(p)+"万":"未填价")+" × "+fmtNum(q)+" = "+fmtNum(p*q)+"万");
-    });
-    txt.push("合计 " + fmtNum(total) + " 万");
-    var s = txt.join("\n");
-    function done(){ say("✅ 已复制清单", "var(--ok)"); }
-    function fb(){
-      var ta=$("resultText"), old=ta.value;
-      ta.value=s; ta.select();
-      try{ document.execCommand("copy"); done(); }catch(e){ say("复制失败，可以手动选中表格","var(--err)"); }
-      ta.value=old;
-    }
-    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, fb);
     else fb();
   });
 
