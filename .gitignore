@@ -3,3 +3,8 @@ node_modules/
 npm-debug.log*
 backups/
 xyq-backup-*.json
+*.pyc
+__pycache__/
+鼠标/工具/ui_activity.log
+鼠标/工具/_backup_*/
+鼠标/9键自动喊话G/
