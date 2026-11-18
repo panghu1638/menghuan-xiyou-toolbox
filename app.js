@@ -756,10 +756,11 @@
     });
     input.addEventListener("change", function (event) {
       var formatted = formatter(event.target.value, new Date(), valueBeforeInput);
+      var savedValue = formatted.replace(/[、\s]+$/, "");
       event.target.value = formatted;
-      record[propertyName] = formatted;
+      record[propertyName] = savedValue;
       saveState();
-      if (changeListener) changeListener(formatted);
+      if (changeListener) changeListener(savedValue);
     });
     input.addEventListener("keydown", function (event) {
       if (event.key === "Enter") event.target.blur();
@@ -818,7 +819,7 @@
           record,
           "deliveryTimes",
           record.name + "出货时间",
-          XYQFloorMarket.formatSaleTimes,
+          XYQFloorMarket.prepareSaleTimeInput,
           "输入时间",
         ),
       );
@@ -920,7 +921,7 @@
           record,
           "deliveryTime",
           record.character + record.category + "出货时间",
-          XYQFloorMarket.formatSaleTimes,
+          XYQFloorMarket.prepareSaleTimeInput,
           "输入时间",
           function (formatted) {
             record.shichen = XYQFloorMarket.shichenFromDeliveryTime(formatted);
@@ -1034,7 +1035,7 @@
           record,
           "deliveryTime",
           record.result + "出货时间",
-          XYQFloorMarket.formatSaleTimes,
+          XYQFloorMarket.prepareSaleTimeInput,
           "输入时间",
           function (formatted) {
             record.shichen = XYQPetFusionTimes.shichenFromDeliveryTime(formatted);

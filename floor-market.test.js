@@ -10,6 +10,7 @@ const {
   formatSaleTimes,
   migrateFloorRecordNames,
   migrateFloorRecordSaleTimes,
+  prepareSaleTimeInput,
   stripSaleTimeDates,
 } = globalThis.XYQFloorMarket;
 
@@ -171,4 +172,20 @@ test("旧数据参考会去掉日期并保留时间", () => {
   );
   assert.equal(stripSaleTimeDates("16.21 23.26"), "16.21、 23.26");
   assert.equal(stripSaleTimeDates("11月12日"), "");
+});
+
+test("出货时间输入完成后预留下一项分隔符", () => {
+  assert.equal(
+    prepareSaleTimeInput("0.47", new Date(2026, 10, 19)),
+    "11月19日 0.47、 ",
+  );
+  assert.equal(
+    prepareSaleTimeInput(
+      "11月17日 0.59、0.47",
+      new Date(2026, 10, 19),
+      "11月17日 0.59",
+    ),
+    "11月17日 0.59、 11月19日 0.47、 ",
+  );
+  assert.equal(prepareSaleTimeInput("", new Date(2026, 10, 19)), "");
 });

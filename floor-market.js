@@ -107,6 +107,11 @@
     );
   }
 
+  function prepareSaleTimeInput(value, now, previousValue) {
+    const formatted = formatSaleTimes(value, now, previousValue);
+    return /\d{1,2}[.：:]\d{1,2}/.test(formatted) ? formatted + "、 " : formatted;
+  }
+
   const shichenNames = [
     "子时",
     "丑时",
@@ -168,6 +173,7 @@
     formatSaleTimes,
     migrateFloorRecordNames,
     migrateFloorRecordSaleTimes,
+    prepareSaleTimeInput,
     shichenFromDeliveryTime,
     stripSaleTimeDates,
   };
