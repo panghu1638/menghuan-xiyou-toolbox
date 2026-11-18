@@ -79,13 +79,19 @@
     const today = current.getMonth() + 1 + "月" + current.getDate() + "日";
     const previous = normalizeSaleTimeSeparators(previousValue);
     const previousWithSeparator = previous ? previous + "、 " : "";
-    if (
+    const separated = spaced.replace(
+      /(\d{1,2}[.：:]\d{1,2})(?=\d{1,2}[.：:]\d{1,2})/g,
+      "$1、 ",
+    );
+    const appendedToExisting =
       previous &&
-      (spaced.startsWith(previous) || spaced.startsWith(previousWithSeparator))
-    ) {
-      const appendedTimes = spaced
+      (separated.startsWith(previousWithSeparator) ||
+        (separated.startsWith(previous) &&
+          /^[\s、]/.test(separated.charAt(previous.length))));
+    if (previous && appendedToExisting) {
+      const appendedTimes = separated
         .slice(
-          spaced.startsWith(previousWithSeparator)
+          separated.startsWith(previousWithSeparator)
             ? previousWithSeparator.length
             : previous.length,
         )
@@ -95,7 +101,9 @@
           return part && !/\d{1,2}月\d{1,2}日/.test(part);
         })
         .map(function (part) {
-          return today + " " + part;
+          const previousDateMatches = previous.match(/\d{1,2}月\d{1,2}日/g) || [];
+          const previousDate = previousDateMatches[previousDateMatches.length - 1];
+          return previousDate === today ? part : today + " " + part;
         });
       if (appendedTimes.length) {
         return [previous].concat(appendedTimes).join("、 ");
