@@ -67,16 +67,35 @@
     return normalized ? normalized.replace(/、\s*/g, "、 ") : "";
   }
 
-  function formatSaleTimes(value, now) {
+  function formatSaleTimes(value, now, previousValue) {
     const spaced = normalizeSaleTimeSeparators(value);
     if (!spaced) return "";
 
     const current = now instanceof Date ? now : new Date();
-    if (/\d{1,2}月\d{1,2}日/.test(spaced) || !/\d{1,2}[.：:]\d{1,2}/.test(spaced)) {
+    if (!/\d{1,2}[.：:]\d{1,2}/.test(spaced)) {
       return spaced;
     }
 
-    return current.getMonth() + 1 + "月" + current.getDate() + "日 " + spaced;
+    const today = current.getMonth() + 1 + "月" + current.getDate() + "日";
+    const previous = normalizeSaleTimeSeparators(previousValue);
+    if (previous && spaced.startsWith(previous)) {
+      const appendedTimes = spaced
+        .slice(previous.length)
+        .replace(/^[、\s]+/, "")
+        .split("、 ")
+        .filter(function (part) {
+          return part && !/\d{1,2}月\d{1,2}日/.test(part);
+        })
+        .map(function (part) {
+          return today + " " + part;
+        });
+      if (appendedTimes.length) {
+        return [previous].concat(appendedTimes).join("、 ");
+      }
+    }
+
+    if (spaced.includes("月")) return spaced;
+    return today + " " + spaced;
   }
 
   function stripSaleTimeDates(value) {

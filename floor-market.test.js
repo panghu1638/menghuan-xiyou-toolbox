@@ -96,6 +96,14 @@ test("出货时间自动补充当天日期并间隔分隔符", () => {
     formatSaleTimes("11月13日 14.28 21.36", today),
     "11月13日 14.28、 21.36",
   );
+  assert.equal(
+    formatSaleTimes(
+      "11月17日 0.59、0.47",
+      new Date(2026, 10, 19),
+      "11月17日 0.59",
+    ),
+    "11月17日 0.59、 11月19日 0.47",
+  );
   assert.equal(formatSaleTimes("", today), "");
   assert.equal(formatSaleTimes("、", today), "");
 });

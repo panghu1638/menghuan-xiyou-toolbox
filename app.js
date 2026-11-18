@@ -746,12 +746,16 @@
     input.value = record[propertyName] || "";
     if (placeholder) input.placeholder = placeholder;
     input.setAttribute("aria-label", ariaLabel);
+    var valueBeforeInput = input.value;
+    input.addEventListener("focus", function (event) {
+      valueBeforeInput = event.target.value;
+    });
     input.addEventListener("input", function (event) {
       record[propertyName] = event.target.value;
       saveState();
     });
     input.addEventListener("change", function (event) {
-      var formatted = formatter(event.target.value);
+      var formatted = formatter(event.target.value, new Date(), valueBeforeInput);
       event.target.value = formatted;
       record[propertyName] = formatted;
       saveState();
