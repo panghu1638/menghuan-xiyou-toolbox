@@ -74,6 +74,8 @@ test("出货时间自动补充当天日期并间隔分隔符", () => {
   const today = new Date(2026, 10, 12);
 
   assert.equal(formatSaleTimes("14.28", today), "11月12日 14.28");
+  assert.equal(formatSaleTimes("14:28", today), "11月12日 14:28");
+  assert.equal(formatSaleTimes("14：28", today), "11月12日 14：28");
   assert.equal(
     formatSaleTimes("14.28、21.36", today),
     "11月12日 14.28、 21.36",

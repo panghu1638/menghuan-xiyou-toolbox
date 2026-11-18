@@ -72,7 +72,7 @@
     if (!spaced) return "";
 
     const current = now instanceof Date ? now : new Date();
-    if (/\d{1,2}月\d{1,2}日/.test(spaced) || !/\d/.test(spaced)) {
+    if (/\d{1,2}月\d{1,2}日/.test(spaced) || !/\d{1,2}[.：:]\d{1,2}/.test(spaced)) {
       return spaced;
     }
 
