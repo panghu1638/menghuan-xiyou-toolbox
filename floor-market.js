@@ -78,9 +78,17 @@
 
     const today = current.getMonth() + 1 + "月" + current.getDate() + "日";
     const previous = normalizeSaleTimeSeparators(previousValue);
-    if (previous && spaced.startsWith(previous)) {
+    const previousWithSeparator = previous ? previous + "、 " : "";
+    if (
+      previous &&
+      (spaced.startsWith(previous) || spaced.startsWith(previousWithSeparator))
+    ) {
       const appendedTimes = spaced
-        .slice(previous.length)
+        .slice(
+          spaced.startsWith(previousWithSeparator)
+            ? previousWithSeparator.length
+            : previous.length,
+        )
         .replace(/^[、\s]+/, "")
         .split("、 ")
         .filter(function (part) {
