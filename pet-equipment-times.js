@@ -1,16 +1,22 @@
 (function () {
   var categories = ["护腕", "项圈", "衣服", "其他"];
   var defaultCharacters = ["无敌狗托", "大唐画晚"];
+  var characterAliases = { "臭名昭著狗托": "臭名昭著" };
 
   function normalizedText(value) {
     return typeof value === "string" ? value.trim() : "";
   }
 
   function addCharacter(characters, value) {
-    var character = normalizedText(value);
+    var character = normalizeCharacter(value);
     if (character && !characters.includes(character)) {
       characters.push(character);
     }
+  }
+
+  function normalizeCharacter(value) {
+    var character = normalizedText(value);
+    return characterAliases[character] || character;
   }
 
   function normalizeCharacters(characters, records) {
@@ -35,7 +41,7 @@
 
   function normalizeRecord(record, characters) {
     var source = record && typeof record === "object" ? record : {};
-    var character = normalizedText(source.character);
+    var character = normalizeCharacter(source.character);
     if (!characters.includes(character)) character = "";
 
     return {
@@ -88,6 +94,7 @@
   globalThis.XYQPetEquipmentTimes = {
     categories,
     defaultCharacters,
+    normalizeCharacter,
     createEmptyRecord,
     migratePetEquipmentRecords,
     removeCharacter,

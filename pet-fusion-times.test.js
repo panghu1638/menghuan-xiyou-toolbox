@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
 import "./floor-market.js";
+import "./pet-equipment-times.js";
 import "./pet-fusion-times.js";
 
 const times = globalThis.XYQPetFusionTimes;
@@ -58,6 +59,24 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         character: "",
         embryoCombo: "",
         result: "",
+        deliveryTime: "",
+        shichen: "—",
+      },
+    ],
+  );
+});
+
+test("炼妖出货记录归并臭名昭著狗托", () => {
+  assert.deepEqual(
+    times.migrateRecords(
+      [{ character: "臭名昭著狗托", embryoCombo: "3+5", result: "6猴子" }],
+      ["臭名昭著"],
+    ),
+    [
+      {
+        character: "臭名昭著",
+        embryoCombo: "3+5",
+        result: "6猴子",
         deliveryTime: "",
         shichen: "—",
       },

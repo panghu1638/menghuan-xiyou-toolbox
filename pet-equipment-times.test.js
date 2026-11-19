@@ -25,6 +25,39 @@ test("角色列表默认包含无敌狗托和大唐画晚且无敌狗托优先",
   );
 });
 
+test("臭名昭著狗托归并为臭名昭著", () => {
+  assert.deepEqual(
+    migratePetEquipmentRecords(
+      [
+        { character: "臭名昭著狗托", category: "护腕", damage: 45 },
+        { character: "臭名昭著", category: "项圈", damage: 48 },
+      ],
+      ["臭名昭著狗托", "臭名昭著"],
+    ),
+    {
+      characters: ["无敌狗托", "大唐画晚", "臭名昭著"],
+      records: [
+        {
+          character: "臭名昭著",
+          category: "护腕",
+          damage: 45,
+          attributes: "",
+          deliveryTime: "",
+          shichen: "—",
+        },
+        {
+          character: "臭名昭著",
+          category: "项圈",
+          damage: 48,
+          attributes: "",
+          deliveryTime: "",
+          shichen: "—",
+        },
+      ],
+    },
+  );
+});
+
 test("新增宠装记录默认使用第一个角色和护腕", () => {
   assert.deepEqual(createEmptyRecord(["大号", "小号"]), {
     character: "大号",
