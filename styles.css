@@ -936,6 +936,20 @@ button:hover {
   text-align: center;
 }
 
+.reference-panel > .pet-equipment-time-table-wrap .fusion-combo-table {
+  min-width: 36rem;
+}
+
+.fusion-combo-table th:nth-child(-n + 3) {
+  width: auto;
+}
+
+.fusion-combo-table th:nth-child(4),
+.fusion-combo-table td:nth-child(4) {
+  width: 5rem;
+  text-align: center;
+}
+
 .reference-panel > .pet-equipment-time-table-wrap .pet-equipment-time-empty {
   padding: 1.4rem;
   color: var(--muted);

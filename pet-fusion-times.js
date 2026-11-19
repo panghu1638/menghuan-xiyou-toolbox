@@ -37,9 +37,41 @@
     });
   }
 
+  var defaultComboRecords = [
+    { stage: "early", main: "画魂", sub: "持国巡守", target: "须弥画魂" },
+    { stage: "early", main: "泪妖", sub: "持国巡守", target: "须弥泪妖" },
+    { stage: "early", main: "须弥宠", sub: "出奇制胜宠", target: "少技能出奇须弥" },
+    { stage: "late", main: "少技能出奇须弥", sub: "多技能胚子", target: "多技能出奇须弥" },
+    { stage: "late", main: "净台妙谛宠", sub: "多技能胚子", target: "多技能净台妙谛" },
+  ];
+
+  function normalizeStage(value) {
+    return value === "late" ? "late" : "early";
+  }
+
+  function createEmptyCombo(stage) {
+    return { stage: normalizeStage(stage), main: "", sub: "", target: "" };
+  }
+
+  function migrateComboRecords(records) {
+    if (!Array.isArray(records)) return structuredClone(defaultComboRecords);
+    return records.map(function (record) {
+      var source = record && typeof record === "object" ? record : {};
+      return {
+        stage: normalizeStage(source.stage),
+        main: normalizedText(source.main),
+        sub: normalizedText(source.sub),
+        target: normalizedText(source.target),
+      };
+    });
+  }
+
   globalThis.XYQPetFusionTimes = {
     createEmptyRecord,
     migrateRecords,
+    defaultComboRecords,
+    createEmptyCombo,
+    migrateComboRecords,
     shichenFromDeliveryTime: XYQFloorMarket.shichenFromDeliveryTime,
   };
 })();

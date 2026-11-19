@@ -120,3 +120,58 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(app, /renderFusionDeliveryTimes\(\)/);
   assert.match(app, /XYQFloorMarket\.formatSaleTimes/);
 });
+
+test("炼妖组合搭配预置前期和后期示例", () => {
+  const stages = new Set(times.defaultComboRecords.map((combo) => combo.stage));
+  assert.deepEqual([...stages].sort(), ["early", "late"]);
+  for (const combo of times.defaultComboRecords) {
+    assert.deepEqual(Object.keys(combo), ["stage", "main", "sub", "target"]);
+    assert.ok(combo.main && combo.sub && combo.target);
+  }
+});
+
+test("新增炼妖组合按阶段生成空行", () => {
+  assert.deepEqual(times.createEmptyCombo("late"), {
+    stage: "late",
+    main: "",
+    sub: "",
+    target: "",
+  });
+  assert.equal(times.createEmptyCombo("其他").stage, "early");
+});
+
+test("炼妖组合迁移补齐字段，未保存过时使用预置", () => {
+  assert.deepEqual(times.migrateComboRecords(undefined), times.defaultComboRecords);
+  assert.notEqual(times.migrateComboRecords(undefined), times.defaultComboRecords);
+  assert.deepEqual(times.migrateComboRecords([]), []);
+  assert.deepEqual(
+    times.migrateComboRecords([
+      { stage: "late", main: " 画魂 ", sub: " 持国巡守 ", target: " 须弥画魂 " },
+      { stage: "x", main: 1 },
+      null,
+    ]),
+    [
+      { stage: "late", main: "画魂", sub: "持国巡守", target: "须弥画魂" },
+      { stage: "early", main: "", sub: "", target: "" },
+      { stage: "early", main: "", sub: "", target: "" },
+    ],
+  );
+});
+
+test("炼妖出货页顶部提供前期后期组合搭配", async () => {
+  const page = await readFile(new URL("./fusion-times.html", import.meta.url), "utf8");
+  const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
+  const backupSource = await readFile(new URL("./data-backup.js", import.meta.url), "utf8");
+
+  assert.match(page, /炼妖组合搭配/);
+  assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-time-records"'));
+  assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-combo-late"'));
+  assert.match(page, /id="fusion-combo-add-early"/);
+  assert.match(page, /id="fusion-combo-add-late"/);
+  assert.match(page, /<th>主宠<\/th>/);
+  assert.match(page, /<th>副宠<\/th>/);
+  assert.match(page, /<th>目标结果<\/th>/);
+  assert.match(app, /fusionComboRecords/);
+  assert.match(app, /renderFusionCombos\(\)/);
+  assert.match(backupSource, /"fusionComboRecords"/);
+});

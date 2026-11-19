@@ -9,6 +9,7 @@
     "floorRecords",
     "petEquipmentDeliveryRecords",
     "fusionDeliveryRecords",
+    "fusionComboRecords",
     "equipmentRecords",
     "eyePriceRecords",
     "yuanxiaoRecords",

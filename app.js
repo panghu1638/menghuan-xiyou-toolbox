@@ -31,6 +31,7 @@
     ),
     petEquipmentDeliveryRecords: [],
     fusionDeliveryRecords: [],
+    fusionComboRecords: structuredClone(XYQPetFusionTimes.defaultComboRecords),
     petEquipmentCharacterVersion: 2,
     equipmentRecords: structuredClone(XYQEquipmentPrices.defaultEquipmentRecords),
     eyePriceRecords: structuredClone(XYQEquipmentPrices.defaultEyePriceRecords),
@@ -234,6 +235,9 @@
       saved.fusionDeliveryRecords = XYQPetFusionTimes.migrateRecords(
         saved.fusionDeliveryRecords,
         saved.petEquipmentCharacters,
+      );
+      saved.fusionComboRecords = XYQPetFusionTimes.migrateComboRecords(
+        saved.fusionComboRecords,
       );
       saved.equipmentRecords = Array.isArray(saved.equipmentRecords)
         ? saved.equipmentRecords
@@ -959,6 +963,68 @@
         actionCell,
       );
       tbody.append(row);
+    });
+  }
+
+  function renderFusionCombos() {
+    ["early", "late"].forEach(function (stage) {
+      var tbody = document.getElementById("fusion-combo-" + stage);
+      if (!tbody) return;
+
+      tbody.replaceChildren();
+      var combos = state.fusionComboRecords.filter(function (combo) {
+        return combo.stage === stage;
+      });
+
+      if (!combos.length) {
+        var emptyRow = document.createElement("tr");
+        var emptyCell = document.createElement("td");
+        emptyCell.colSpan = 4;
+        emptyCell.className = "pet-equipment-time-empty";
+        emptyCell.textContent = "还没有组合，点击上方按钮新增。";
+        emptyRow.append(emptyCell);
+        tbody.append(emptyRow);
+        return;
+      }
+
+      combos.forEach(function (combo) {
+        var row = document.createElement("tr");
+        [
+          ["main", "主宠", "如 画魂"],
+          ["sub", "副宠", "如 持国巡守"],
+          ["target", "目标结果", "如 须弥画魂"],
+        ].forEach(function (field) {
+          var cell = document.createElement("td");
+          var input = document.createElement("input");
+          input.type = "text";
+          input.value = combo[field[0]];
+          input.placeholder = field[2];
+          input.setAttribute("aria-label", field[1]);
+          input.addEventListener("input", function (event) {
+            combo[field[0]] = event.target.value;
+            saveState();
+          });
+          cell.append(input);
+          row.append(cell);
+        });
+
+        var actionCell = document.createElement("td");
+        var removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "danger";
+        removeButton.textContent = "删除";
+        removeButton.addEventListener("click", function () {
+          if (!confirmDelete("确定删除这条炼妖组合吗？")) return;
+          state.fusionComboRecords = state.fusionComboRecords.filter(
+            function (item) { return item !== combo; },
+          );
+          saveState();
+          renderFusionCombos();
+        });
+        actionCell.append(removeButton);
+        row.append(actionCell);
+        tbody.append(row);
+      });
     });
   }
 
@@ -2566,6 +2632,14 @@
     renderPetEquipmentTimes();
   });
 
+  ["early", "late"].forEach(function (stage) {
+    bindClick("fusion-combo-add-" + stage, function () {
+      state.fusionComboRecords.push(XYQPetFusionTimes.createEmptyCombo(stage));
+      saveState();
+      renderFusionCombos();
+    });
+  });
+
   bindClick("fusion-add-record", function () {
     if (!state.petEquipmentCharacters.length) {
       alert("请先在宠装出货页添加角色。");
@@ -2770,6 +2844,7 @@
     renderFloorMarket();
     renderEquipmentMarket();
     renderPetEquipmentTimes();
+    renderFusionCombos();
     renderFusionDeliveryTimes();
     renderEyePriceMarket();
     renderSpiritStoneMarket();
@@ -2787,6 +2862,7 @@
   renderFloorMarket();
   renderEquipmentMarket();
   renderPetEquipmentTimes();
+  renderFusionCombos();
   renderFusionDeliveryTimes();
   renderEyePriceMarket();
   renderSpiritStoneMarket();
