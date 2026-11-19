@@ -26,7 +26,9 @@
     stallPriceDrafts: [{ item: "", unitPrice: null }],
     floorRecords: structuredClone(XYQFloorMarket.defaultFloorRecords),
     floorNameVersion: 2,
-    petEquipmentCharacters: [],
+    petEquipmentCharacters: structuredClone(
+      XYQPetEquipmentTimes.defaultCharacters,
+    ),
     petEquipmentDeliveryRecords: [],
     fusionDeliveryRecords: [],
     petEquipmentCharacterVersion: 2,
@@ -2570,7 +2572,14 @@
       return;
     }
     state.fusionDeliveryRecords.push(
-      XYQPetFusionTimes.createEmptyRecord(state.petEquipmentCharacters),
+      XYQPetFusionTimes.createEmptyRecord(
+        state.petEquipmentCharacters,
+        state.fusionDeliveryRecords.length
+          ? state.fusionDeliveryRecords[
+              state.fusionDeliveryRecords.length - 1
+            ].character
+          : "",
+      ),
     );
     saveState();
     renderFusionDeliveryTimes();

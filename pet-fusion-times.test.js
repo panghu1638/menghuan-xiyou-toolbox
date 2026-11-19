@@ -6,15 +6,22 @@ import "./pet-fusion-times.js";
 
 const times = globalThis.XYQPetFusionTimes;
 
-test("新增炼妖记录默认使用第一个角色", () => {
-  assert.deepEqual(times.createEmptyRecord(["大号", "小号"]), {
+test("新增炼妖记录沿用最近角色", () => {
+  assert.deepEqual(times.createEmptyRecord(["大号", "小号"], "小号"), {
+    character: "小号",
+    embryoCombo: "",
+    result: "",
+    deliveryTime: "",
+    shichen: "",
+  });
+  assert.deepEqual(times.createEmptyRecord(["大号", "小号"], "未保存角色"), {
     character: "大号",
     embryoCombo: "",
     result: "",
     deliveryTime: "",
     shichen: "",
   });
-  assert.deepEqual(times.createEmptyRecord([]), {
+  assert.deepEqual(times.createEmptyRecord([], ""), {
     character: "",
     embryoCombo: "",
     result: "",

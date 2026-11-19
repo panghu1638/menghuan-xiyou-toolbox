@@ -1,5 +1,6 @@
 (function () {
   var categories = ["护腕", "项圈", "衣服", "其他"];
+  var defaultCharacters = ["无敌狗托", "大唐画晚"];
 
   function normalizedText(value) {
     return typeof value === "string" ? value.trim() : "";
@@ -14,6 +15,9 @@
 
   function normalizeCharacters(characters, records) {
     var normalized = [];
+    defaultCharacters.forEach(function (character) {
+      addCharacter(normalized, character);
+    });
     (Array.isArray(characters) ? characters : []).forEach(function (character) {
       addCharacter(normalized, character);
     });
@@ -83,6 +87,7 @@
 
   globalThis.XYQPetEquipmentTimes = {
     categories,
+    defaultCharacters,
     createEmptyRecord,
     migratePetEquipmentRecords,
     removeCharacter,

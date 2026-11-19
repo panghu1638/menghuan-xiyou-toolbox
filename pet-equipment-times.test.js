@@ -7,6 +7,7 @@ import "./pet-equipment-times.js";
 
 const {
   categories,
+  defaultCharacters,
   createEmptyRecord,
   migratePetEquipmentRecords,
   removeCharacter,
@@ -14,6 +15,14 @@ const {
 
 test("宠装出货部位覆盖护腕项圈衣服并保留其他", () => {
   assert.deepEqual(categories, ["护腕", "项圈", "衣服", "其他"]);
+});
+
+test("角色列表默认包含无敌狗托和大唐画晚且无敌狗托优先", () => {
+  assert.deepEqual(defaultCharacters, ["无敌狗托", "大唐画晚"]);
+  assert.deepEqual(
+    migratePetEquipmentRecords([], ["运气爆棚", "无敌狗托"]).characters,
+    ["无敌狗托", "大唐画晚", "运气爆棚"],
+  );
 });
 
 test("新增宠装记录默认使用第一个角色和护腕", () => {
@@ -50,7 +59,7 @@ test("宠装出货记录迁移保留角色并补齐字段", () => {
       [" 大号 ", "大号"],
     ),
     {
-      characters: ["大号", "小号"],
+      characters: ["无敌狗托", "大唐画晚", "大号", "小号"],
       records: [
         {
           character: "大号",
@@ -94,9 +103,9 @@ test("宠装出货时间按梦幻30分钟时辰轮换", async () => {
   assert.match(app, /record\.shichen/);
 });
 
-test("没有保存角色时角色列表为空", () => {
+test("没有保存角色时保留默认角色", () => {
   assert.deepEqual(migratePetEquipmentRecords(undefined, undefined), {
-    characters: [],
+    characters: ["无敌狗托", "大唐画晚"],
     records: [],
   });
 });

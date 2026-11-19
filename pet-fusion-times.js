@@ -3,9 +3,13 @@
     return typeof value === "string" ? value.trim() : "";
   }
 
-  function createEmptyRecord(characters) {
+  function createEmptyRecord(characters, lastCharacter) {
+    var last = normalizedText(lastCharacter);
     return {
-      character: (Array.isArray(characters) && characters[0]) || "",
+      character:
+        Array.isArray(characters) && characters.includes(last)
+          ? last
+          : (characters && characters[0]) || "",
       embryoCombo: "",
       result: "",
       deliveryTime: "",
