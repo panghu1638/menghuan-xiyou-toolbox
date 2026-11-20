@@ -164,6 +164,9 @@ test("炼妖出货页顶部提供前期后期组合搭配", async () => {
   const backupSource = await readFile(new URL("./data-backup.js", import.meta.url), "utf8");
 
   assert.match(page, /炼妖组合搭配/);
+  assert.match(page, /前期：定方向/);
+  assert.match(page, /后期：合胚子/);
+  assert.match(page, /预置思路仅作参考/);
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-time-records"'));
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-combo-late"'));
   assert.match(page, /id="fusion-combo-add-early"/);
