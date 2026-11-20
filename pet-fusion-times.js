@@ -47,12 +47,19 @@
     });
   }
 
-  var defaultComboRecords = [
+  var legacyDefaultComboRecords = [
     { stage: "early", main: "画魂", sub: "持国巡守", target: "须弥画魂" },
     { stage: "early", main: "泪妖", sub: "持国巡守", target: "须弥泪妖" },
     { stage: "early", main: "须弥宠", sub: "出奇制胜宠", target: "少技能出奇须弥" },
     { stage: "late", main: "少技能出奇须弥", sub: "多技能胚子", target: "多技能出奇须弥" },
     { stage: "late", main: "净台妙谛宠", sub: "多技能胚子", target: "多技能净台妙谛" },
+  ];
+
+  var defaultComboRecords = [
+    { stage: "early", main: "画魂", sub: "持国巡守", target: "6–7技能须弥画魂" },
+    { stage: "early", main: "泪妖", sub: "持国巡守", target: "6–7技能须弥泪妖" },
+    { stage: "late", main: "6–7技能须弥", sub: "4技能出奇自在心猿", target: "须弥出奇自在心猿" },
+    { stage: "late", main: "6–7技能须弥", sub: "4技能出奇人形翼马", target: "须弥出奇人形翼马" },
   ];
 
   function normalizeStage(value) {
@@ -63,9 +70,20 @@
     return { stage: normalizeStage(stage), main: "", sub: "", target: "" };
   }
 
+  function comboRecordsMatch(first, second) {
+    return first.length === second.length &&
+      first.every(function (combo, index) {
+        var other = second[index];
+        return combo.stage === other.stage &&
+          combo.main === other.main &&
+          combo.sub === other.sub &&
+          combo.target === other.target;
+      });
+  }
+
   function migrateComboRecords(records) {
     if (!Array.isArray(records)) return structuredClone(defaultComboRecords);
-    return records.map(function (record) {
+    var normalized = records.map(function (record) {
       var source = record && typeof record === "object" ? record : {};
       return {
         stage: normalizeStage(source.stage),
@@ -74,6 +92,9 @@
         target: normalizedText(source.target),
       };
     });
+    return comboRecordsMatch(normalized, legacyDefaultComboRecords)
+      ? structuredClone(defaultComboRecords)
+      : normalized;
   }
 
   globalThis.XYQPetFusionTimes = {

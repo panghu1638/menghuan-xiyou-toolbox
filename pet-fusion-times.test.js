@@ -122,12 +122,32 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
 });
 
 test("炼妖组合搭配预置前期和后期示例", () => {
-  const stages = new Set(times.defaultComboRecords.map((combo) => combo.stage));
-  assert.deepEqual([...stages].sort(), ["early", "late"]);
-  for (const combo of times.defaultComboRecords) {
-    assert.deepEqual(Object.keys(combo), ["stage", "main", "sub", "target"]);
-    assert.ok(combo.main && combo.sub && combo.target);
-  }
+  assert.deepEqual(times.defaultComboRecords, [
+    {
+      stage: "early",
+      main: "画魂",
+      sub: "持国巡守",
+      target: "6–7技能须弥画魂",
+    },
+    {
+      stage: "early",
+      main: "泪妖",
+      sub: "持国巡守",
+      target: "6–7技能须弥泪妖",
+    },
+    {
+      stage: "late",
+      main: "6–7技能须弥",
+      sub: "4技能出奇自在心猿",
+      target: "须弥出奇自在心猿",
+    },
+    {
+      stage: "late",
+      main: "6–7技能须弥",
+      sub: "4技能出奇人形翼马",
+      target: "须弥出奇人形翼马",
+    },
+  ]);
 });
 
 test("新增炼妖组合按阶段生成空行", () => {
@@ -175,6 +195,25 @@ test("炼妖组合迁移补齐字段，未保存过时使用预置", () => {
   );
 });
 
+test("旧版未修改的预置组合自动升级，自定义组合保留", () => {
+  const legacyDefaults = [
+    { stage: "early", main: "画魂", sub: "持国巡守", target: "须弥画魂" },
+    { stage: "early", main: "泪妖", sub: "持国巡守", target: "须弥泪妖" },
+    { stage: "early", main: "须弥宠", sub: "出奇制胜宠", target: "少技能出奇须弥" },
+    { stage: "late", main: "少技能出奇须弥", sub: "多技能胚子", target: "多技能出奇须弥" },
+    { stage: "late", main: "净台妙谛宠", sub: "多技能胚子", target: "多技能净台妙谛" },
+  ];
+  const customCombo = {
+    stage: "late",
+    main: "自用主宠",
+    sub: "自用副宠",
+    target: "自用结果",
+  };
+
+  assert.deepEqual(times.migrateComboRecords(legacyDefaults), times.defaultComboRecords);
+  assert.deepEqual(times.migrateComboRecords([customCombo]), [customCombo]);
+});
+
 test("炼妖出货页顶部提供前期后期组合搭配", async () => {
   const page = await readFile(new URL("./fusion-times.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
@@ -187,6 +226,7 @@ test("炼妖出货页顶部提供前期后期组合搭配", async () => {
   assert.match(page, /预置思路仅作参考/);
   assert.match(page, /id="fusion-combo-count-early"/);
   assert.match(page, /id="fusion-combo-count-late"/);
+  assert.match(page, /接4技能出奇心猿或人形翼马/);
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-time-records"'));
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-combo-late"'));
   assert.match(page, /id="fusion-combo-add-early"/);
