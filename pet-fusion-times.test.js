@@ -140,6 +140,23 @@ test("新增炼妖组合按阶段生成空行", () => {
   assert.equal(times.createEmptyCombo("其他").stage, "early");
 });
 
+test("炼妖组合可生成预填炼妖记录", () => {
+  assert.deepEqual(
+    times.createRecordFromCombo(
+      { main: " 画魂 ", sub: " 持国巡守 ", target: " 须弥画魂 " },
+      ["大号", "小号"],
+      "小号",
+    ),
+    {
+      character: "小号",
+      embryoCombo: "画魂 + 持国巡守",
+      result: "须弥画魂",
+      deliveryTime: "",
+      shichen: "",
+    },
+  );
+});
+
 test("炼妖组合迁移补齐字段，未保存过时使用预置", () => {
   assert.deepEqual(times.migrateComboRecords(undefined), times.defaultComboRecords);
   assert.notEqual(times.migrateComboRecords(undefined), times.defaultComboRecords);
@@ -164,9 +181,12 @@ test("炼妖出货页顶部提供前期后期组合搭配", async () => {
   const backupSource = await readFile(new URL("./data-backup.js", import.meta.url), "utf8");
 
   assert.match(page, /炼妖组合搭配/);
-  assert.match(page, /前期：定方向/);
-  assert.match(page, /后期：合胚子/);
+  assert.match(page, /class="fusion-combo-board"/);
+  assert.match(page, />前期<\/span>\s*<h3[^>]*>定方向<\/h3>/);
+  assert.match(page, />后期<\/span>\s*<h3[^>]*>合胚子<\/h3>/);
   assert.match(page, /预置思路仅作参考/);
+  assert.match(page, /id="fusion-combo-count-early"/);
+  assert.match(page, /id="fusion-combo-count-late"/);
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-time-records"'));
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-combo-late"'));
   assert.match(page, /id="fusion-combo-add-early"/);
@@ -176,5 +196,7 @@ test("炼妖出货页顶部提供前期后期组合搭配", async () => {
   assert.match(page, /<th>目标结果<\/th>/);
   assert.match(app, /fusionComboRecords/);
   assert.match(app, /renderFusionCombos\(\)/);
+  assert.match(app, /createRecordFromCombo/);
+  assert.match(app, /记录/);
   assert.match(backupSource, /"fusionComboRecords"/);
 });

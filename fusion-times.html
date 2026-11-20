@@ -43,43 +43,67 @@
 
     <main>
       <section class="reference-panel pet-equipment-time-panel" aria-labelledby="fusion-combo-title">
-        <div>
-          <h2 id="fusion-combo-title">炼妖组合搭配</h2>
-          <p>前期先搭技能方向，后期再补多技能胚子；预置思路仅作参考，可按本区行情调整。</p>
+        <div class="fusion-combo-intro">
+          <div>
+            <h2 id="fusion-combo-title">炼妖组合搭配</h2>
+            <p>前期先搭技能方向，后期再补多技能胚子。预置思路仅作参考，可按本区行情调整；点“记录”把组合带入下方录入。</p>
+          </div>
+          <span class="fusion-combo-autosave">修改后自动保存</span>
         </div>
-        <div class="pet-equipment-time-actions">
-          <h3>前期：定方向</h3>
-          <button id="fusion-combo-add-early" type="button" class="primary">新增前期组合</button>
-        </div>
-        <div class="reference-table-wrap pet-equipment-time-table-wrap">
-          <table class="pet-equipment-time-table fusion-combo-table">
-            <thead>
-              <tr>
-                <th>主宠</th>
-                <th>副宠</th>
-                <th>目标结果</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="fusion-combo-early"></tbody>
-          </table>
-        </div>
-        <div class="pet-equipment-time-actions">
-          <h3>后期：合胚子</h3>
-          <button id="fusion-combo-add-late" type="button" class="primary">新增后期组合</button>
-        </div>
-        <div class="reference-table-wrap pet-equipment-time-table-wrap">
-          <table class="pet-equipment-time-table fusion-combo-table">
-            <thead>
-              <tr>
-                <th>主宠</th>
-                <th>副宠</th>
-                <th>目标结果</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="fusion-combo-late"></tbody>
-          </table>
+        <div class="fusion-combo-board">
+          <section class="fusion-combo-lane fusion-combo-lane-early" aria-labelledby="fusion-combo-early-title">
+            <div class="fusion-combo-lane-head">
+              <div>
+                <span class="fusion-combo-stage">前期</span>
+                <h3 id="fusion-combo-early-title">定方向</h3>
+                <p>先合核心技能，控制胚子成本。</p>
+              </div>
+              <div class="fusion-combo-lane-side">
+                <span class="fusion-combo-count" id="fusion-combo-count-early">3 组</span>
+                <button id="fusion-combo-add-early" type="button" class="primary">新增组合</button>
+              </div>
+            </div>
+            <div class="reference-table-wrap pet-equipment-time-table-wrap">
+              <table class="pet-equipment-time-table fusion-combo-table">
+                <thead>
+                  <tr>
+                    <th>主宠</th>
+                    <th>副宠</th>
+                    <th>目标结果</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="fusion-combo-early"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="fusion-combo-lane fusion-combo-lane-late" aria-labelledby="fusion-combo-late-title">
+            <div class="fusion-combo-lane-head">
+              <div>
+                <span class="fusion-combo-stage">后期</span>
+                <h3 id="fusion-combo-late-title">合胚子</h3>
+                <p>带着特殊技能，再冲多技能胚子。</p>
+              </div>
+              <div class="fusion-combo-lane-side">
+                <span class="fusion-combo-count" id="fusion-combo-count-late">2 组</span>
+                <button id="fusion-combo-add-late" type="button" class="primary">新增组合</button>
+              </div>
+            </div>
+            <div class="reference-table-wrap pet-equipment-time-table-wrap">
+              <table class="pet-equipment-time-table fusion-combo-table">
+                <thead>
+                  <tr>
+                    <th>主宠</th>
+                    <th>副宠</th>
+                    <th>目标结果</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="fusion-combo-late"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </section>
 

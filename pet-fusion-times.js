@@ -21,6 +21,16 @@
     };
   }
 
+  function createRecordFromCombo(combo, characters, lastCharacter) {
+    var record = createEmptyRecord(characters, lastCharacter);
+    var source = combo && typeof combo === "object" ? combo : {};
+    record.embryoCombo = [normalizedText(source.main), normalizedText(source.sub)]
+      .filter(Boolean)
+      .join(" + ");
+    record.result = normalizedText(source.target);
+    return record;
+  }
+
   function migrateRecords(records, characters) {
     var savedCharacters = Array.isArray(characters) ? characters : [];
     return (Array.isArray(records) ? records : []).map(function (record) {
@@ -68,6 +78,7 @@
 
   globalThis.XYQPetFusionTimes = {
     createEmptyRecord,
+    createRecordFromCombo,
     migrateRecords,
     defaultComboRecords,
     createEmptyCombo,

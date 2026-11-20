@@ -936,8 +936,154 @@ button:hover {
   text-align: center;
 }
 
-.reference-panel > .pet-equipment-time-table-wrap .fusion-combo-table {
-  min-width: 36rem;
+section.reference-panel > div.fusion-combo-intro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.fusion-combo-intro > div {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.fusion-combo-autosave {
+  flex: 0 0 auto;
+  padding: 0.28rem 0.62rem;
+  border: 1px solid rgba(47, 125, 106, 0.18);
+  border-radius: 999px;
+  background: rgba(238, 248, 245, 0.9);
+  color: var(--green);
+  font-size: 0.76rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.fusion-combo-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.fusion-combo-lane {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(185, 216, 208, 0.9);
+  border-top-width: 3px;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #ffffff, var(--panel-tint));
+  box-shadow: var(--shadow-soft);
+}
+
+.fusion-combo-lane-early {
+  border-top-color: var(--green);
+}
+
+.fusion-combo-lane-late {
+  border-top-color: var(--gold);
+}
+
+.fusion-combo-lane-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(238, 248, 245, 0.92), rgba(255, 255, 255, 0.96));
+}
+
+.fusion-combo-lane-late .fusion-combo-lane-head {
+  background: linear-gradient(135deg, rgba(255, 249, 235, 0.95), rgba(255, 255, 255, 0.96));
+}
+
+.fusion-combo-stage {
+  display: inline-flex;
+  margin-bottom: 0.42rem;
+  padding: 0.16rem 0.48rem;
+  border-radius: 999px;
+  background: rgba(47, 125, 106, 0.1);
+  color: var(--green-deep);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.fusion-combo-lane-late .fusion-combo-stage {
+  background: rgba(194, 149, 61, 0.14);
+  color: var(--gold-deep);
+}
+
+.fusion-combo-lane-head h3 {
+  color: var(--green-deep);
+  font-size: 1.08rem;
+}
+
+.fusion-combo-lane-late .fusion-combo-lane-head h3 {
+  color: var(--gold-deep);
+}
+
+.fusion-combo-lane-head p {
+  margin-top: 0.32rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.fusion-combo-lane-side {
+  display: grid;
+  flex: 0 0 auto;
+  justify-items: end;
+  gap: 0.45rem;
+}
+
+.fusion-combo-lane-side button {
+  min-height: 2.15rem;
+  padding: 0.38rem 0.72rem;
+  box-shadow: none;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.fusion-combo-count {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-combo-lane .reference-table-wrap {
+  border-radius: 0;
+}
+
+.fusion-combo-lane .fusion-combo-table {
+  min-width: 31rem;
+  table-layout: fixed;
+}
+
+.fusion-combo-lane th {
+  padding: 0.56rem 0.58rem;
+  border-bottom-color: rgba(47, 125, 106, 0.22);
+  font-size: 0.76rem;
+}
+
+.fusion-combo-lane-late th {
+  border-bottom-color: rgba(194, 149, 61, 0.28);
+  background: linear-gradient(180deg, rgba(255, 249, 235, 0.96), rgba(255, 253, 248, 0.96));
+  color: var(--gold-deep);
+}
+
+.fusion-combo-lane td {
+  padding: 0.38rem;
+}
+
+.fusion-combo-lane tbody tr:hover {
+  background: linear-gradient(90deg, rgba(47, 125, 106, 0.045), rgba(231, 154, 159, 0.055));
+}
+
+.fusion-combo-lane input {
+  min-height: 2.15rem;
+  padding: 0.34rem 0.48rem;
+  font-size: 0.82rem;
 }
 
 .fusion-combo-table th:nth-child(-n + 3) {
@@ -946,7 +1092,32 @@ button:hover {
 
 .fusion-combo-table th:nth-child(4),
 .fusion-combo-table td:nth-child(4) {
-  width: 5rem;
+  width: 6.5rem;
+  text-align: center;
+}
+
+.fusion-combo-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.28rem;
+}
+
+.fusion-combo-row-actions button {
+  min-height: 2rem;
+  padding: 0.26rem 0.46rem;
+  border-radius: 0.52rem;
+  font-size: 0.76rem;
+}
+
+.fusion-combo-record {
+  border-color: rgba(47, 125, 106, 0.24);
+  background: var(--panel-soft);
+  color: var(--green-deep);
+}
+
+.fusion-combo-lane .pet-equipment-time-empty {
+  padding: 1.4rem;
+  color: var(--muted);
   text-align: center;
 }
 
@@ -1414,6 +1585,24 @@ footer p {
   .recipe,
   .result {
     grid-template-columns: 1fr;
+  }
+
+  section.reference-panel > div.fusion-combo-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fusion-combo-lane-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .fusion-combo-lane-side {
+    width: 100%;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-items: start;
   }
 
   .recipe-header {

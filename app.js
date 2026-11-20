@@ -975,6 +975,8 @@
       var combos = state.fusionComboRecords.filter(function (combo) {
         return combo.stage === stage;
       });
+      var count = document.getElementById("fusion-combo-count-" + stage);
+      if (count) count.textContent = combos.length + " 组";
 
       if (!combos.length) {
         var emptyRow = document.createElement("tr");
@@ -1009,6 +1011,39 @@
         });
 
         var actionCell = document.createElement("td");
+        var actionWrap = document.createElement("div");
+        actionWrap.className = "fusion-combo-row-actions";
+        var recordButton = document.createElement("button");
+        recordButton.type = "button";
+        recordButton.className = "fusion-combo-record";
+        recordButton.textContent = "记录";
+        recordButton.addEventListener("click", function () {
+          if (!combo.main.trim() || !combo.sub.trim() || !combo.target.trim()) {
+            alert("请先补全主宠、副宠和目标结果。");
+            return;
+          }
+          if (!state.petEquipmentCharacters.length) {
+            alert("请先在宠装出货页添加角色。");
+            return;
+          }
+          var lastCharacter = state.fusionDeliveryRecords.length
+            ? state.fusionDeliveryRecords[
+                state.fusionDeliveryRecords.length - 1
+              ].character
+            : "";
+          state.fusionDeliveryRecords.push(
+            XYQPetFusionTimes.createRecordFromCombo(
+              combo,
+              state.petEquipmentCharacters,
+              lastCharacter,
+            ),
+          );
+          saveState();
+          renderFusionDeliveryTimes();
+          var title = document.getElementById("fusion-time-title");
+          if (title) title.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
         var removeButton = document.createElement("button");
         removeButton.type = "button";
         removeButton.className = "danger";
@@ -1021,7 +1056,8 @@
           saveState();
           renderFusionCombos();
         });
-        actionCell.append(removeButton);
+        actionWrap.append(recordButton, removeButton);
+        actionCell.append(actionWrap);
         row.append(actionCell);
         tbody.append(row);
       });
