@@ -125,27 +125,27 @@ test("炼妖组合搭配预置前期和后期示例", () => {
   assert.deepEqual(times.defaultComboRecords, [
     {
       stage: "early",
-      main: "画魂",
-      sub: "持国巡守",
-      target: "6–7技能须弥画魂",
+      main: "6–7须弥心猿",
+      sub: "4–5出其心猿",
+      target: "6–7双特殊心猿",
     },
     {
       stage: "early",
-      main: "泪妖",
-      sub: "持国巡守",
-      target: "6–7技能须弥泪妖",
+      main: "6–7须弥人马",
+      sub: "4–5出其人马",
+      target: "6–7双特殊人马",
     },
     {
       stage: "late",
-      main: "6–7技能须弥",
-      sub: "4技能出奇自在心猿",
-      target: "须弥出奇自在心猿",
+      main: "8–10须弥心猿",
+      sub: "6–8出其心猿",
+      target: "8+双特殊心猿",
     },
     {
       stage: "late",
-      main: "6–7技能须弥",
-      sub: "4技能出奇人形翼马",
-      target: "须弥出奇人形翼马",
+      main: "8–10须弥人马",
+      sub: "6–8出其人马",
+      target: "8+双特殊人马",
     },
   ]);
 });
@@ -196,12 +196,44 @@ test("炼妖组合迁移补齐字段，未保存过时使用预置", () => {
 });
 
 test("旧版未修改的预置组合自动升级，自定义组合保留", () => {
-  const legacyDefaults = [
+  const firstLegacyDefaults = [
     { stage: "early", main: "画魂", sub: "持国巡守", target: "须弥画魂" },
     { stage: "early", main: "泪妖", sub: "持国巡守", target: "须弥泪妖" },
     { stage: "early", main: "须弥宠", sub: "出奇制胜宠", target: "少技能出奇须弥" },
     { stage: "late", main: "少技能出奇须弥", sub: "多技能胚子", target: "多技能出奇须弥" },
     { stage: "late", main: "净台妙谛宠", sub: "多技能胚子", target: "多技能净台妙谛" },
+  ];
+  const secondLegacyDefaults = [
+    { stage: "early", main: "画魂", sub: "持国巡守", target: "6–7技能须弥画魂" },
+    { stage: "early", main: "泪妖", sub: "持国巡守", target: "6–7技能须弥泪妖" },
+    { stage: "late", main: "6–7技能须弥", sub: "4技能出奇自在心猿", target: "须弥出奇自在心猿" },
+    { stage: "late", main: "6–7技能须弥", sub: "4技能出奇人形翼马", target: "须弥出奇人形翼马" },
+  ];
+  const thirdLegacyDefaults = [
+    {
+      stage: "early",
+      main: "6–7技能须弥自在心猿",
+      sub: "4–5技能出其不意自在心猿",
+      target: "6–7技能双特殊自在心猿",
+    },
+    {
+      stage: "early",
+      main: "6–7技能须弥人形翼马",
+      sub: "4–5技能出其不意人形翼马",
+      target: "6–7技能双特殊人形翼马",
+    },
+    {
+      stage: "late",
+      main: "8–10技能须弥自在心猿",
+      sub: "6–8技能出其不意自在心猿",
+      target: "8技能以上双特殊自在心猿",
+    },
+    {
+      stage: "late",
+      main: "8–10技能须弥人形翼马",
+      sub: "6–8技能出其不意人形翼马",
+      target: "8技能以上双特殊人形翼马",
+    },
   ];
   const customCombo = {
     stage: "late",
@@ -210,7 +242,18 @@ test("旧版未修改的预置组合自动升级，自定义组合保留", () =>
     target: "自用结果",
   };
 
-  assert.deepEqual(times.migrateComboRecords(legacyDefaults), times.defaultComboRecords);
+  assert.deepEqual(
+    times.migrateComboRecords(firstLegacyDefaults),
+    times.defaultComboRecords,
+  );
+  assert.deepEqual(
+    times.migrateComboRecords(secondLegacyDefaults),
+    times.defaultComboRecords,
+  );
+  assert.deepEqual(
+    times.migrateComboRecords(thirdLegacyDefaults),
+    times.defaultComboRecords,
+  );
   assert.deepEqual(times.migrateComboRecords([customCombo]), [customCombo]);
 });
 
@@ -226,7 +269,11 @@ test("炼妖出货页顶部提供前期后期组合搭配", async () => {
   assert.match(page, /预置思路仅作参考/);
   assert.match(page, /id="fusion-combo-count-early"/);
   assert.match(page, /id="fusion-combo-count-late"/);
-  assert.match(page, /接4技能出奇心猿或人形翼马/);
+  assert.match(page, /同造型 6–7 技能双特殊/);
+  assert.match(page, /同造型 8\+ 技能双特殊/);
+  assert.match(page, /出其不意/);
+  assert.match(page, /心猿＝自在心猿/);
+  assert.match(page, /人马＝人形翼马/);
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-time-records"'));
   assert.ok(page.indexOf('id="fusion-combo-early"') < page.indexOf('id="fusion-combo-late"'));
   assert.match(page, /id="fusion-combo-add-early"/);
