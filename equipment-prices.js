@@ -19,8 +19,8 @@
     "115九眼天珠": Array.from({ length: 21 }, (_, index) => 80 + index),
     "125三眼天珠": Array.from({ length: 20 }, (_, index) => 80 + index),
     "125九眼天珠": Array.from({ length: 20 }, (_, index) => 80 + index),
-    "105三眼天珠": Array.from({ length: 31 }, (_, index) => 70 + index),
-    "105九眼天珠": Array.from({ length: 31 }, (_, index) => 70 + index),
+    "105三眼天珠": Array.from({ length: 11 }, (_, index) => 90 + index),
+    "105九眼天珠": Array.from({ length: 11 }, (_, index) => 90 + index),
   };
 
   function createEquipmentRecords() {
@@ -64,6 +64,12 @@
     }) || null;
   }
 
+  function migrateEyePriceRecords(records) {
+    return records.filter(function (record) {
+      return record.level !== 105 || record.power >= 90;
+    });
+  }
+
   function nonNegativeNumber(value) {
     return Number.isFinite(value) && value >= 0 ? value : null;
   }
@@ -94,12 +100,11 @@
     calculateEquipmentArbitrage,
     defaultEquipmentRecords: createEquipmentRecords(),
     defaultEyeNotes: [
-      { source: "105三九眼", label: "40–50", price: 18.8 },
-      { source: "105三九眼", label: "60+", price: 30 },
       { source: "125九眼", label: "灵力50", price: 99 },
     ],
     defaultEyePriceRecords: createEyePriceRecords(),
     findEquipmentRecord,
     findEyePriceRecord,
+    migrateEyePriceRecords,
   };
 })();

@@ -21,7 +21,7 @@ test("内置宝宝装备价格覆盖截图关键数据", () => {
 });
 
 test("内置三眼九眼天珠价格默认留空", () => {
-  assert.equal(prices.defaultEyePriceRecords.length, 144);
+  assert.equal(prices.defaultEyePriceRecords.length, 104);
   assert.deepEqual(
     [...new Set(prices.defaultEyePriceRecords.map((record) => record.level))],
     [115, 125, 105],
@@ -39,6 +39,20 @@ test("内置三眼九眼天珠价格默认留空", () => {
     power: 93,
     priceWan: null,
   });
+  assert.equal(
+    prices.findEyePriceRecord(prices.defaultEyePriceRecords, 105, "三眼天珠", 89),
+    null,
+  );
+  assert.equal(
+    prices.findEyePriceRecord(prices.defaultEyePriceRecords, 105, "九眼天珠", 89),
+    null,
+  );
+  assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 105, "九眼天珠", 90), {
+    level: 105,
+    type: "九眼天珠",
+    power: 90,
+    priceWan: null,
+  });
   assert.deepEqual(prices.findEyePriceRecord(prices.defaultEyePriceRecords, 115, "九眼天珠", 98), {
     level: 115,
     type: "九眼天珠",
@@ -52,9 +66,22 @@ test("内置三眼九眼天珠价格默认留空", () => {
     priceWan: null,
   });
   assert.deepEqual(prices.defaultEyeNotes, [
-    { source: "105三九眼", label: "40–50", price: 18.8 },
-    { source: "105三九眼", label: "60+", price: 30 },
     { source: "125九眼", label: "灵力50", price: 99 },
+  ]);
+});
+
+test("三眼九眼旧数据只删除105级90以下档位", () => {
+  const records = [
+    { level: 105, type: "三眼天珠", power: 89, priceWan: 15 },
+    { level: 105, type: "三眼天珠", power: 90, priceWan: 20 },
+    { level: 115, type: "九眼天珠", power: 80, priceWan: 30 },
+    { level: 125, type: "三眼天珠", power: 85, priceWan: 40 },
+  ];
+
+  assert.deepEqual(prices.migrateEyePriceRecords(records), [
+    { level: 105, type: "三眼天珠", power: 90, priceWan: 20 },
+    { level: 115, type: "九眼天珠", power: 80, priceWan: 30 },
+    { level: 125, type: "三眼天珠", power: 85, priceWan: 40 },
   ]);
 });
 

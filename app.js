@@ -251,6 +251,9 @@
         );
         saved.eyePriceResetVersion = 1;
       }
+      saved.eyePriceRecords = XYQEquipmentPrices.migrateEyePriceRecords(
+        saved.eyePriceRecords,
+      );
       saved.decomposeSymbolPriceWan = normalizeDecomposeSymbolPrice(saved);
       saved.lingShiDecompose = normalizeLingShiDecompose(saved.lingShiDecompose);
       saved.yuPoDecompose = normalizeYuPoDecompose(saved.yuPoDecompose);
