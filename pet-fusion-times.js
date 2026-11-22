@@ -47,8 +47,8 @@
       embryoCombo: "",
       result: "",
       success: false,
-      successSub: false,
-      wild: false,
+      resultType: "main",
+      skillCount: null,
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
@@ -85,8 +85,13 @@
       var attemptDate = normalizeAttemptDate(source.attemptDate) ||
         attemptDateFromDeliveryTime(deliveryTime);
       var success = source.success === true;
-      var successSub = source.successSub === true;
-      var wild = source.wild === true;
+      var resultType = normalizedText(source.resultType);
+      if (!["main", "sub", "wild", "turtle", "bubble"].includes(resultType)) {
+        if (source.wild === true) resultType = "wild";
+        else if (source.successSub === true) resultType = "sub";
+        else resultType = "main";
+      }
+      var skillCount = Number(source.skillCount);
       var fullSkills = source.fullSkills === true;
       return {
         character: savedCharacters.includes(character) ? character : "",
@@ -94,8 +99,8 @@
         embryoCombo: normalizedText(source.embryoCombo),
         result: normalizedText(source.result),
         success,
-        successSub,
-        wild,
+        resultType,
+        skillCount: Number.isFinite(skillCount) && skillCount >= 0 ? skillCount : null,
         fullSkills,
         deliveryTime: deliveryTime,
         shichen: XYQFloorMarket.shichenFromDeliveryTime(deliveryTime),
@@ -133,7 +138,11 @@
           successes: 0,
           successSubs: 0,
           wilds: 0,
+          turtlesAndBubbles: 0,
           fullSkills: 0,
+          skillTotal: 0,
+          skillCountRecords: 0,
+          averageSkillCount: null,
           successRate: null,
         };
         summaryByCombo.set(embryoCombo, summary);
@@ -141,14 +150,25 @@
       }
       summary.attempts += 1;
       if (source.success === true) summary.successes += 1;
-      if (source.successSub === true) summary.successSubs += 1;
-      if (source.wild === true) summary.wilds += 1;
+      if (source.resultType === "sub") summary.successSubs += 1;
+      if (source.resultType === "wild") summary.wilds += 1;
+      if (source.resultType === "turtle" || source.resultType === "bubble") {
+        summary.turtlesAndBubbles += 1;
+      }
       if (source.fullSkills === true) summary.fullSkills += 1;
+      var skillCount = Number(source.skillCount);
+      if (Number.isFinite(skillCount) && skillCount >= 0) {
+        summary.skillTotal += skillCount;
+        summary.skillCountRecords += 1;
+      }
     });
 
     summaries.forEach(function (summary) {
       summary.successRate = summary.attempts
         ? summary.successes / summary.attempts
+        : null;
+      summary.averageSkillCount = summary.skillCountRecords
+        ? summary.skillTotal / summary.skillCountRecords
         : null;
     });
     return summaries;

@@ -1155,31 +1155,48 @@
       });
       successCell.append(successInput);
 
-      var successSubCell = document.createElement("td");
-      successSubCell.className = "fusion-success-cell";
-      var successSubInput = document.createElement("input");
-      successSubInput.type = "checkbox";
-      successSubInput.checked = record.successSub === true;
-      successSubInput.setAttribute("aria-label", "出副宠");
-      successSubInput.addEventListener("change", function (event) {
-        record.successSub = event.target.checked;
+      var resultTypeCell = document.createElement("td");
+      var resultTypeSelect = document.createElement("select");
+      resultTypeSelect.setAttribute("aria-label", "结果类型");
+      [
+        ["main", "主宠"],
+        ["sub", "副宠"],
+        ["wild", "野生"],
+        ["turtle", "大海龟"],
+        ["bubble", "泡泡"],
+      ].forEach(function (item) {
+        var option = document.createElement("option");
+        option.value = item[0];
+        option.textContent = item[1];
+        resultTypeSelect.append(option);
+      });
+      resultTypeSelect.value = record.resultType || "main";
+      resultTypeSelect.addEventListener("change", function (event) {
+        record.resultType = event.target.value;
         saveState();
         renderFusionDeliveryTimes();
       });
-      successSubCell.append(successSubInput);
+      resultTypeCell.append(resultTypeSelect);
 
-      var wildCell = document.createElement("td");
-      wildCell.className = "fusion-success-cell";
-      var wildInput = document.createElement("input");
-      wildInput.type = "checkbox";
-      wildInput.checked = record.wild === true;
-      wildInput.setAttribute("aria-label", "野生");
-      wildInput.addEventListener("change", function (event) {
-        record.wild = event.target.checked;
+      var skillCountCell = document.createElement("td");
+      var skillCountInput = createDecimalInput();
+      skillCountInput.inputMode = "numeric";
+      skillCountInput.value = record.skillCount === null ? "" : record.skillCount;
+      skillCountInput.placeholder = "如 8";
+      skillCountInput.setAttribute("aria-label", "实际技能数");
+      skillCountInput.addEventListener("input", function (event) {
+        var value = Number(event.target.value);
+        record.skillCount = event.target.value !== "" &&
+          Number.isFinite(value) && value >= 0
+          ? value
+          : null;
         saveState();
-        renderFusionDeliveryTimes();
+        renderFusionStats(XYQPetFusionTimes.filterRecordsByRange(
+          state.fusionDeliveryRecords,
+          state.fusionStatsRange,
+        ));
       });
-      wildCell.append(wildInput);
+      skillCountCell.append(skillCountInput);
 
       var fullSkillsCell = document.createElement("td");
       fullSkillsCell.className = "fusion-success-cell";
@@ -1248,8 +1265,8 @@
         dateCell,
         embryoCell,
         successCell,
-        successSubCell,
-        wildCell,
+        resultTypeCell,
+        skillCountCell,
         fullSkillsCell,
         resultCell,
         timeCell,
@@ -1264,6 +1281,10 @@
     return rate === null ? "—" : (rate * 100).toFixed(2) + "%";
   }
 
+  function formatFusionSkillCount(value) {
+    return value === null ? "—" : String(Number(value.toFixed(2)));
+  }
+
   function renderFusionStats(records) {
     var tbody = document.getElementById("fusion-time-stats");
     var tfoot = document.getElementById("fusion-time-stats-total");
@@ -1275,7 +1296,7 @@
     if (!summaries.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 7;
+      emptyCell.colSpan = 9;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有可统计的胚子组合。";
       emptyRow.append(emptyCell);
@@ -1286,7 +1307,13 @@
     summaries.forEach(function (summary) {
       var row = document.createElement("tr");
       [summary.embryoCombo, summary.attempts, summary.successes]
-        .concat([summary.successSubs, summary.wilds, summary.fullSkills])
+        .concat([
+          summary.successSubs,
+          summary.wilds,
+          summary.turtlesAndBubbles,
+          summary.fullSkills,
+          formatFusionSkillCount(summary.averageSkillCount),
+        ])
         .map(String)
         .concat(formatFusionSuccessRate(summary.successRate))
         .forEach(function (value) {
@@ -1312,8 +1339,26 @@
     var fullSkills = summaries.reduce(function (total, summary) {
       return total + summary.fullSkills;
     }, 0);
+    var skillTotal = summaries.reduce(function (total, summary) {
+      return total + summary.skillTotal;
+    }, 0);
+    var skillCountRecords = summaries.reduce(function (total, summary) {
+      return total + summary.skillCountRecords;
+    }, 0);
+    var averageSkillCount = skillCountRecords ? skillTotal / skillCountRecords : null;
     var totalRow = document.createElement("tr");
-    ["合计", attempts, successes, successSubs, wilds, fullSkills]
+    [
+      "合计",
+      attempts,
+      successes,
+      successSubs,
+      wilds,
+      summaries.reduce(function (total, summary) {
+        return total + summary.turtlesAndBubbles;
+      }, 0),
+      fullSkills,
+      formatFusionSkillCount(averageSkillCount),
+    ]
       .map(String)
       .concat(formatFusionSuccessRate(attempts ? successes / attempts : null))
       .forEach(function (value) {
@@ -2838,6 +2883,24 @@
             ].character
           : "",
       ),
+    );
+    saveState();
+    renderFusionDeliveryTimes();
+  });
+
+  bindClick("fusion-remove-empty-records", function () {
+    var emptyCount = state.fusionDeliveryRecords.filter(function (record) {
+      return !record.embryoCombo.trim();
+    }).length;
+    if (!emptyCount) {
+      alert("没有未填写的炼妖记录。");
+      return;
+    }
+    if (!confirmDelete("确定删除 " + emptyCount + " 条胚子组合未填写的炼妖记录吗？")) {
+      return;
+    }
+    state.fusionDeliveryRecords = state.fusionDeliveryRecords.filter(
+      function (record) { return record.embryoCombo.trim(); },
     );
     saveState();
     renderFusionDeliveryTimes();

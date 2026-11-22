@@ -16,8 +16,8 @@ test("新增炼妖记录沿用最近角色", () => {
       embryoCombo: "",
       result: "",
       success: false,
-      successSub: false,
-      wild: false,
+      resultType: "main",
+      skillCount: null,
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
@@ -31,8 +31,8 @@ test("新增炼妖记录沿用最近角色", () => {
       embryoCombo: "",
       result: "",
       success: false,
-      successSub: false,
-      wild: false,
+      resultType: "main",
+      skillCount: null,
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
@@ -44,8 +44,8 @@ test("新增炼妖记录沿用最近角色", () => {
     embryoCombo: "",
     result: "",
     success: false,
-    successSub: false,
-    wild: false,
+    resultType: "main",
+    skillCount: null,
     fullSkills: false,
     deliveryTime: "",
     shichen: "",
@@ -67,8 +67,8 @@ test("新增炼妖记录一次生成五行空行", () => {
     embryoCombo: "",
     result: "",
     success: false,
-    successSub: false,
-    wild: false,
+    resultType: "main",
+    skillCount: null,
     fullSkills: false,
     deliveryTime: "",
     shichen: "",
@@ -99,8 +99,8 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         embryoCombo: "泪妖 + 日游神",
         result: "须弥泪妖",
         success: false,
-        successSub: false,
-        wild: false,
+        resultType: "main",
+        skillCount: null,
         fullSkills: false,
         deliveryTime: "11月12日 21.36",
         shichen: "寅时",
@@ -111,8 +111,8 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         embryoCombo: "",
         result: "",
         success: false,
-        successSub: false,
-        wild: false,
+        resultType: "main",
+        skillCount: null,
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
@@ -134,8 +134,59 @@ test("炼妖出货记录归并臭名昭著狗托", () => {
         embryoCombo: "3+5",
         result: "6猴子",
         success: false,
-        successSub: false,
-        wild: false,
+        resultType: "main",
+        skillCount: null,
+        fullSkills: false,
+        deliveryTime: "",
+        shichen: "—",
+      },
+    ],
+  );
+});
+
+test("炼妖旧记录迁移出副野生并清理技能数", () => {
+  assert.deepEqual(
+    times.migrateRecords(
+      [
+        { embryoCombo: "日+马", successSub: true, skillCount: "8" },
+        { embryoCombo: "马+日", wild: true, skillCount: -1 },
+        { embryoCombo: "广+鸟", skillCount: "x" },
+      ],
+      [],
+    ),
+    [
+      {
+        character: "",
+        attemptDate: "",
+        embryoCombo: "日+马",
+        result: "",
+        success: false,
+        resultType: "sub",
+        skillCount: 8,
+        fullSkills: false,
+        deliveryTime: "",
+        shichen: "—",
+      },
+      {
+        character: "",
+        attemptDate: "",
+        embryoCombo: "马+日",
+        result: "",
+        success: false,
+        resultType: "wild",
+        skillCount: null,
+        fullSkills: false,
+        deliveryTime: "",
+        shichen: "—",
+      },
+      {
+        character: "",
+        attemptDate: "",
+        embryoCombo: "广+鸟",
+        result: "",
+        success: false,
+        resultType: "main",
+        skillCount: null,
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
@@ -178,7 +229,7 @@ test("炼妖记录按胚子组合统计出货率", () => {
     times.summarizeRecords([
       { embryoCombo: " 日+马 ", success: true },
       { embryoCombo: "日+马", success: false },
-      { embryoCombo: "马+日", success: false, successSub: true },
+      { embryoCombo: "马+日", success: false, resultType: "sub", skillCount: 7 },
       { embryoCombo: "", success: true },
     ]),
     [
@@ -188,7 +239,11 @@ test("炼妖记录按胚子组合统计出货率", () => {
         successes: 1,
         successSubs: 0,
         wilds: 0,
+        turtlesAndBubbles: 0,
         fullSkills: 0,
+        skillTotal: 0,
+        skillCountRecords: 0,
+        averageSkillCount: null,
         successRate: 0.5,
       },
       {
@@ -197,28 +252,43 @@ test("炼妖记录按胚子组合统计出货率", () => {
         successes: 0,
         successSubs: 1,
         wilds: 0,
+        turtlesAndBubbles: 0,
         fullSkills: 0,
+        skillTotal: 7,
+        skillCountRecords: 1,
+        averageSkillCount: 7,
         successRate: 0,
       },
     ],
   );
 });
 
-test("出副宠独立于是否出货且默认出主", () => {
+test("炼妖结果类型独立于是否出货并统计技能数", () => {
   assert.deepEqual(
     times.summarizeRecords([
-      { embryoCombo: "日+马", success: false, wild: true },
-      { embryoCombo: "日+马", success: true, successSub: true, fullSkills: true },
+      { embryoCombo: "日+马", success: false, resultType: "wild", skillCount: 3 },
+      {
+        embryoCombo: "日+马",
+        success: true,
+        resultType: "sub",
+        skillCount: 8,
+        fullSkills: true,
+      },
+      { embryoCombo: "日+马", resultType: "turtle" },
     ]),
     [
       {
         embryoCombo: "日+马",
-        attempts: 2,
+        attempts: 3,
         successes: 1,
         successSubs: 1,
         wilds: 1,
         fullSkills: 1,
-        successRate: 0.5,
+        turtlesAndBubbles: 1,
+        skillTotal: 11,
+        skillCountRecords: 2,
+        averageSkillCount: 5.5,
+        successRate: 1 / 3,
       },
     ],
   );
@@ -236,18 +306,19 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(page, /<th>梦幻时辰<\/th>/);
   assert.match(page, /<th>记录日期<\/th>/);
   assert.match(page, /<th>是否出货<\/th>/);
-  assert.match(page, /<th>出副<\/th>/);
-  assert.match(page, /<th>野生<\/th>/);
+  assert.match(page, /<th>结果类型<\/th>/);
+  assert.match(page, /<th>实际技能数<\/th>/);
   assert.match(page, /<th>满技能<\/th>/);
   assert.match(page, /id="fusion-stats-range"/);
   assert.match(page, /value="day" selected>当天<\/option>/);
   assert.match(page, /id="fusion-time-stats"/);
   assert.match(app, /filterRecordsByRange/);
   assert.match(app, /summarizeRecords/);
-  assert.match(app, /successSub/);
-  assert.doesNotMatch(app, /出主宠/);
-  assert.match(app, /record\.wild/);
+  assert.match(app, /record\.resultType/);
   assert.match(app, /record\.fullSkills/);
+  assert.match(app, /record\.skillCount/);
+  assert.match(page, /id="fusion-remove-empty-records"/);
+  assert.match(app, /fusion-remove-empty-records/);
   assert.match(app, /createEmptyRecords/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);
@@ -314,8 +385,8 @@ test("炼妖组合可生成预填炼妖记录", () => {
       embryoCombo: "画魂 + 持国巡守",
       result: "须弥画魂",
       success: false,
-      successSub: false,
-      wild: false,
+      resultType: "main",
+      skillCount: null,
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
