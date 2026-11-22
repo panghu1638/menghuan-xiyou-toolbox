@@ -22,6 +22,7 @@
   --shadow: 0 18px 42px rgba(47, 125, 106, 0.1);
   --shadow-soft: 0 9px 24px rgba(47, 125, 106, 0.06);
   --radius: 1.1rem;
+  --page-width: 1640px;
   --font-display: "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", serif;
   --font-body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
 }
@@ -94,7 +95,7 @@ h3 {
   display: grid;
   gap: 1.5rem;
   align-items: end;
-  max-width: 1180px;
+  max-width: var(--page-width);
   margin: 0 auto;
   padding: 3.75rem 2rem 2rem;
 }
@@ -273,7 +274,7 @@ button:focus-visible {
 }
 
 main {
-  max-width: 1180px;
+  max-width: var(--page-width);
   margin: 0 auto;
   padding: 0 2rem 3rem;
 }
@@ -824,10 +825,6 @@ button:hover {
 .reference-panel > .pet-equipment-time-table-wrap .pet-equipment-time-table {
   min-width: 60rem;
   table-layout: fixed;
-}
-
-.fusion-main {
-  max-width: min(100%, 1640px);
 }
 
 .fusion-stats-table-wrap {
@@ -1573,7 +1570,7 @@ section.reference-panel > div.fusion-combo-intro {
 }
 
 footer {
-  max-width: 1180px;
+  max-width: var(--page-width);
   margin: 0 auto;
   padding: 0 2rem 3rem;
   color: var(--muted);

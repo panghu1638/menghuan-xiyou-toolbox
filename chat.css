@@ -11,7 +11,7 @@
   --err-bg: #fdeef0;
   --blue: var(--green);
   --blue-bg: #ecf6f2;
-  max-width: 1080px;
+  max-width: var(--page-width);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 14px;
