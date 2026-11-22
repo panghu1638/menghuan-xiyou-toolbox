@@ -946,6 +946,8 @@
       updateShichenCell();
 
       var actionCell = document.createElement("td");
+      var actionWrap = document.createElement("div");
+      actionWrap.className = "pet-equipment-time-actions fusion-time-actions";
       var removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.className = "danger";
@@ -1258,7 +1260,23 @@
         saveState();
         renderFusionDeliveryTimes();
       });
-      actionCell.append(removeButton);
+      var sameAttemptButton = document.createElement("button");
+      sameAttemptButton.type = "button";
+      sameAttemptButton.textContent = "同次";
+      sameAttemptButton.title = "复制这行的角色、日期、组合和时间，追加一个空结果";
+      sameAttemptButton.addEventListener("click", function () {
+        var index = state.fusionDeliveryRecords.indexOf(record);
+        if (index === -1) return;
+        state.fusionDeliveryRecords.splice(
+          index + 1,
+          0,
+          XYQPetFusionTimes.createRecordForSameAttempt(record),
+        );
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      actionWrap.append(sameAttemptButton, removeButton);
+      actionCell.append(actionWrap);
 
       row.append(
         characterCell,

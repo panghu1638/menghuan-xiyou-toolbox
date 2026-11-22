@@ -991,6 +991,10 @@ button:hover {
   text-align: center;
 }
 
+.fusion-time-actions {
+  grid-template-columns: repeat(2, minmax(3.5rem, 1fr));
+}
+
 section.reference-panel > div.fusion-combo-intro {
   display: flex;
   align-items: flex-start;

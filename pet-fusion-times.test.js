@@ -76,6 +76,35 @@ test("新增炼妖记录一次生成五行空行", () => {
   assert.equal(records[4].character, "小号");
 });
 
+test("同一次炼妖可追加第二个结果", () => {
+  assert.deepEqual(
+    times.createRecordForSameAttempt({
+      character: "大号",
+      attemptDate: "2026-11-22",
+      embryoCombo: "6须弥 + 4出其",
+      result: "第一个成品",
+      success: true,
+      resultType: "sub",
+      skillCount: 9,
+      fullSkills: true,
+      deliveryTime: "11月22日 14.30",
+      shichen: "酉时",
+    }),
+    {
+      character: "大号",
+      attemptDate: "2026-11-22",
+      embryoCombo: "6须弥 + 4出其",
+      result: "",
+      success: false,
+      resultType: "main",
+      skillCount: null,
+      fullSkills: false,
+      deliveryTime: "11月22日 14.30",
+      shichen: "酉时",
+    },
+  );
+});
+
 test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
   assert.deepEqual(
     times.migrateRecords(
@@ -345,6 +374,7 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(page, /id="fusion-remove-empty-records"/);
   assert.match(app, /fusion-remove-empty-records/);
   assert.match(app, /createEmptyRecords/);
+  assert.match(app, /createRecordForSameAttempt/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);
   assert.match(app, /record\.shichen/);

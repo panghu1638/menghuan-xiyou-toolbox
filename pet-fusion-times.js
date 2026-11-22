@@ -71,6 +71,23 @@
     return record;
   }
 
+  function createRecordForSameAttempt(source) {
+    var record = source && typeof source === "object" ? source : {};
+    return {
+      character: normalizedText(record.character),
+      attemptDate: normalizeAttemptDate(record.attemptDate),
+      embryoCombo: normalizedText(record.embryoCombo),
+      result: "",
+      success: false,
+      resultType: "main",
+      skillCount: null,
+      fullSkills: false,
+      deliveryTime: normalizedText(record.deliveryTime),
+      shichen: normalizedText(record.shichen) ||
+        XYQFloorMarket.shichenFromDeliveryTime(record.deliveryTime),
+    };
+  }
+
   function createEmptyRecords(count, characters, lastCharacter, now) {
     var total = Number(count);
     if (!Number.isFinite(total) || total < 0) total = 0;
@@ -290,6 +307,7 @@
     createEmptyRecord,
     createEmptyRecords,
     createRecordFromCombo,
+    createRecordForSameAttempt,
     migrateRecords,
     filterRecordsByRange,
     summarizeRecords,
