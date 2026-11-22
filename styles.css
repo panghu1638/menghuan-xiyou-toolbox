@@ -826,6 +826,30 @@ button:hover {
   table-layout: fixed;
 }
 
+.fusion-stats-table-wrap {
+  margin-bottom: 0.75rem;
+}
+
+.fusion-stats-table {
+  min-width: 40rem;
+  table-layout: fixed;
+}
+
+.fusion-stats-table th,
+.fusion-stats-table td {
+  width: 25%;
+  text-align: center;
+}
+
+.fusion-success-cell {
+  text-align: center;
+}
+
+.fusion-success-cell input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
 .pet-market-grid {
   grid-template-columns: 1fr;
 }
@@ -920,11 +944,11 @@ button:hover {
 }
 
 .fusion-time-table th:nth-child(2) {
-  width: 14rem;
+  width: 10rem;
 }
 
 .fusion-time-table th:nth-child(3) {
-  width: 12rem;
+  width: 5rem;
 }
 
 .fusion-time-table th:nth-child(4) {
@@ -932,6 +956,14 @@ button:hover {
 }
 
 .fusion-time-table th:nth-child(5) {
+  width: 5rem;
+}
+
+.fusion-time-table th:nth-child(6) {
+  width: 12rem;
+}
+
+.fusion-time-table th:nth-child(7) {
   width: 5rem;
   text-align: center;
 }

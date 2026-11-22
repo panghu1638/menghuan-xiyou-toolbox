@@ -31,6 +31,7 @@
     ),
     petEquipmentDeliveryRecords: [],
     fusionDeliveryRecords: [],
+    fusionStatsRange: "day",
     fusionComboRecords: structuredClone(XYQPetFusionTimes.defaultComboRecords),
     petEquipmentCharacterVersion: 2,
     equipmentRecords: structuredClone(XYQEquipmentPrices.defaultEquipmentRecords),
@@ -236,6 +237,9 @@
         saved.fusionDeliveryRecords,
         saved.petEquipmentCharacters,
       );
+      if (!["day", "month", "all"].includes(saved.fusionStatsRange)) {
+        saved.fusionStatsRange = "day";
+      }
       saved.fusionComboRecords = XYQPetFusionTimes.migrateComboRecords(
         saved.fusionComboRecords,
       );
@@ -1072,19 +1076,26 @@
     if (!tbody) return;
 
     tbody.replaceChildren();
+    var rangeSelect = document.getElementById("fusion-stats-range");
+    if (rangeSelect) rangeSelect.value = state.fusionStatsRange;
+    var records = XYQPetFusionTimes.filterRecordsByRange(
+      state.fusionDeliveryRecords,
+      state.fusionStatsRange,
+    );
+    renderFusionStats(records);
 
-    if (!state.fusionDeliveryRecords.length) {
+    if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 7;
+      emptyCell.colSpan = 8;
       emptyCell.className = "pet-equipment-time-empty";
-      emptyCell.textContent = "还没有炼妖记录，点击“新增炼妖记录”开始填写。";
+      emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
       tbody.append(emptyRow);
       return;
     }
 
-    state.fusionDeliveryRecords.forEach(function (record) {
+    records.forEach(function (record) {
       var row = document.createElement("tr");
 
       var characterCell = document.createElement("td");
@@ -1107,6 +1118,18 @@
       });
       characterCell.append(characterSelect);
 
+      var dateCell = document.createElement("td");
+      var dateInput = document.createElement("input");
+      dateInput.type = "date";
+      dateInput.value = record.attemptDate;
+      dateInput.setAttribute("aria-label", "炼妖日期");
+      dateInput.addEventListener("change", function (event) {
+        record.attemptDate = event.target.value;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      dateCell.append(dateInput);
+
       var embryoCell = document.createElement("td");
       var embryoInput = document.createElement("input");
       embryoInput.type = "text";
@@ -1118,6 +1141,24 @@
         saveState();
       });
       embryoCell.append(embryoInput);
+
+      var successCell = document.createElement("td");
+      successCell.className = "fusion-success-cell";
+      var successInput = document.createElement("input");
+      successInput.type = "checkbox";
+      successInput.checked = record.success === true;
+      successInput.setAttribute("aria-label", "是否出货");
+      successInput.addEventListener("change", function (event) {
+        record.success = event.target.checked;
+        saveState();
+        renderFusionStats(
+          XYQPetFusionTimes.filterRecordsByRange(
+            state.fusionDeliveryRecords,
+            state.fusionStatsRange,
+          ),
+        );
+      });
+      successCell.append(successInput);
 
       var resultCell = document.createElement("td");
       var resultInput = document.createElement("input");
@@ -1170,7 +1211,9 @@
 
       row.append(
         characterCell,
+        dateCell,
         embryoCell,
+        successCell,
         resultCell,
         timeCell,
         shichenCell,
@@ -1178,6 +1221,60 @@
       );
       tbody.append(row);
     });
+  }
+
+  function formatFusionSuccessRate(rate) {
+    return rate === null ? "—" : (rate * 100).toFixed(2) + "%";
+  }
+
+  function renderFusionStats(records) {
+    var tbody = document.getElementById("fusion-time-stats");
+    var tfoot = document.getElementById("fusion-time-stats-total");
+    if (!tbody || !tfoot) return;
+
+    tbody.replaceChildren();
+    tfoot.replaceChildren();
+    var summaries = XYQPetFusionTimes.summarizeRecords(records);
+    if (!summaries.length) {
+      var emptyRow = document.createElement("tr");
+      var emptyCell = document.createElement("td");
+      emptyCell.colSpan = 4;
+      emptyCell.className = "pet-equipment-time-empty";
+      emptyCell.textContent = "当前范围内还没有可统计的胚子组合。";
+      emptyRow.append(emptyCell);
+      tbody.append(emptyRow);
+      return;
+    }
+
+    summaries.forEach(function (summary) {
+      var row = document.createElement("tr");
+      [summary.embryoCombo, summary.attempts, summary.successes]
+        .map(String)
+        .concat(formatFusionSuccessRate(summary.successRate))
+        .forEach(function (value) {
+          var cell = document.createElement("td");
+          cell.textContent = value;
+          row.append(cell);
+        });
+      tbody.append(row);
+    });
+
+    var attempts = summaries.reduce(function (total, summary) {
+      return total + summary.attempts;
+    }, 0);
+    var successes = summaries.reduce(function (total, summary) {
+      return total + summary.successes;
+    }, 0);
+    var totalRow = document.createElement("tr");
+    ["合计", attempts, successes]
+      .map(String)
+      .concat(formatFusionSuccessRate(attempts ? successes / attempts : null))
+      .forEach(function (value) {
+        var cell = document.createElement("td");
+        cell.textContent = value;
+        totalRow.append(cell);
+      });
+    tfoot.append(totalRow);
   }
 
   function priceValue(value) {
@@ -2697,6 +2794,15 @@
     saveState();
     renderFusionDeliveryTimes();
   });
+
+  var fusionStatsRange = document.getElementById("fusion-stats-range");
+  if (fusionStatsRange) {
+    fusionStatsRange.addEventListener("change", function (event) {
+      state.fusionStatsRange = event.target.value;
+      saveState();
+      renderFusionDeliveryTimes();
+    });
+  }
 
   bindClick("pet-market-add-record", function () {
     var input = document.getElementById("pet-market-add-name");

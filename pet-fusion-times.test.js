@@ -8,24 +8,36 @@ import "./pet-fusion-times.js";
 const times = globalThis.XYQPetFusionTimes;
 
 test("新增炼妖记录沿用最近角色", () => {
-  assert.deepEqual(times.createEmptyRecord(["大号", "小号"], "小号"), {
-    character: "小号",
-    embryoCombo: "",
-    result: "",
-    deliveryTime: "",
-    shichen: "",
-  });
-  assert.deepEqual(times.createEmptyRecord(["大号", "小号"], "未保存角色"), {
-    character: "大号",
-    embryoCombo: "",
-    result: "",
-    deliveryTime: "",
-    shichen: "",
-  });
+  assert.deepEqual(
+    times.createEmptyRecord(["大号", "小号"], "小号", new Date(2026, 10, 22)),
+    {
+      character: "小号",
+      attemptDate: "2026-11-22",
+      embryoCombo: "",
+      result: "",
+      success: false,
+      deliveryTime: "",
+      shichen: "",
+    },
+  );
+  assert.deepEqual(
+    times.createEmptyRecord(["大号", "小号"], "未保存角色", new Date(2026, 10, 22)),
+    {
+      character: "大号",
+      attemptDate: "2026-11-22",
+      embryoCombo: "",
+      result: "",
+      success: false,
+      deliveryTime: "",
+      shichen: "",
+    },
+  );
   assert.deepEqual(times.createEmptyRecord([], ""), {
     character: "",
+    attemptDate: "2026-11-22",
     embryoCombo: "",
     result: "",
+    success: false,
     deliveryTime: "",
     shichen: "",
   });
@@ -50,15 +62,19 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
     [
       {
         character: "大号",
+        attemptDate: "2026-11-12",
         embryoCombo: "泪妖 + 日游神",
         result: "须弥泪妖",
+        success: false,
         deliveryTime: "11月12日 21.36",
         shichen: "寅时",
       },
       {
         character: "",
+        attemptDate: "",
         embryoCombo: "",
         result: "",
+        success: false,
         deliveryTime: "",
         shichen: "—",
       },
@@ -75,8 +91,10 @@ test("炼妖出货记录归并臭名昭著狗托", () => {
     [
       {
         character: "臭名昭著",
+        attemptDate: "",
         embryoCombo: "3+5",
         result: "6猴子",
+        success: false,
         deliveryTime: "",
         shichen: "—",
       },
@@ -99,6 +117,35 @@ test("炼妖出货时间按梦幻30分钟时辰轮换", () => {
   );
 });
 
+test("炼妖记录按当天当月和全部筛选", () => {
+  const records = [
+    { embryoCombo: "日+马", attemptDate: "2026-11-22", success: true },
+    { embryoCombo: "日+马", attemptDate: "2026-11-21", success: false },
+    { embryoCombo: "马+日", attemptDate: "2026-10-22", success: true },
+    { embryoCombo: "广+鸟", attemptDate: "", success: false },
+  ];
+  const now = new Date(2026, 10, 22);
+
+  assert.equal(times.filterRecordsByRange(records, "day", now).length, 1);
+  assert.equal(times.filterRecordsByRange(records, "month", now).length, 2);
+  assert.equal(times.filterRecordsByRange(records, "all", now).length, 4);
+});
+
+test("炼妖记录按胚子组合统计出货率", () => {
+  assert.deepEqual(
+    times.summarizeRecords([
+      { embryoCombo: " 日+马 ", success: true },
+      { embryoCombo: "日+马", success: false },
+      { embryoCombo: "马+日", success: true },
+      { embryoCombo: "", success: true },
+    ]),
+    [
+      { embryoCombo: "日+马", attempts: 2, successes: 1, successRate: 0.5 },
+      { embryoCombo: "马+日", attempts: 1, successes: 1, successRate: 1 },
+    ],
+  );
+});
+
 test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   const page = await readFile(new URL("./fusion-times.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
@@ -109,6 +156,13 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(page, /<th>炼妖结果<\/th>/);
   assert.match(page, /<th>出货时间<\/th>/);
   assert.match(page, /<th>梦幻时辰<\/th>/);
+  assert.match(page, /<th>记录日期<\/th>/);
+  assert.match(page, /<th>是否出货<\/th>/);
+  assert.match(page, /id="fusion-stats-range"/);
+  assert.match(page, /value="day" selected>当天<\/option>/);
+  assert.match(page, /id="fusion-time-stats"/);
+  assert.match(app, /filterRecordsByRange/);
+  assert.match(app, /summarizeRecords/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);
   assert.match(app, /record\.shichen/);
@@ -166,11 +220,14 @@ test("炼妖组合可生成预填炼妖记录", () => {
       { main: " 画魂 ", sub: " 持国巡守 ", target: " 须弥画魂 " },
       ["大号", "小号"],
       "小号",
+      new Date(2026, 10, 22),
     ),
     {
       character: "小号",
+      attemptDate: "2026-11-22",
       embryoCombo: "画魂 + 持国巡守",
       result: "须弥画魂",
+      success: false,
       deliveryTime: "",
       shichen: "",
     },

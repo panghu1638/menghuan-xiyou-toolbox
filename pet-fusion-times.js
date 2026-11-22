@@ -7,22 +7,53 @@
     return XYQPetEquipmentTimes.normalizeCharacter(value);
   }
 
-  function createEmptyRecord(characters, lastCharacter) {
+  function normalizeAttemptDate(value) {
+    var date = typeof value === "string" ? value.trim() : "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return "";
+    var parsed = new Date(date + "T00:00:00");
+    return parsed.getFullYear() + "-" +
+      String(parsed.getMonth() + 1).padStart(2, "0") + "-" +
+      String(parsed.getDate()).padStart(2, "0") === date
+      ? date
+      : "";
+  }
+
+  function localDateString(now) {
+    var current = now instanceof Date ? now : new Date();
+    return current.getFullYear() + "-" +
+      String(current.getMonth() + 1).padStart(2, "0") + "-" +
+      String(current.getDate()).padStart(2, "0");
+  }
+
+  function attemptDateFromDeliveryTime(value) {
+    var match = normalizedText(value).match(/(\d{1,2})月(\d{1,2})日/);
+    if (!match) return "";
+    var current = new Date();
+    return normalizeAttemptDate(
+      current.getFullYear() + "-" +
+        String(Number(match[1])).padStart(2, "0") + "-" +
+        String(Number(match[2])).padStart(2, "0"),
+    );
+  }
+
+  function createEmptyRecord(characters, lastCharacter, now) {
     var last = normalizedText(lastCharacter);
     return {
       character:
         Array.isArray(characters) && characters.includes(last)
           ? last
           : (characters && characters[0]) || "",
+      attemptDate: localDateString(now),
       embryoCombo: "",
       result: "",
+      success: false,
       deliveryTime: "",
       shichen: "",
     };
   }
 
-  function createRecordFromCombo(combo, characters, lastCharacter) {
-    var record = createEmptyRecord(characters, lastCharacter);
+  function createRecordFromCombo(combo, characters, lastCharacter, now) {
+    var record = createEmptyRecord(characters, lastCharacter, now);
     var source = combo && typeof combo === "object" ? combo : {};
     record.embryoCombo = [normalizedText(source.main), normalizedText(source.sub)]
       .filter(Boolean)
@@ -37,14 +68,63 @@
       var source = record && typeof record === "object" ? record : {};
       var character = normalizeCharacter(source.character);
       var deliveryTime = normalizedText(source.deliveryTime);
+      var attemptDate = normalizeAttemptDate(source.attemptDate) ||
+        attemptDateFromDeliveryTime(deliveryTime);
       return {
         character: savedCharacters.includes(character) ? character : "",
+        attemptDate,
         embryoCombo: normalizedText(source.embryoCombo),
         result: normalizedText(source.result),
+        success: source.success === true,
         deliveryTime: deliveryTime,
         shichen: XYQFloorMarket.shichenFromDeliveryTime(deliveryTime),
       };
     });
+  }
+
+  function filterRecordsByRange(records, range, now) {
+    var list = Array.isArray(records) ? records : [];
+    if (range === "all") return list;
+
+    var today = localDateString(now);
+    var month = today.slice(0, 7);
+    return list.filter(function (record) {
+      var date = normalizeAttemptDate(record && record.attemptDate);
+      if (range === "month") return date.slice(0, 7) === month;
+      return date === today;
+    });
+  }
+
+  function summarizeRecords(records) {
+    var summaries = [];
+    var summaryByCombo = new Map();
+
+    (Array.isArray(records) ? records : []).forEach(function (record) {
+      var source = record && typeof record === "object" ? record : {};
+      var embryoCombo = normalizedText(source.embryoCombo);
+      if (!embryoCombo) return;
+
+      var summary = summaryByCombo.get(embryoCombo);
+      if (!summary) {
+        summary = {
+          embryoCombo,
+          attempts: 0,
+          successes: 0,
+          successRate: null,
+        };
+        summaryByCombo.set(embryoCombo, summary);
+        summaries.push(summary);
+      }
+      summary.attempts += 1;
+      if (source.success === true) summary.successes += 1;
+    });
+
+    summaries.forEach(function (summary) {
+      summary.successRate = summary.attempts
+        ? summary.successes / summary.attempts
+        : null;
+    });
+    return summaries;
   }
 
   var legacyDefaultComboRecordSets = [
@@ -157,6 +237,8 @@
     createEmptyRecord,
     createRecordFromCombo,
     migrateRecords,
+    filterRecordsByRange,
+    summarizeRecords,
     defaultComboRecords,
     createEmptyCombo,
     migrateComboRecords,

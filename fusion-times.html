@@ -110,17 +110,41 @@
       <section class="reference-panel pet-equipment-time-panel" aria-labelledby="fusion-time-title">
         <div>
           <h2 id="fusion-time-title">炼妖记录</h2>
-          <p>角色名复用“宠装出货”页的角色列表；先在那里添加角色，再在这里新增炼妖记录。</p>
+          <p>默认显示当天记录，可切换当月或全部；统计按胚子组合计算出货率。角色名复用“宠装出货”页的角色列表。</p>
         </div>
         <div class="pet-equipment-time-actions">
+          <label>
+            显示范围
+            <select id="fusion-stats-range" aria-label="炼妖记录显示范围">
+              <option value="day" selected>当天</option>
+              <option value="month">当月</option>
+              <option value="all">全部</option>
+            </select>
+          </label>
           <button id="fusion-add-record" type="button" class="primary">新增炼妖记录</button>
+        </div>
+        <div class="reference-table-wrap fusion-stats-table-wrap">
+          <table class="pet-equipment-time-table fusion-stats-table">
+            <thead>
+              <tr>
+                <th>胚子组合</th>
+                <th>尝试次数</th>
+                <th>出货次数</th>
+                <th>出货率</th>
+              </tr>
+            </thead>
+            <tbody id="fusion-time-stats"></tbody>
+            <tfoot id="fusion-time-stats-total"></tfoot>
+          </table>
         </div>
         <div class="reference-table-wrap pet-equipment-time-table-wrap">
           <table class="pet-equipment-time-table fusion-time-table">
             <thead>
               <tr>
                 <th>角色</th>
+                <th>记录日期</th>
                 <th>胚子组合</th>
+                <th>是否出货</th>
                 <th>炼妖结果</th>
                 <th>出货时间</th>
                 <th>梦幻时辰</th>
