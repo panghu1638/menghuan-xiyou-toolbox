@@ -19,7 +19,6 @@ test("新增炼妖记录沿用最近角色", () => {
       successMain: false,
       successSub: false,
       wild: false,
-      wild: false,
       deliveryTime: "",
       shichen: "",
     },
@@ -35,7 +34,6 @@ test("新增炼妖记录沿用最近角色", () => {
       successMain: false,
       successSub: false,
       wild: false,
-      wild: false,
       deliveryTime: "",
       shichen: "",
     },
@@ -49,10 +47,33 @@ test("新增炼妖记录沿用最近角色", () => {
     successMain: false,
     successSub: false,
     wild: false,
+    deliveryTime: "",
+    shichen: "",
+  });
+});
+
+test("新增炼妖记录一次生成五行空行", () => {
+  const records = times.createEmptyRecords(
+    5,
+    ["大号", "小号"],
+    "小号",
+    new Date(2026, 10, 22),
+  );
+
+  assert.equal(records.length, 5);
+  assert.deepEqual(records[0], {
+    character: "小号",
+    attemptDate: "2026-11-22",
+    embryoCombo: "",
+    result: "",
+    success: false,
+    successMain: false,
+    successSub: false,
     wild: false,
     deliveryTime: "",
     shichen: "",
   });
+  assert.equal(records[4].character, "小号");
 });
 
 test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
@@ -81,7 +102,6 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         successMain: false,
         successSub: false,
         wild: false,
-        wild: false,
         deliveryTime: "11月12日 21.36",
         shichen: "寅时",
       },
@@ -93,7 +113,6 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         success: false,
         successMain: false,
         successSub: false,
-        wild: false,
         wild: false,
         deliveryTime: "",
         shichen: "—",
@@ -117,7 +136,6 @@ test("炼妖出货记录归并臭名昭著狗托", () => {
         success: false,
         successMain: false,
         successSub: false,
-        wild: false,
         wild: false,
         deliveryTime: "",
         shichen: "—",
@@ -229,6 +247,7 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(app, /successMain/);
   assert.match(app, /successSub/);
   assert.match(app, /record\.wild/);
+  assert.match(app, /createEmptyRecords/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);
   assert.match(app, /record\.shichen/);

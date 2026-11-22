@@ -2831,7 +2831,8 @@
       return;
     }
     state.fusionDeliveryRecords.push(
-      XYQPetFusionTimes.createEmptyRecord(
+      ...XYQPetFusionTimes.createEmptyRecords(
+        5,
         state.petEquipmentCharacters,
         state.fusionDeliveryRecords.length
           ? state.fusionDeliveryRecords[

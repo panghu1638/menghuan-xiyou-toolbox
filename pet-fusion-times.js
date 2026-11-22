@@ -65,6 +65,17 @@
     return record;
   }
 
+  function createEmptyRecords(count, characters, lastCharacter, now) {
+    var total = Number(count);
+    if (!Number.isFinite(total) || total < 0) total = 0;
+    return Array.from(
+      { length: Math.floor(total) },
+      function () {
+        return createEmptyRecord(characters, lastCharacter, now);
+      },
+    );
+  }
+
   function migrateRecords(records, characters) {
     var savedCharacters = Array.isArray(characters) ? characters : [];
     return (Array.isArray(records) ? records : []).map(function (record) {
@@ -251,6 +262,7 @@
 
   globalThis.XYQPetFusionTimes = {
     createEmptyRecord,
+    createEmptyRecords,
     createRecordFromCombo,
     migrateRecords,
     filterRecordsByRange,
