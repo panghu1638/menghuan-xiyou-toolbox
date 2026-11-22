@@ -946,8 +946,6 @@
       updateShichenCell();
 
       var actionCell = document.createElement("td");
-      var actionWrap = document.createElement("div");
-      actionWrap.className = "pet-equipment-time-actions fusion-time-actions";
       var removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.className = "danger";
@@ -1248,6 +1246,8 @@
       updateShichenCell(record.deliveryTime);
 
       var actionCell = document.createElement("td");
+      var actionWrap = document.createElement("div");
+      actionWrap.className = "pet-equipment-time-actions fusion-time-actions";
       var removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.className = "danger";
