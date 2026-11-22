@@ -47,6 +47,8 @@
       embryoCombo: "",
       result: "",
       success: false,
+      successMain: false,
+      successSub: false,
       deliveryTime: "",
       shichen: "",
     };
@@ -70,12 +72,21 @@
       var deliveryTime = normalizedText(source.deliveryTime);
       var attemptDate = normalizeAttemptDate(source.attemptDate) ||
         attemptDateFromDeliveryTime(deliveryTime);
+      var success = source.success === true;
+      var successMain = source.successMain === true;
+      var successSub = source.successSub === true;
+      if (!success) {
+        successMain = false;
+        successSub = false;
+      }
       return {
         character: savedCharacters.includes(character) ? character : "",
         attemptDate,
         embryoCombo: normalizedText(source.embryoCombo),
         result: normalizedText(source.result),
-        success: source.success === true,
+        success,
+        successMain,
+        successSub,
         deliveryTime: deliveryTime,
         shichen: XYQFloorMarket.shichenFromDeliveryTime(deliveryTime),
       };
@@ -110,13 +121,19 @@
           embryoCombo,
           attempts: 0,
           successes: 0,
+          successMains: 0,
+          successSubs: 0,
           successRate: null,
         };
         summaryByCombo.set(embryoCombo, summary);
         summaries.push(summary);
       }
       summary.attempts += 1;
-      if (source.success === true) summary.successes += 1;
+      if (source.success === true) {
+        summary.successes += 1;
+        if (source.successMain === true) summary.successMains += 1;
+        if (source.successSub === true) summary.successSubs += 1;
+      }
     });
 
     summaries.forEach(function (summary) {

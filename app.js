@@ -1087,7 +1087,7 @@
     if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 8;
+      emptyCell.colSpan = 10;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
@@ -1150,15 +1150,44 @@
       successInput.setAttribute("aria-label", "是否出货");
       successInput.addEventListener("change", function (event) {
         record.success = event.target.checked;
+        if (!record.success) {
+          record.successMain = false;
+          record.successSub = false;
+        }
         saveState();
-        renderFusionStats(
-          XYQPetFusionTimes.filterRecordsByRange(
-            state.fusionDeliveryRecords,
-            state.fusionStatsRange,
-          ),
-        );
+        renderFusionDeliveryTimes();
       });
       successCell.append(successInput);
+
+      var successMainCell = document.createElement("td");
+      successMainCell.className = "fusion-success-cell";
+      var successMainInput = document.createElement("input");
+      successMainInput.type = "checkbox";
+      successMainInput.checked = record.successMain === true;
+      successMainInput.setAttribute("aria-label", "出主宠");
+      successMainInput.addEventListener("change", function (event) {
+        record.successMain = event.target.checked;
+        record.successSub = false;
+        if (record.successMain) record.success = true;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      successMainCell.append(successMainInput);
+
+      var successSubCell = document.createElement("td");
+      successSubCell.className = "fusion-success-cell";
+      var successSubInput = document.createElement("input");
+      successSubInput.type = "checkbox";
+      successSubInput.checked = record.successSub === true;
+      successSubInput.setAttribute("aria-label", "出副宠");
+      successSubInput.addEventListener("change", function (event) {
+        record.successSub = event.target.checked;
+        record.successMain = false;
+        if (record.successSub) record.success = true;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      successSubCell.append(successSubInput);
 
       var resultCell = document.createElement("td");
       var resultInput = document.createElement("input");
@@ -1214,6 +1243,8 @@
         dateCell,
         embryoCell,
         successCell,
+        successMainCell,
+        successSubCell,
         resultCell,
         timeCell,
         shichenCell,
@@ -1249,6 +1280,7 @@
     summaries.forEach(function (summary) {
       var row = document.createElement("tr");
       [summary.embryoCombo, summary.attempts, summary.successes]
+        .concat([summary.successMains, summary.successSubs])
         .map(String)
         .concat(formatFusionSuccessRate(summary.successRate))
         .forEach(function (value) {
@@ -1265,8 +1297,14 @@
     var successes = summaries.reduce(function (total, summary) {
       return total + summary.successes;
     }, 0);
+    var successMains = summaries.reduce(function (total, summary) {
+      return total + summary.successMains;
+    }, 0);
+    var successSubs = summaries.reduce(function (total, summary) {
+      return total + summary.successSubs;
+    }, 0);
     var totalRow = document.createElement("tr");
-    ["合计", attempts, successes]
+    ["合计", attempts, successes, successMains, successSubs]
       .map(String)
       .concat(formatFusionSuccessRate(attempts ? successes / attempts : null))
       .forEach(function (value) {
