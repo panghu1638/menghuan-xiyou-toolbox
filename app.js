@@ -1182,8 +1182,31 @@
       var skillCountInput = createDecimalInput();
       skillCountInput.inputMode = "numeric";
       skillCountInput.value = record.skillCount === null ? "" : record.skillCount;
-      skillCountInput.placeholder = "如 8";
+      skillCountInput.placeholder = "如 8 或 6 7 8";
       skillCountInput.setAttribute("aria-label", "实际技能数");
+      skillCountInput.addEventListener("blur", function (event) {
+        var counts = XYQPetFusionTimes.parseSkillCountBatch(event.target.value);
+        if (counts.length < 2 || counts.includes(null)) {
+          if (counts.length > 1) alert("实际技能数请填写整数，多个用空格、逗号或顿号分隔。");
+          return;
+        }
+
+        var recordIndex = state.fusionDeliveryRecords.indexOf(record);
+        if (recordIndex === -1) return;
+        var followingRecords = state.fusionDeliveryRecords
+          .slice(recordIndex, recordIndex + counts.length);
+        if (followingRecords.length < counts.length) {
+          alert("后面只有 " + followingRecords.length + " 行可填写，还需要新增 " +
+            (counts.length - followingRecords.length) + " 行。");
+          return;
+        }
+
+        followingRecords.forEach(function (targetRecord, index) {
+          targetRecord.skillCount = counts[index];
+        });
+        saveState();
+        renderFusionDeliveryTimes();
+      });
       skillCountInput.addEventListener("input", function (event) {
         var value = Number(event.target.value);
         record.skillCount = event.target.value !== "" &&

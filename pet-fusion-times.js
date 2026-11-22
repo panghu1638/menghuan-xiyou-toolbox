@@ -24,6 +24,16 @@
     return Number.isFinite(count) && count >= 0 ? count : null;
   }
 
+  function parseSkillCountBatch(value) {
+    return normalizedText(value)
+      .split(/[\s,，、;；]+/)
+      .filter(Boolean)
+      .map(function (item) {
+        var count = Number(item);
+        return Number.isInteger(count) && count >= 0 ? count : null;
+      });
+  }
+
   function localDateString(now) {
     var current = now instanceof Date ? now : new Date();
     return current.getFullYear() + "-" +
@@ -308,6 +318,7 @@
     createEmptyRecords,
     createRecordFromCombo,
     createRecordForSameAttempt,
+    parseSkillCountBatch,
     migrateRecords,
     filterRecordsByRange,
     summarizeRecords,
