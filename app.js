@@ -1150,10 +1150,6 @@
       successInput.setAttribute("aria-label", "是否出货");
       successInput.addEventListener("change", function (event) {
         record.success = event.target.checked;
-        if (!record.success) {
-          record.successMain = false;
-          record.successSub = false;
-        }
         saveState();
         renderFusionDeliveryTimes();
       });
@@ -1167,8 +1163,7 @@
       successMainInput.setAttribute("aria-label", "出主宠");
       successMainInput.addEventListener("change", function (event) {
         record.successMain = event.target.checked;
-        record.successSub = false;
-        if (record.successMain) record.success = true;
+        if (record.successMain) record.successSub = false;
         saveState();
         renderFusionDeliveryTimes();
       });
@@ -1182,8 +1177,7 @@
       successSubInput.setAttribute("aria-label", "出副宠");
       successSubInput.addEventListener("change", function (event) {
         record.successSub = event.target.checked;
-        record.successMain = false;
-        if (record.successSub) record.success = true;
+        if (record.successSub) record.successMain = false;
         saveState();
         renderFusionDeliveryTimes();
       });

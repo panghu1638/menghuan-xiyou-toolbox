@@ -148,7 +148,7 @@ test("炼妖记录按胚子组合统计出货率", () => {
     times.summarizeRecords([
       { embryoCombo: " 日+马 ", success: true, successMain: true },
       { embryoCombo: "日+马", success: false },
-      { embryoCombo: "马+日", success: true, successSub: true },
+      { embryoCombo: "马+日", success: false, successSub: true },
       { embryoCombo: "", success: true },
     ]),
     [
@@ -163,10 +163,29 @@ test("炼妖记录按胚子组合统计出货率", () => {
       {
         embryoCombo: "马+日",
         attempts: 1,
-        successes: 1,
+        successes: 0,
         successMains: 0,
         successSubs: 1,
-        successRate: 1,
+        successRate: 0,
+      },
+    ],
+  );
+});
+
+test("出主宠和出副宠独立于是否出货", () => {
+  assert.deepEqual(
+    times.summarizeRecords([
+      { embryoCombo: "日+马", success: false, successMain: true },
+      { embryoCombo: "日+马", success: true, successSub: true },
+    ]),
+    [
+      {
+        embryoCombo: "日+马",
+        attempts: 2,
+        successes: 1,
+        successMains: 1,
+        successSubs: 1,
+        successRate: 0.5,
       },
     ],
   );

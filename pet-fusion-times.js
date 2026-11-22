@@ -75,10 +75,6 @@
       var success = source.success === true;
       var successMain = source.successMain === true;
       var successSub = source.successSub === true;
-      if (!success) {
-        successMain = false;
-        successSub = false;
-      }
       return {
         character: savedCharacters.includes(character) ? character : "",
         attemptDate,
@@ -129,11 +125,9 @@
         summaries.push(summary);
       }
       summary.attempts += 1;
-      if (source.success === true) {
-        summary.successes += 1;
-        if (source.successMain === true) summary.successMains += 1;
-        if (source.successSub === true) summary.successSubs += 1;
-      }
+      if (source.success === true) summary.successes += 1;
+      if (source.successMain === true) summary.successMains += 1;
+      if (source.successSub === true) summary.successSubs += 1;
     });
 
     summaries.forEach(function (summary) {
