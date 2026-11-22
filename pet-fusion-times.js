@@ -47,7 +47,6 @@
       embryoCombo: "",
       result: "",
       success: false,
-      successMain: false,
       successSub: false,
       wild: false,
       deliveryTime: "",
@@ -85,7 +84,6 @@
       var attemptDate = normalizeAttemptDate(source.attemptDate) ||
         attemptDateFromDeliveryTime(deliveryTime);
       var success = source.success === true;
-      var successMain = source.successMain === true;
       var successSub = source.successSub === true;
       var wild = source.wild === true;
       return {
@@ -94,7 +92,6 @@
         embryoCombo: normalizedText(source.embryoCombo),
         result: normalizedText(source.result),
         success,
-        successMain,
         successSub,
         wild,
         deliveryTime: deliveryTime,
@@ -131,7 +128,6 @@
           embryoCombo,
           attempts: 0,
           successes: 0,
-          successMains: 0,
           successSubs: 0,
           wilds: 0,
           successRate: null,
@@ -141,7 +137,6 @@
       }
       summary.attempts += 1;
       if (source.success === true) summary.successes += 1;
-      if (source.successMain === true) summary.successMains += 1;
       if (source.successSub === true) summary.successSubs += 1;
       if (source.wild === true) summary.wilds += 1;
     });

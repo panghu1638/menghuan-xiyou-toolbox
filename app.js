@@ -851,7 +851,7 @@
     if (!state.petEquipmentDeliveryRecords.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 7;
+      emptyCell.colSpan = 6;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "还没有装备记录，点击“新增装备记录”开始填写。";
       emptyRow.append(emptyCell);
@@ -1087,7 +1087,7 @@
     if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 11;
+      emptyCell.colSpan = 10;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
@@ -1155,20 +1155,6 @@
       });
       successCell.append(successInput);
 
-      var successMainCell = document.createElement("td");
-      successMainCell.className = "fusion-success-cell";
-      var successMainInput = document.createElement("input");
-      successMainInput.type = "checkbox";
-      successMainInput.checked = record.successMain === true;
-      successMainInput.setAttribute("aria-label", "出主宠");
-      successMainInput.addEventListener("change", function (event) {
-        record.successMain = event.target.checked;
-        if (record.successMain) record.successSub = false;
-        saveState();
-        renderFusionDeliveryTimes();
-      });
-      successMainCell.append(successMainInput);
-
       var successSubCell = document.createElement("td");
       successSubCell.className = "fusion-success-cell";
       var successSubInput = document.createElement("input");
@@ -1177,7 +1163,6 @@
       successSubInput.setAttribute("aria-label", "出副宠");
       successSubInput.addEventListener("change", function (event) {
         record.successSub = event.target.checked;
-        if (record.successSub) record.successMain = false;
         saveState();
         renderFusionDeliveryTimes();
       });
@@ -1250,7 +1235,6 @@
         dateCell,
         embryoCell,
         successCell,
-        successMainCell,
         successSubCell,
         wildCell,
         resultCell,
@@ -1288,7 +1272,7 @@
     summaries.forEach(function (summary) {
       var row = document.createElement("tr");
       [summary.embryoCombo, summary.attempts, summary.successes]
-        .concat([summary.successMains, summary.successSubs, summary.wilds])
+        .concat([summary.successSubs, summary.wilds])
         .map(String)
         .concat(formatFusionSuccessRate(summary.successRate))
         .forEach(function (value) {
@@ -1305,9 +1289,6 @@
     var successes = summaries.reduce(function (total, summary) {
       return total + summary.successes;
     }, 0);
-    var successMains = summaries.reduce(function (total, summary) {
-      return total + summary.successMains;
-    }, 0);
     var successSubs = summaries.reduce(function (total, summary) {
       return total + summary.successSubs;
     }, 0);
@@ -1315,7 +1296,7 @@
       return total + summary.wilds;
     }, 0);
     var totalRow = document.createElement("tr");
-    ["合计", attempts, successes, successMains, successSubs, wilds]
+    ["合计", attempts, successes, successSubs, wilds]
       .map(String)
       .concat(formatFusionSuccessRate(attempts ? successes / attempts : null))
       .forEach(function (value) {

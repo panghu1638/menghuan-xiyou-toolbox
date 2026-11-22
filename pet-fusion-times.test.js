@@ -16,7 +16,6 @@ test("新增炼妖记录沿用最近角色", () => {
       embryoCombo: "",
       result: "",
       success: false,
-      successMain: false,
       successSub: false,
       wild: false,
       deliveryTime: "",
@@ -31,7 +30,6 @@ test("新增炼妖记录沿用最近角色", () => {
       embryoCombo: "",
       result: "",
       success: false,
-      successMain: false,
       successSub: false,
       wild: false,
       deliveryTime: "",
@@ -44,7 +42,6 @@ test("新增炼妖记录沿用最近角色", () => {
     embryoCombo: "",
     result: "",
     success: false,
-    successMain: false,
     successSub: false,
     wild: false,
     deliveryTime: "",
@@ -67,7 +64,6 @@ test("新增炼妖记录一次生成五行空行", () => {
     embryoCombo: "",
     result: "",
     success: false,
-    successMain: false,
     successSub: false,
     wild: false,
     deliveryTime: "",
@@ -99,7 +95,6 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         embryoCombo: "泪妖 + 日游神",
         result: "须弥泪妖",
         success: false,
-        successMain: false,
         successSub: false,
         wild: false,
         deliveryTime: "11月12日 21.36",
@@ -111,7 +106,6 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         embryoCombo: "",
         result: "",
         success: false,
-        successMain: false,
         successSub: false,
         wild: false,
         deliveryTime: "",
@@ -134,7 +128,6 @@ test("炼妖出货记录归并臭名昭著狗托", () => {
         embryoCombo: "3+5",
         result: "6猴子",
         success: false,
-        successMain: false,
         successSub: false,
         wild: false,
         deliveryTime: "",
@@ -176,7 +169,7 @@ test("炼妖记录按当天当月和全部筛选", () => {
 test("炼妖记录按胚子组合统计出货率", () => {
   assert.deepEqual(
     times.summarizeRecords([
-      { embryoCombo: " 日+马 ", success: true, successMain: true },
+      { embryoCombo: " 日+马 ", success: true },
       { embryoCombo: "日+马", success: false },
       { embryoCombo: "马+日", success: false, successSub: true },
       { embryoCombo: "", success: true },
@@ -186,7 +179,6 @@ test("炼妖记录按胚子组合统计出货率", () => {
         embryoCombo: "日+马",
         attempts: 2,
         successes: 1,
-        successMains: 1,
         successSubs: 0,
         wilds: 0,
         successRate: 0.5,
@@ -195,7 +187,6 @@ test("炼妖记录按胚子组合统计出货率", () => {
         embryoCombo: "马+日",
         attempts: 1,
         successes: 0,
-        successMains: 0,
         successSubs: 1,
         wilds: 0,
         successRate: 0,
@@ -204,10 +195,10 @@ test("炼妖记录按胚子组合统计出货率", () => {
   );
 });
 
-test("出主宠和出副宠独立于是否出货", () => {
+test("出副宠独立于是否出货且默认出主", () => {
   assert.deepEqual(
     times.summarizeRecords([
-      { embryoCombo: "日+马", success: false, successMain: true, wild: true },
+      { embryoCombo: "日+马", success: false, wild: true },
       { embryoCombo: "日+马", success: true, successSub: true },
     ]),
     [
@@ -215,7 +206,6 @@ test("出主宠和出副宠独立于是否出货", () => {
         embryoCombo: "日+马",
         attempts: 2,
         successes: 1,
-        successMains: 1,
         successSubs: 1,
         wilds: 1,
         successRate: 0.5,
@@ -236,16 +226,15 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(page, /<th>梦幻时辰<\/th>/);
   assert.match(page, /<th>记录日期<\/th>/);
   assert.match(page, /<th>是否出货<\/th>/);
-  assert.match(page, /<th>出主宠<\/th>/);
-  assert.match(page, /<th>出副宠<\/th>/);
+  assert.match(page, /<th>出副<\/th>/);
   assert.match(page, /<th>野生<\/th>/);
   assert.match(page, /id="fusion-stats-range"/);
   assert.match(page, /value="day" selected>当天<\/option>/);
   assert.match(page, /id="fusion-time-stats"/);
   assert.match(app, /filterRecordsByRange/);
   assert.match(app, /summarizeRecords/);
-  assert.match(app, /successMain/);
   assert.match(app, /successSub/);
+  assert.doesNotMatch(app, /出主宠/);
   assert.match(app, /record\.wild/);
   assert.match(app, /createEmptyRecords/);
   assert.match(page, /30分钟一轮/);
@@ -313,7 +302,6 @@ test("炼妖组合可生成预填炼妖记录", () => {
       embryoCombo: "画魂 + 持国巡守",
       result: "须弥画魂",
       success: false,
-      successMain: false,
       successSub: false,
       wild: false,
       deliveryTime: "",
