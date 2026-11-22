@@ -837,7 +837,7 @@ button:hover {
 
 .fusion-stats-table th,
 .fusion-stats-table td {
-  width: 16.66%;
+  width: 14.28%;
   text-align: center;
 }
 
@@ -952,7 +952,7 @@ button:hover {
 }
 
 .fusion-time-table th:nth-child(4) {
-  width: 5rem;
+  width: 4.5rem;
 }
 
 .fusion-time-table th:nth-child(5) {
@@ -964,27 +964,27 @@ button:hover {
 }
 
 .fusion-time-table th:nth-child(7) {
-  width: 13rem;
+  width: 4.5rem;
 }
 
 .fusion-time-table th:nth-child(8) {
-  width: 13rem;
+  width: 12rem;
 }
 
 .fusion-time-table th:nth-child(9) {
-  width: 5rem;
+  width: 12rem;
   text-align: center;
 }
 
 .reference-panel > .pet-equipment-time-table-wrap .fusion-time-table {
-  min-width: 66rem;
+  min-width: 71rem;
 }
 
 .reference-panel > .fusion-stats-table-wrap .fusion-stats-table {
-  min-width: 46rem;
+  min-width: 50rem;
 }
 
-.fusion-time-table th:nth-child(10) {
+.fusion-time-table th:nth-child(11) {
   text-align: center;
 }
 

@@ -49,6 +49,7 @@
       success: false,
       successMain: false,
       successSub: false,
+      wild: false,
       deliveryTime: "",
       shichen: "",
     };
@@ -75,6 +76,7 @@
       var success = source.success === true;
       var successMain = source.successMain === true;
       var successSub = source.successSub === true;
+      var wild = source.wild === true;
       return {
         character: savedCharacters.includes(character) ? character : "",
         attemptDate,
@@ -83,6 +85,7 @@
         success,
         successMain,
         successSub,
+        wild,
         deliveryTime: deliveryTime,
         shichen: XYQFloorMarket.shichenFromDeliveryTime(deliveryTime),
       };
@@ -119,6 +122,7 @@
           successes: 0,
           successMains: 0,
           successSubs: 0,
+          wilds: 0,
           successRate: null,
         };
         summaryByCombo.set(embryoCombo, summary);
@@ -128,6 +132,7 @@
       if (source.success === true) summary.successes += 1;
       if (source.successMain === true) summary.successMains += 1;
       if (source.successSub === true) summary.successSubs += 1;
+      if (source.wild === true) summary.wilds += 1;
     });
 
     summaries.forEach(function (summary) {

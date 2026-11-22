@@ -1087,7 +1087,7 @@
     if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 10;
+      emptyCell.colSpan = 11;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
@@ -1183,6 +1183,19 @@
       });
       successSubCell.append(successSubInput);
 
+      var wildCell = document.createElement("td");
+      wildCell.className = "fusion-success-cell";
+      var wildInput = document.createElement("input");
+      wildInput.type = "checkbox";
+      wildInput.checked = record.wild === true;
+      wildInput.setAttribute("aria-label", "野生");
+      wildInput.addEventListener("change", function (event) {
+        record.wild = event.target.checked;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      wildCell.append(wildInput);
+
       var resultCell = document.createElement("td");
       var resultInput = document.createElement("input");
       resultInput.type = "text";
@@ -1239,6 +1252,7 @@
         successCell,
         successMainCell,
         successSubCell,
+        wildCell,
         resultCell,
         timeCell,
         shichenCell,
@@ -1263,7 +1277,7 @@
     if (!summaries.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 4;
+      emptyCell.colSpan = 7;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有可统计的胚子组合。";
       emptyRow.append(emptyCell);
@@ -1274,7 +1288,7 @@
     summaries.forEach(function (summary) {
       var row = document.createElement("tr");
       [summary.embryoCombo, summary.attempts, summary.successes]
-        .concat([summary.successMains, summary.successSubs])
+        .concat([summary.successMains, summary.successSubs, summary.wilds])
         .map(String)
         .concat(formatFusionSuccessRate(summary.successRate))
         .forEach(function (value) {
@@ -1297,8 +1311,11 @@
     var successSubs = summaries.reduce(function (total, summary) {
       return total + summary.successSubs;
     }, 0);
+    var wilds = summaries.reduce(function (total, summary) {
+      return total + summary.wilds;
+    }, 0);
     var totalRow = document.createElement("tr");
-    ["合计", attempts, successes, successMains, successSubs]
+    ["合计", attempts, successes, successMains, successSubs, wilds]
       .map(String)
       .concat(formatFusionSuccessRate(attempts ? successes / attempts : null))
       .forEach(function (value) {

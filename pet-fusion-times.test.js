@@ -18,6 +18,8 @@ test("新增炼妖记录沿用最近角色", () => {
       success: false,
       successMain: false,
       successSub: false,
+      wild: false,
+      wild: false,
       deliveryTime: "",
       shichen: "",
     },
@@ -32,6 +34,8 @@ test("新增炼妖记录沿用最近角色", () => {
       success: false,
       successMain: false,
       successSub: false,
+      wild: false,
+      wild: false,
       deliveryTime: "",
       shichen: "",
     },
@@ -44,6 +48,8 @@ test("新增炼妖记录沿用最近角色", () => {
     success: false,
     successMain: false,
     successSub: false,
+    wild: false,
+    wild: false,
     deliveryTime: "",
     shichen: "",
   });
@@ -74,6 +80,8 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         success: false,
         successMain: false,
         successSub: false,
+        wild: false,
+        wild: false,
         deliveryTime: "11月12日 21.36",
         shichen: "寅时",
       },
@@ -85,6 +93,8 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         success: false,
         successMain: false,
         successSub: false,
+        wild: false,
+        wild: false,
         deliveryTime: "",
         shichen: "—",
       },
@@ -107,6 +117,8 @@ test("炼妖出货记录归并臭名昭著狗托", () => {
         success: false,
         successMain: false,
         successSub: false,
+        wild: false,
+        wild: false,
         deliveryTime: "",
         shichen: "—",
       },
@@ -158,6 +170,7 @@ test("炼妖记录按胚子组合统计出货率", () => {
         successes: 1,
         successMains: 1,
         successSubs: 0,
+        wilds: 0,
         successRate: 0.5,
       },
       {
@@ -166,6 +179,7 @@ test("炼妖记录按胚子组合统计出货率", () => {
         successes: 0,
         successMains: 0,
         successSubs: 1,
+        wilds: 0,
         successRate: 0,
       },
     ],
@@ -175,7 +189,7 @@ test("炼妖记录按胚子组合统计出货率", () => {
 test("出主宠和出副宠独立于是否出货", () => {
   assert.deepEqual(
     times.summarizeRecords([
-      { embryoCombo: "日+马", success: false, successMain: true },
+      { embryoCombo: "日+马", success: false, successMain: true, wild: true },
       { embryoCombo: "日+马", success: true, successSub: true },
     ]),
     [
@@ -185,6 +199,7 @@ test("出主宠和出副宠独立于是否出货", () => {
         successes: 1,
         successMains: 1,
         successSubs: 1,
+        wilds: 1,
         successRate: 0.5,
       },
     ],
@@ -205,6 +220,7 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(page, /<th>是否出货<\/th>/);
   assert.match(page, /<th>出主宠<\/th>/);
   assert.match(page, /<th>出副宠<\/th>/);
+  assert.match(page, /<th>野生<\/th>/);
   assert.match(page, /id="fusion-stats-range"/);
   assert.match(page, /value="day" selected>当天<\/option>/);
   assert.match(page, /id="fusion-time-stats"/);
@@ -212,6 +228,7 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(app, /summarizeRecords/);
   assert.match(app, /successMain/);
   assert.match(app, /successSub/);
+  assert.match(app, /record\.wild/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);
   assert.match(app, /record\.shichen/);
@@ -279,6 +296,7 @@ test("炼妖组合可生成预填炼妖记录", () => {
       success: false,
       successMain: false,
       successSub: false,
+      wild: false,
       deliveryTime: "",
       shichen: "",
     },
