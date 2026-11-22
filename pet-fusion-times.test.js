@@ -21,10 +21,6 @@ test("新增炼妖记录沿用最近角色", () => {
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
     },
   );
   assert.deepEqual(
@@ -40,8 +36,6 @@ test("新增炼妖记录沿用最近角色", () => {
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
     },
   );
   assert.deepEqual(times.createEmptyRecord([], ""), {
@@ -55,8 +49,6 @@ test("新增炼妖记录沿用最近角色", () => {
     fullSkills: false,
     deliveryTime: "",
     shichen: "",
-    accountLuck: "unknown",
-    systemLuck: "unknown",
   });
 });
 
@@ -80,8 +72,6 @@ test("新增炼妖记录一次生成五行空行", () => {
     fullSkills: false,
     deliveryTime: "",
     shichen: "",
-    accountLuck: "unknown",
-    systemLuck: "unknown",
   });
   assert.equal(records[4].character, "小号");
 });
@@ -99,8 +89,6 @@ test("同一次炼妖可追加第二个结果", () => {
       fullSkills: true,
       deliveryTime: "11月22日 14.30",
       shichen: "酉时",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
     }),
     {
       character: "大号",
@@ -113,8 +101,6 @@ test("同一次炼妖可追加第二个结果", () => {
       fullSkills: false,
       deliveryTime: "11月22日 14.30",
       shichen: "酉时",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
     },
   );
 });
@@ -126,14 +112,31 @@ test("实际技能数支持一批数字按行拆分", () => {
   assert.deepEqual(times.parseSkillCountBatch(""), []);
 });
 
+test("炼妖时间只保留当天时间", () => {
+  assert.deepEqual(times.formatFusionTime("11月22日 0.29"), {
+    time: "0.29",
+    month: 11,
+    day: 22,
+  });
+  assert.deepEqual(times.formatFusionTime("14：30"), {
+    time: "14.30",
+    month: NaN,
+    day: NaN,
+  });
+  assert.deepEqual(times.formatFusionTime("11月22日"), {
+    time: "",
+    month: 11,
+    day: 22,
+  });
+});
+
 test("炼妖因素按时辰角色号品和系统状态分组统计", () => {
-  const summaries = times.summarizeFactors([
+  const records = [
     {
       embryoCombo: "日+马",
       shichen: "亥时",
       character: "大号",
-      accountLuck: "lucky",
-      systemLuck: "generous",
+      attemptDate: "2026-11-22",
       success: true,
       resultType: "main",
       skillCount: 8,
@@ -143,12 +146,15 @@ test("炼妖因素按时辰角色号品和系统状态分组统计", () => {
       embryoCombo: "日+马",
       shichen: "亥时",
       character: "小号",
-      accountLuck: "unlucky",
-      systemLuck: "tight",
+      attemptDate: "2026-11-21",
       resultType: "wild",
     },
     { embryoCombo: "" },
-  ]);
+  ];
+  const summaries = times.summarizeFactors(records, {
+    accountLuck: { 大号: "lucky", 小号: "unlucky" },
+    systemLuck: { "2026-11-22": "generous", "2026-11-21": "tight" },
+  });
 
   assert.deepEqual(
     summaries.find((summary) => summary.factor === "梦幻时辰" && summary.value === "亥时"),
@@ -201,10 +207,8 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         resultType: "main",
         skillCount: null,
         fullSkills: false,
-        deliveryTime: "11月12日 21.36",
+        deliveryTime: "21.36",
         shichen: "寅时",
-        accountLuck: "unknown",
-        systemLuck: "unknown",
       },
       {
         character: "",
@@ -217,8 +221,6 @@ test("炼妖出货记录迁移保留有效角色并补齐字段", () => {
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
-        accountLuck: "unknown",
-        systemLuck: "unknown",
       },
     ],
   );
@@ -242,8 +244,6 @@ test("炼妖出货记录归并臭名昭著狗托", () => {
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
-        accountLuck: "unknown",
-        systemLuck: "unknown",
       },
     ],
   );
@@ -271,8 +271,6 @@ test("炼妖旧记录迁移出副野生并清理技能数", () => {
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
-        accountLuck: "unknown",
-        systemLuck: "unknown",
       },
       {
         character: "",
@@ -285,8 +283,6 @@ test("炼妖旧记录迁移出副野生并清理技能数", () => {
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
-        accountLuck: "unknown",
-        systemLuck: "unknown",
       },
       {
         character: "",
@@ -299,8 +295,6 @@ test("炼妖旧记录迁移出副野生并清理技能数", () => {
         fullSkills: false,
         deliveryTime: "",
         shichen: "—",
-        accountLuck: "unknown",
-        systemLuck: "unknown",
       },
     ],
   );
@@ -459,10 +453,11 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(app, /createRecordForSameAttempt/);
   assert.match(app, /parseSkillCountBatch/);
   assert.match(app, /formatSkillCountBatch/);
-  assert.match(page, /<th>号品<\/th>/);
-  assert.match(page, /<th>系统状态<\/th>/);
+  assert.match(page, /号品汇总/);
+  assert.match(page, /系统状态汇总/);
   assert.match(page, /id="fusion-factor-stats"/);
   assert.match(app, /summarizeFactors/);
+  assert.match(app, /formatFusionTime/);
   assert.match(app, /如 8 或 6 7 8/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);
@@ -534,8 +529,6 @@ test("炼妖组合可生成预填炼妖记录", () => {
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
     },
   );
 });

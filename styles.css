@@ -973,14 +973,8 @@ button:hover {
 }
 
 .fusion-time-table th:nth-child(9) {
-  width: 7.5rem;
+  width: 12rem;
   text-align: center;
-}
-
-.fusion-time-table th:nth-child(10),
-.fusion-time-table th:nth-child(11),
-.fusion-time-table th:nth-child(12) {
-  width: 7rem;
 }
 
 .reference-panel > .pet-equipment-time-table-wrap .fusion-time-table {
@@ -993,7 +987,7 @@ button:hover {
   min-width: 50rem;
 }
 
-.fusion-time-table th:nth-child(13) {
+.fusion-time-table th:nth-child(11) {
   text-align: center;
 }
 

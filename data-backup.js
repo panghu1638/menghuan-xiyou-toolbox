@@ -21,6 +21,8 @@
     "lingShiDecompose",
     "yuPoDecompose",
     "equipmentAdsorb",
+    "fusionAccountLuckByCharacter",
+    "fusionSystemLuckByDate",
   ];
   const numberFields = [
     "goldPriceInput",

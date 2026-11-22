@@ -32,6 +32,8 @@
     petEquipmentDeliveryRecords: [],
     fusionDeliveryRecords: [],
     fusionStatsRange: "day",
+    fusionAccountLuckByCharacter: {},
+    fusionSystemLuckByDate: {},
     fusionComboRecords: structuredClone(XYQPetFusionTimes.defaultComboRecords),
     petEquipmentCharacterVersion: 2,
     equipmentRecords: structuredClone(XYQEquipmentPrices.defaultEquipmentRecords),
@@ -237,6 +239,27 @@
         saved.fusionDeliveryRecords,
         saved.petEquipmentCharacters,
       );
+      var legacyRecords = Array.isArray(saved.fusionDeliveryRecords)
+        ? saved.fusionDeliveryRecords
+        : [];
+      if (!saved.fusionAccountLuckByCharacter) {
+        saved.fusionAccountLuckByCharacter = {};
+        legacyRecords.forEach(function (record) {
+          if (record.character) {
+            saved.fusionAccountLuckByCharacter[record.character] =
+              XYQPetFusionTimes.normalizeAccountLuck(record.accountLuck);
+          }
+        });
+      }
+      if (!saved.fusionSystemLuckByDate) {
+        saved.fusionSystemLuckByDate = {};
+        legacyRecords.forEach(function (record) {
+          if (record.attemptDate) {
+            saved.fusionSystemLuckByDate[record.attemptDate] =
+              XYQPetFusionTimes.normalizeSystemLuck(record.systemLuck);
+          }
+        });
+      }
       if (!["day", "month", "all"].includes(saved.fusionStatsRange)) {
         saved.fusionStatsRange = "day";
       }
@@ -1078,6 +1101,7 @@
     tbody.replaceChildren();
     var rangeSelect = document.getElementById("fusion-stats-range");
     if (rangeSelect) rangeSelect.value = state.fusionStatsRange;
+    updateFusionLuckSummaryControls();
     var records = XYQPetFusionTimes.filterRecordsByRange(
       state.fusionDeliveryRecords,
       state.fusionStatsRange,
@@ -1088,7 +1112,7 @@
     if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 13;
+      emptyCell.colSpan = 11;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
@@ -1248,50 +1272,6 @@
       });
       resultCell.append(resultInput);
 
-      var accountLuckCell = document.createElement("td");
-      var accountLuckSelect = document.createElement("select");
-      accountLuckSelect.setAttribute("aria-label", "号品");
-      [
-        ["unknown", "未记录"],
-        ["lucky", "号品好"],
-        ["normal", "普通"],
-        ["unlucky", "号品差"],
-      ].forEach(function (item) {
-        var option = document.createElement("option");
-        option.value = item[0];
-        option.textContent = item[1];
-        accountLuckSelect.append(option);
-      });
-      accountLuckSelect.value = record.accountLuck || "unknown";
-      accountLuckSelect.addEventListener("change", function (event) {
-        record.accountLuck = event.target.value;
-        saveState();
-        renderFusionDeliveryTimes();
-      });
-      accountLuckCell.append(accountLuckSelect);
-
-      var systemLuckCell = document.createElement("td");
-      var systemLuckSelect = document.createElement("select");
-      systemLuckSelect.setAttribute("aria-label", "系统状态");
-      [
-        ["unknown", "未记录"],
-        ["generous", "放水"],
-        ["normal", "正常"],
-        ["tight", "不放水"],
-      ].forEach(function (item) {
-        var option = document.createElement("option");
-        option.value = item[0];
-        option.textContent = item[1];
-        systemLuckSelect.append(option);
-      });
-      systemLuckSelect.value = record.systemLuck || "unknown";
-      systemLuckSelect.addEventListener("change", function (event) {
-        record.systemLuck = event.target.value;
-        saveState();
-        renderFusionDeliveryTimes();
-      });
-      systemLuckCell.append(systemLuckSelect);
-
       var timeCell = document.createElement("td");
       var shichenCell = document.createElement("td");
       shichenCell.className = "fusion-shichen";
@@ -1303,8 +1283,11 @@
           record,
           "deliveryTime",
           record.result + "出货时间",
-          XYQFloorMarket.prepareSaleTimeInput,
-          "输入时间",
+          function (value, now, previousValue) {
+            var fusionTime = XYQPetFusionTimes.formatFusionTime(value);
+            return fusionTime ? fusionTime.time : "";
+          },
+          "如 0.29",
           function (formatted) {
             record.shichen = XYQPetFusionTimes.shichenFromDeliveryTime(formatted);
             saveState();
@@ -1356,8 +1339,6 @@
         skillCountCell,
         fullSkillsCell,
         resultCell,
-        accountLuckCell,
-        systemLuckCell,
         timeCell,
         shichenCell,
         actionCell,
@@ -1463,7 +1444,10 @@
     if (!tbody) return;
 
     tbody.replaceChildren();
-    var summaries = XYQPetFusionTimes.summarizeFactors(records);
+    var summaries = XYQPetFusionTimes.summarizeFactors(records, {
+      accountLuck: state.fusionAccountLuckByCharacter,
+      systemLuck: state.fusionSystemLuckByDate,
+    });
     if (!summaries.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
@@ -1497,6 +1481,38 @@
         });
       tbody.append(row);
     });
+  }
+
+  function updateFusionLuckSummaryControls() {
+    var accountSelect = document.getElementById("fusion-account-luck-summary");
+    var systemSelect = document.getElementById("fusion-system-luck-summary");
+    var records = XYQPetFusionTimes.filterRecordsByRange(
+      state.fusionDeliveryRecords,
+      state.fusionStatsRange,
+    );
+    var activeCharacters = new Set(records.map(function (record) {
+      return record.character;
+    }).filter(Boolean));
+    var activeDates = new Set(records.map(function (record) {
+      return record.attemptDate;
+    }).filter(Boolean));
+    var accountValues = [...activeCharacters].map(function (character) {
+      return state.fusionAccountLuckByCharacter[character] || "unknown";
+    });
+    var systemValues = [...activeDates].map(function (date) {
+      return state.fusionSystemLuckByDate[date] || "unknown";
+    });
+
+    if (accountSelect) {
+      accountSelect.value = accountValues.length && new Set(accountValues).size === 1
+        ? accountValues[0]
+        : "unknown";
+    }
+    if (systemSelect) {
+      systemSelect.value = systemValues.length && new Set(systemValues).size === 1
+        ? systemValues[0]
+        : "unknown";
+    }
   }
 
   function priceValue(value) {
@@ -3040,6 +3056,44 @@
   if (fusionStatsRange) {
     fusionStatsRange.addEventListener("change", function (event) {
       state.fusionStatsRange = event.target.value;
+      saveState();
+      renderFusionDeliveryTimes();
+    });
+  }
+
+  var fusionAccountLuckSummary = document.getElementById(
+    "fusion-account-luck-summary",
+  );
+  if (fusionAccountLuckSummary) {
+    fusionAccountLuckSummary.addEventListener("change", function (event) {
+      var luck = event.target.value;
+      XYQPetFusionTimes.filterRecordsByRange(
+        state.fusionDeliveryRecords,
+        state.fusionStatsRange,
+      ).forEach(function (record) {
+        if (record.character) {
+          state.fusionAccountLuckByCharacter[record.character] = luck;
+        }
+      });
+      saveState();
+      renderFusionDeliveryTimes();
+    });
+  }
+
+  var fusionSystemLuckSummary = document.getElementById(
+    "fusion-system-luck-summary",
+  );
+  if (fusionSystemLuckSummary) {
+    fusionSystemLuckSummary.addEventListener("change", function (event) {
+      var luck = event.target.value;
+      XYQPetFusionTimes.filterRecordsByRange(
+        state.fusionDeliveryRecords,
+        state.fusionStatsRange,
+      ).forEach(function (record) {
+        if (record.attemptDate) {
+          state.fusionSystemLuckByDate[record.attemptDate] = luck;
+        }
+      });
       saveState();
       renderFusionDeliveryTimes();
     });

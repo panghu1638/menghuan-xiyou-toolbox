@@ -123,6 +123,24 @@
           </label>
           <button id="fusion-add-record" type="button" class="primary">新增炼妖记录</button>
           <button id="fusion-remove-empty-records" type="button">删除未填写行</button>
+          <label>
+            号品汇总
+            <select id="fusion-account-luck-summary" aria-label="号品汇总">
+              <option value="unknown" selected>未记录</option>
+              <option value="lucky">号品好</option>
+              <option value="normal">普通</option>
+              <option value="unlucky">号品差</option>
+            </select>
+          </label>
+          <label>
+            系统状态汇总
+            <select id="fusion-system-luck-summary" aria-label="系统状态汇总">
+              <option value="unknown" selected>未记录</option>
+              <option value="generous">放水</option>
+              <option value="normal">正常</option>
+              <option value="tight">不放水</option>
+            </select>
+          </label>
         </div>
         <div class="reference-table-wrap fusion-stats-table-wrap">
           <table class="pet-equipment-time-table fusion-stats-table">
@@ -155,8 +173,6 @@
                 <th>实际技能数</th>
                 <th>满技能</th>
                 <th>炼妖结果</th>
-                <th>号品</th>
-                <th>系统状态</th>
                 <th>出货时间</th>
                 <th>梦幻时辰</th>
                 <th>操作</th>

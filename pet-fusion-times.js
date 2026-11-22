@@ -40,6 +40,21 @@
       .replace(/^、+|、+$/g, "");
   }
 
+  function formatFusionTime(value) {
+    var text = normalizedText(value);
+    var match = text
+      .replace(/\d{1,2}月\d{1,2}日/g, " ")
+      .match(/(\d{1,2})[.：:](\d{1,2})/);
+    var dateMatch = text.match(/\d{1,2}月\d{1,2}日/);
+    if (!match && !dateMatch) return "";
+    var dateNumbers = dateMatch ? dateMatch[0].match(/\d+/g) : [];
+    return {
+      time: match ? match[1] + "." + match[2] : "",
+      month: Number(dateNumbers[0]),
+      day: Number(dateNumbers[1]),
+    };
+  }
+
   function normalizeChoice(value, choices) {
     var choice = normalizedText(value);
     return choices.includes(choice) ? choice : choices[0];
@@ -63,6 +78,26 @@
     );
   }
 
+  function fusionDateFromDeliveryTime(value, now) {
+    var parsed = formatFusionTime(value);
+    if (!parsed || !Number.isFinite(parsed.month) || !Number.isFinite(parsed.day)) {
+      return "";
+    }
+    var current = now instanceof Date ? now : new Date();
+    var year = current.getFullYear();
+    var candidate = new Date(year, parsed.month - 1, parsed.day);
+    if (candidate.getFullYear() !== year ||
+      candidate.getMonth() !== parsed.month - 1 ||
+      candidate.getDate() !== parsed.day) {
+      return "";
+    }
+    return normalizeAttemptDate(
+      year + "-" +
+        String(parsed.month).padStart(2, "0") + "-" +
+        String(parsed.day).padStart(2, "0"),
+    );
+  }
+
   function createEmptyRecord(characters, lastCharacter, now) {
     var last = normalizedText(lastCharacter);
     return {
@@ -79,8 +114,6 @@
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
-      accountLuck: "unknown",
-      systemLuck: "unknown",
     };
   }
 
@@ -108,8 +141,6 @@
       deliveryTime: normalizedText(record.deliveryTime),
       shichen: normalizedText(record.shichen) ||
         XYQFloorMarket.shichenFromDeliveryTime(record.deliveryTime),
-      accountLuck: normalizeAccountLuck(record.accountLuck),
-      systemLuck: normalizeSystemLuck(record.systemLuck),
     };
   }
 
@@ -149,19 +180,20 @@
       }
       var skillCount = normalizeSkillCount(source.skillCount);
       var fullSkills = source.fullSkills === true;
+      var fusionTime = formatFusionTime(deliveryTime);
+      var normalizedFusionTime = fusionTime ? fusionTime.time : "";
       return {
         character: savedCharacters.includes(character) ? character : "",
-        attemptDate,
+        attemptDate: attemptDate ||
+          fusionDateFromDeliveryTime(deliveryTime),
         embryoCombo: normalizedText(source.embryoCombo),
         result: normalizedText(source.result),
         success,
         resultType,
         skillCount: Number.isFinite(skillCount) && skillCount >= 0 ? skillCount : null,
         fullSkills,
-        deliveryTime: deliveryTime,
-        shichen: XYQFloorMarket.shichenFromDeliveryTime(deliveryTime),
-        accountLuck: normalizeAccountLuck(source.accountLuck),
-        systemLuck: normalizeSystemLuck(source.systemLuck),
+        deliveryTime: normalizedFusionTime,
+        shichen: XYQFloorMarket.shichenFromDeliveryTime(normalizedFusionTime),
       };
     });
   }
@@ -232,7 +264,12 @@
     return summaries;
   }
 
-  function summarizeFactors(records) {
+  function summarizeFactors(records, luckSettings) {
+    var settings = luckSettings && typeof luckSettings === "object"
+      ? luckSettings
+      : {};
+    var accountLuckByCharacter = settings.accountLuck || {};
+    var systemLuckByDate = settings.systemLuck || {};
     var factors = [
       ["梦幻时辰", "shichen", function (value) { return value || "未记录"; }],
       ["角色", "character", function (value) { return value || "未记录"; }],
@@ -245,7 +282,10 @@
       var summaries = [];
       (Array.isArray(records) ? records : []).forEach(function (record) {
         if (!normalizedText(record && record.embryoCombo)) return;
-        var value = factor[2](record[factor[1]]);
+        var source = Object.assign({}, record);
+        source.accountLuck = accountLuckByCharacter[record.character] || "unknown";
+        source.systemLuck = systemLuckByDate[record.attemptDate] || "unknown";
+        var value = factor[2](source[factor[1]]);
         var summary = summaryByValue.get(value);
         if (!summary) {
           summary = {
@@ -423,10 +463,14 @@
     createRecordForSameAttempt,
     parseSkillCountBatch,
     formatSkillCountBatch,
+    formatFusionTime,
+    fusionDateFromDeliveryTime,
     migrateRecords,
     filterRecordsByRange,
     summarizeRecords,
     summarizeFactors,
+    normalizeAccountLuck,
+    normalizeSystemLuck,
     defaultComboRecords,
     createEmptyCombo,
     migrateComboRecords,
