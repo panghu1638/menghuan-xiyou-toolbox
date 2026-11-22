@@ -18,6 +18,12 @@
       : "";
   }
 
+  function normalizeSkillCount(value) {
+    if (value === null || value === "") return null;
+    var count = Number(value);
+    return Number.isFinite(count) && count >= 0 ? count : null;
+  }
+
   function localDateString(now) {
     var current = now instanceof Date ? now : new Date();
     return current.getFullYear() + "-" +
@@ -91,7 +97,7 @@
         else if (source.successSub === true) resultType = "sub";
         else resultType = "main";
       }
-      var skillCount = Number(source.skillCount);
+      var skillCount = normalizeSkillCount(source.skillCount);
       var fullSkills = source.fullSkills === true;
       return {
         character: savedCharacters.includes(character) ? character : "",
@@ -156,8 +162,8 @@
         summary.turtlesAndBubbles += 1;
       }
       if (source.fullSkills === true) summary.fullSkills += 1;
-      var skillCount = Number(source.skillCount);
-      if (Number.isFinite(skillCount) && skillCount >= 0) {
+      var skillCount = normalizeSkillCount(source.skillCount);
+      if (skillCount !== null) {
         summary.skillTotal += skillCount;
         summary.skillCountRecords += 1;
       }

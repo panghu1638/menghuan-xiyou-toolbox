@@ -294,6 +294,31 @@ test("炼妖结果类型独立于是否出货并统计技能数", () => {
   );
 });
 
+test("炼妖技能数空值不参与平均统计", () => {
+  assert.deepEqual(
+    times.summarizeRecords(
+      times.migrateRecords([
+        { embryoCombo: "日+马", skillCount: null },
+        { embryoCombo: "日+马", skillCount: "" },
+        { embryoCombo: "日+马", skillCount: 0 },
+      ], []),
+    ),
+    [{
+      embryoCombo: "日+马",
+      attempts: 3,
+      successes: 0,
+      successSubs: 0,
+      wilds: 0,
+      turtlesAndBubbles: 0,
+      fullSkills: 0,
+      skillTotal: 0,
+      skillCountRecords: 1,
+      averageSkillCount: 0,
+      successRate: 0,
+    }],
+  );
+});
+
 test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   const page = await readFile(new URL("./fusion-times.html", import.meta.url), "utf8");
   const app = await readFile(new URL("./app.js", import.meta.url), "utf8");
