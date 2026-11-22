@@ -34,6 +34,12 @@
       });
   }
 
+  function formatSkillCountBatch(value) {
+    return normalizedText(value)
+      .replace(/[\s,，、;；]+/g, "、")
+      .replace(/^、+|、+$/g, "");
+  }
+
   function localDateString(now) {
     var current = now instanceof Date ? now : new Date();
     return current.getFullYear() + "-" +
@@ -319,6 +325,7 @@
     createRecordFromCombo,
     createRecordForSameAttempt,
     parseSkillCountBatch,
+    formatSkillCountBatch,
     migrateRecords,
     filterRecordsByRange,
     summarizeRecords,

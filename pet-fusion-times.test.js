@@ -107,6 +107,7 @@ test("同一次炼妖可追加第二个结果", () => {
 
 test("实际技能数支持一批数字按行拆分", () => {
   assert.deepEqual(times.parseSkillCountBatch(" 6 7，8、9；10 "), [6, 7, 8, 9, 10]);
+  assert.equal(times.formatSkillCountBatch(" 6 7，8、9；10 "), "6、7、8、9、10");
   assert.deepEqual(times.parseSkillCountBatch("6,7.x"), [6, null]);
   assert.deepEqual(times.parseSkillCountBatch(""), []);
 });
@@ -382,6 +383,7 @@ test("炼妖出货页接入宠装角色和地板时间格式", async () => {
   assert.match(app, /createEmptyRecords/);
   assert.match(app, /createRecordForSameAttempt/);
   assert.match(app, /parseSkillCountBatch/);
+  assert.match(app, /formatSkillCountBatch/);
   assert.match(app, /如 8 或 6 7 8/);
   assert.match(page, /30分钟一轮/);
   assert.match(app, /shichenFromDeliveryTime/);

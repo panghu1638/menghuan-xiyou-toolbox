@@ -1185,6 +1185,7 @@
       skillCountInput.placeholder = "如 8 或 6 7 8";
       skillCountInput.setAttribute("aria-label", "实际技能数");
       skillCountInput.addEventListener("blur", function (event) {
+        event.target.value = XYQPetFusionTimes.formatSkillCountBatch(event.target.value);
         var counts = XYQPetFusionTimes.parseSkillCountBatch(event.target.value);
         if (counts.length < 2 || counts.includes(null)) {
           if (counts.length > 1) alert("实际技能数请填写整数，多个用空格、逗号或顿号分隔。");
