@@ -40,6 +40,11 @@
       .replace(/^、+|、+$/g, "");
   }
 
+  function normalizeChoice(value, choices) {
+    var choice = normalizedText(value);
+    return choices.includes(choice) ? choice : choices[0];
+  }
+
   function localDateString(now) {
     var current = now instanceof Date ? now : new Date();
     return current.getFullYear() + "-" +
@@ -74,6 +79,8 @@
       fullSkills: false,
       deliveryTime: "",
       shichen: "",
+      accountLuck: "unknown",
+      systemLuck: "unknown",
     };
   }
 
@@ -101,7 +108,17 @@
       deliveryTime: normalizedText(record.deliveryTime),
       shichen: normalizedText(record.shichen) ||
         XYQFloorMarket.shichenFromDeliveryTime(record.deliveryTime),
+      accountLuck: normalizeAccountLuck(record.accountLuck),
+      systemLuck: normalizeSystemLuck(record.systemLuck),
     };
+  }
+
+  function normalizeAccountLuck(value) {
+    return normalizeChoice(value, ["unknown", "lucky", "normal", "unlucky"]);
+  }
+
+  function normalizeSystemLuck(value) {
+    return normalizeChoice(value, ["unknown", "generous", "normal", "tight"]);
   }
 
   function createEmptyRecords(count, characters, lastCharacter, now) {
@@ -143,6 +160,8 @@
         fullSkills,
         deliveryTime: deliveryTime,
         shichen: XYQFloorMarket.shichenFromDeliveryTime(deliveryTime),
+        accountLuck: normalizeAccountLuck(source.accountLuck),
+        systemLuck: normalizeSystemLuck(source.systemLuck),
       };
     });
   }
@@ -211,6 +230,84 @@
         : null;
     });
     return summaries;
+  }
+
+  function summarizeFactors(records) {
+    var factors = [
+      ["梦幻时辰", "shichen", function (value) { return value || "未记录"; }],
+      ["角色", "character", function (value) { return value || "未记录"; }],
+      ["号品", "accountLuck", normalizeAccountLuckLabel],
+      ["系统状态", "systemLuck", normalizeSystemLuckLabel],
+    ];
+
+    return factors.map(function (factor) {
+      var summaryByValue = new Map();
+      var summaries = [];
+      (Array.isArray(records) ? records : []).forEach(function (record) {
+        if (!normalizedText(record && record.embryoCombo)) return;
+        var value = factor[2](record[factor[1]]);
+        var summary = summaryByValue.get(value);
+        if (!summary) {
+          summary = {
+            factor: factor[0],
+            value,
+            attempts: 0,
+            successes: 0,
+            successSubs: 0,
+            wilds: 0,
+            turtlesAndBubbles: 0,
+            fullSkills: 0,
+            skillTotal: 0,
+            skillCountRecords: 0,
+            averageSkillCount: null,
+            successRate: null,
+          };
+          summaryByValue.set(value, summary);
+          summaries.push(summary);
+        }
+        summary.attempts += 1;
+        if (record.success === true) summary.successes += 1;
+        if (record.resultType === "sub") summary.successSubs += 1;
+        if (record.resultType === "wild") summary.wilds += 1;
+        if (record.resultType === "turtle" || record.resultType === "bubble") {
+          summary.turtlesAndBubbles += 1;
+        }
+        if (record.fullSkills === true) summary.fullSkills += 1;
+        var skillCount = normalizeSkillCount(record.skillCount);
+        if (skillCount !== null) {
+          summary.skillTotal += skillCount;
+          summary.skillCountRecords += 1;
+        }
+      });
+
+      summaries.forEach(function (summary) {
+        summary.averageSkillCount = summary.skillCountRecords
+          ? summary.skillTotal / summary.skillCountRecords
+          : null;
+        summary.successRate = summary.attempts
+          ? summary.successes / summary.attempts
+          : null;
+      });
+      return summaries;
+    }).flat();
+  }
+
+  function normalizeAccountLuckLabel(value) {
+    return {
+      unknown: "未记录",
+      lucky: "号品好",
+      normal: "普通",
+      unlucky: "号品差",
+    }[normalizeAccountLuck(value)];
+  }
+
+  function normalizeSystemLuckLabel(value) {
+    return {
+      unknown: "未记录",
+      generous: "放水",
+      normal: "正常",
+      tight: "不放水",
+    }[normalizeSystemLuck(value)];
   }
 
   var legacyDefaultComboRecordSets = [
@@ -329,6 +426,7 @@
     migrateRecords,
     filterRecordsByRange,
     summarizeRecords,
+    summarizeFactors,
     defaultComboRecords,
     createEmptyCombo,
     migrateComboRecords,

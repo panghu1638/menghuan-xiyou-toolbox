@@ -1083,11 +1083,12 @@
       state.fusionStatsRange,
     );
     renderFusionStats(records);
+    renderFusionFactors(records);
 
     if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 11;
+      emptyCell.colSpan = 13;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
@@ -1247,6 +1248,50 @@
       });
       resultCell.append(resultInput);
 
+      var accountLuckCell = document.createElement("td");
+      var accountLuckSelect = document.createElement("select");
+      accountLuckSelect.setAttribute("aria-label", "号品");
+      [
+        ["unknown", "未记录"],
+        ["lucky", "号品好"],
+        ["normal", "普通"],
+        ["unlucky", "号品差"],
+      ].forEach(function (item) {
+        var option = document.createElement("option");
+        option.value = item[0];
+        option.textContent = item[1];
+        accountLuckSelect.append(option);
+      });
+      accountLuckSelect.value = record.accountLuck || "unknown";
+      accountLuckSelect.addEventListener("change", function (event) {
+        record.accountLuck = event.target.value;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      accountLuckCell.append(accountLuckSelect);
+
+      var systemLuckCell = document.createElement("td");
+      var systemLuckSelect = document.createElement("select");
+      systemLuckSelect.setAttribute("aria-label", "系统状态");
+      [
+        ["unknown", "未记录"],
+        ["generous", "放水"],
+        ["normal", "正常"],
+        ["tight", "不放水"],
+      ].forEach(function (item) {
+        var option = document.createElement("option");
+        option.value = item[0];
+        option.textContent = item[1];
+        systemLuckSelect.append(option);
+      });
+      systemLuckSelect.value = record.systemLuck || "unknown";
+      systemLuckSelect.addEventListener("change", function (event) {
+        record.systemLuck = event.target.value;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      systemLuckCell.append(systemLuckSelect);
+
       var timeCell = document.createElement("td");
       var shichenCell = document.createElement("td");
       shichenCell.className = "fusion-shichen";
@@ -1311,6 +1356,8 @@
         skillCountCell,
         fullSkillsCell,
         resultCell,
+        accountLuckCell,
+        systemLuckCell,
         timeCell,
         shichenCell,
         actionCell,
@@ -1409,6 +1456,47 @@
         totalRow.append(cell);
       });
     tfoot.append(totalRow);
+  }
+
+  function renderFusionFactors(records) {
+    var tbody = document.getElementById("fusion-factor-stats");
+    if (!tbody) return;
+
+    tbody.replaceChildren();
+    var summaries = XYQPetFusionTimes.summarizeFactors(records);
+    if (!summaries.length) {
+      var emptyRow = document.createElement("tr");
+      var emptyCell = document.createElement("td");
+      emptyCell.colSpan = 10;
+      emptyCell.className = "pet-equipment-time-empty";
+      emptyCell.textContent = "当前范围内还没有可统计的炼妖因素。";
+      emptyRow.append(emptyCell);
+      tbody.append(emptyRow);
+      return;
+    }
+
+    summaries.forEach(function (summary) {
+      var row = document.createElement("tr");
+      [
+        summary.factor,
+        summary.value,
+        summary.attempts,
+        summary.successes,
+        summary.successSubs,
+        summary.wilds,
+        summary.turtlesAndBubbles,
+        summary.fullSkills,
+        formatFusionSkillCount(summary.averageSkillCount),
+      ]
+        .map(String)
+        .concat(formatFusionSuccessRate(summary.successRate))
+        .forEach(function (value) {
+          var cell = document.createElement("td");
+          cell.textContent = value;
+          row.append(cell);
+        });
+      tbody.append(row);
+    });
   }
 
   function priceValue(value) {
