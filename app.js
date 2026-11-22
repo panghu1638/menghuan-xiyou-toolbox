@@ -851,7 +851,7 @@
     if (!state.petEquipmentDeliveryRecords.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 6;
+      emptyCell.colSpan = 7;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "还没有装备记录，点击“新增装备记录”开始填写。";
       emptyRow.append(emptyCell);
@@ -1087,7 +1087,7 @@
     if (!records.length) {
       var emptyRow = document.createElement("tr");
       var emptyCell = document.createElement("td");
-      emptyCell.colSpan = 10;
+      emptyCell.colSpan = 11;
       emptyCell.className = "pet-equipment-time-empty";
       emptyCell.textContent = "当前范围内还没有炼妖记录。";
       emptyRow.append(emptyCell);
@@ -1181,6 +1181,19 @@
       });
       wildCell.append(wildInput);
 
+      var fullSkillsCell = document.createElement("td");
+      fullSkillsCell.className = "fusion-success-cell";
+      var fullSkillsInput = document.createElement("input");
+      fullSkillsInput.type = "checkbox";
+      fullSkillsInput.checked = record.fullSkills === true;
+      fullSkillsInput.setAttribute("aria-label", "满技能");
+      fullSkillsInput.addEventListener("change", function (event) {
+        record.fullSkills = event.target.checked;
+        saveState();
+        renderFusionDeliveryTimes();
+      });
+      fullSkillsCell.append(fullSkillsInput);
+
       var resultCell = document.createElement("td");
       var resultInput = document.createElement("input");
       resultInput.type = "text";
@@ -1237,6 +1250,7 @@
         successCell,
         successSubCell,
         wildCell,
+        fullSkillsCell,
         resultCell,
         timeCell,
         shichenCell,
@@ -1272,7 +1286,7 @@
     summaries.forEach(function (summary) {
       var row = document.createElement("tr");
       [summary.embryoCombo, summary.attempts, summary.successes]
-        .concat([summary.successSubs, summary.wilds])
+        .concat([summary.successSubs, summary.wilds, summary.fullSkills])
         .map(String)
         .concat(formatFusionSuccessRate(summary.successRate))
         .forEach(function (value) {
@@ -1295,8 +1309,11 @@
     var wilds = summaries.reduce(function (total, summary) {
       return total + summary.wilds;
     }, 0);
+    var fullSkills = summaries.reduce(function (total, summary) {
+      return total + summary.fullSkills;
+    }, 0);
     var totalRow = document.createElement("tr");
-    ["合计", attempts, successes, successSubs, wilds]
+    ["合计", attempts, successes, successSubs, wilds, fullSkills]
       .map(String)
       .concat(formatFusionSuccessRate(attempts ? successes / attempts : null))
       .forEach(function (value) {
